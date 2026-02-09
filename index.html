@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pro Scientific Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Pro Scientific Calculator</h1>
+        <p>Safe parser • History • Theme • Keyboard</p>
+      </div>
+
+      <div class="controls">
+        <button id="angleBtn" class="chip" type="button">DEG</button>
+        <button id="themeBtn" class="chip" type="button">Dark</button>
+        <button id="clearHistBtn" class="chip" type="button">Clear History</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Calculator -->
+      <section class="calc">
+        <div class="display">
+          <div class="meta">
+            <span id="status">Ready</span>
+            <span id="memory">M: 0</span>
+          </div>
+
+          <div id="expression" class="expression" dir="ltr"></div>
+          <div id="result" class="result" dir="ltr">0</div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn danger" data-act="clear">C</button>
+          <button class="btn" data-act="back">⌫</button>
+          <button class="btn" data-act="ans">ANS</button>
+          <button class="btn op" data-op="/">÷</button>
+
+          <button class="btn fn" data-fn="sin">sin</button>
+          <button class="btn fn" data-fn="cos">cos</button>
+          <button class="btn fn" data-fn="tan">tan</button>
+          <button class="btn op" data-op="*">×</button>
+
+          <button class="btn fn" data-fn="log">log</button>
+          <button class="btn fn" data-fn="ln">ln</button>
+          <button class="btn fn" data-fn="sqrt">√</button>
+          <button class="btn op" data-op="-">−</button>
+
+          <button class="btn fn" data-fn="pow">xʸ</button>
+          <button class="btn fn" data-fn="fact">n!</button>
+          <button class="btn" data-act="pi">π</button>
+          <button class="btn op" data-op="+">+</button>
+
+          <button class="btn" data-act="(">(</button>
+          <button class="btn" data-act=")">)</button>
+          <button class="btn" data-act="e">e</button>
+          <button class="btn" data-op="%">%</button>
+
+          <button class="btn" data-num="7">7</button>
+          <button class="btn" data-num="8">8</button>
+          <button class="btn" data-num="9">9</button>
+          <button class="btn" data-act="dot">.</button>
+
+          <button class="btn" data-num="4">4</button>
+          <button class="btn" data-num="5">5</button>
+          <button class="btn" data-num="6">6</button>
+          <button class="btn" data-act="neg">±</button>
+
+          <button class="btn" data-num="1">1</button>
+          <button class="btn" data-num="2">2</button>
+          <button class="btn" data-num="3">3</button>
+          <button class="btn ok" data-act="eq">=</button>
+
+          <button class="btn wide" data-num="0">0</button>
+        </div>
+
+        <div class="memrow">
+          <button class="btn chip2" data-mem="mc">MC</button>
+          <button class="btn chip2" data-mem="mr">MR</button>
+          <button class="btn chip2" data-mem="mplus">M+</button>
+          <button class="btn chip2" data-mem="mminus">M-</button>
+        </div>
+      </section>
+
+      <!-- History -->
+      <aside class="history">
+        <h2>History</h2>
+        <div id="historyList" class="historyList"></div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>Examples:</span>
+      <code>sin(30)</code>
+      <code>sqrt(144)</code>
+      <code>5!</code>
+      <code>2^10</code>
+      <code>(3+7)*9</code>
+    </footer>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="math.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
