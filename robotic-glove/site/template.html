@@ -1,0 +1,1958 @@
+<title>Robotic Glove Build Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Supervisor's build guide for a low-cost tendon-driven robotic glove: design review, mechanics, electronics, Arduino and Python code, stages, budget, testing and safety.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: engineering lab manual. Sticky chapter rail on the left, one reading column, wide figures.
+   Colour code shared by every diagram: tendon = orange, elastic = green, sheath = grey, servo = blue. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8edf3; --ink:#142033; --muted:#566578; --line:#d0d9e3;
+  --accent:#1f5fcc; --accent-soft:#e2ebfb; --accent-ink:#ffffff;
+  --tendon:#dd6216; --tendon-soft:#fde2cd; --elastic:#258f50; --sheath:#8994a2; --servo:#2a63c9; --board:#1c4c9a; --on-blue:#ffffff;
+  --part:#dbe3ec; --wood:#ead6ad; --wood-line:#9c7c4f;
+  --danger:#bf3529; --danger-soft:#fbe4e1; --warn:#9a620a; --warn-soft:#fcefd6; --ok:#25804c; --ok-soft:#dff2e6;
+  --w-red:#d2372c; --w-gnd:#1e2631; --w-sig:#e2850f; --w-in:#2b6bd4;
+  --code-bg:#f6f8fb; --code-ink:#1b2738;
+  --hl-kw:#7d3ae8; --hl-str:#1a7a36; --hl-com:#6c7a8b; --hl-num:#ad5600; --hl-fn:#1f5fcc; --hl-type:#0d6b77;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-head:"IBM Plex Sans Condensed","IBM Plex Sans","Arial Narrow",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d131b; --surface:#141c27; --surface-2:#1b2532; --ink:#e3eaf2; --muted:#98a6b7; --line:#2a3647;
+  --accent:#7aa8ff; --accent-soft:#1a2944; --accent-ink:#0b1424;
+  --tendon:#ff8c43; --tendon-soft:#4b2a16; --elastic:#4fc683; --sheath:#7f8a9a; --servo:#3c74dc; --board:#2a5cb3;
+  --part:#26313f; --wood:#5b4b33; --wood-line:#b39566;
+  --danger:#ff7063; --danger-soft:#3a1d1b; --warn:#e8ab46; --warn-soft:#3a2c14; --ok:#57c98b; --ok-soft:#153324;
+  --w-red:#ff6a5c; --w-gnd:#c4cdd9; --w-sig:#ffab3c; --w-in:#7aa8ff;
+  --code-bg:#0f1620; --code-ink:#dbe4ee;
+  --hl-kw:#c39dff; --hl-str:#80e0a2; --hl-com:#8090a3; --hl-num:#ffb86b; --hl-fn:#8db6ff; --hl-type:#70d3df;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0d131b; --surface:#141c27; --surface-2:#1b2532; --ink:#e3eaf2; --muted:#98a6b7; --line:#2a3647;
+  --accent:#7aa8ff; --accent-soft:#1a2944; --accent-ink:#0b1424;
+  --tendon:#ff8c43; --tendon-soft:#4b2a16; --elastic:#4fc683; --sheath:#7f8a9a; --servo:#3c74dc; --board:#2a5cb3;
+  --part:#26313f; --wood:#5b4b33; --wood-line:#b39566;
+  --danger:#ff7063; --danger-soft:#3a1d1b; --warn:#e8ab46; --warn-soft:#3a2c14; --ok:#57c98b; --ok-soft:#153324;
+  --w-red:#ff6a5c; --w-gnd:#c4cdd9; --w-sig:#ffab3c; --w-in:#7aa8ff;
+  --code-bg:#0f1620; --code-ink:#dbe4ee;
+  --hl-kw:#c39dff; --hl-str:#80e0a2; --hl-com:#8090a3; --hl-num:#ffb86b; --hl-fn:#8db6ff; --hl-type:#70d3df;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+@media (min-width:981px){html{scroll-padding-top:20px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.shell{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:232px minmax(0,1fr);gap:44px;padding-block:28px 96px}
+main{min-width:0}
+
+/* chapter rail */
+.sidenav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;padding-right:4px}
+.sidenav .brand{font-family:var(--font-head);font-weight:700;font-size:1.05rem;letter-spacing:.01em;margin:0 0 4px}
+.sidenav .brand-sub{font-size:.78rem;color:var(--muted);margin:0 0 18px}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.toc a{display:grid;grid-template-columns:30px 1fr;align-items:baseline;gap:6px;padding:6px 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:.9rem;line-height:1.3}
+.toc a .k{font-family:var(--font-mono);font-size:.74rem;color:var(--muted)}
+.toc a:hover{background:var(--surface-2)}
+.toc a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.toc a.active .k{color:var(--accent)}
+.mobile-toc{display:none}
+@media (max-width:980px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0;padding-top:0}
+  .sidenav{display:none}
+  .mobile-toc{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+  .mobile-toc summary{cursor:pointer;font-weight:600;font-family:var(--font-head);list-style:none;display:flex;justify-content:space-between;align-items:center}
+  .mobile-toc summary::-webkit-details-marker{display:none}
+  .mobile-toc summary::after{content:"▾";color:var(--muted)}
+  .mobile-toc[open] summary::after{content:"▴"}
+  .mobile-toc .toc{margin-top:8px;max-height:60vh;overflow:auto}
+}
+
+/* type */
+h1,h2,h3,h4{font-family:var(--font-head);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:700}
+h3{font-size:1.28rem;font-weight:600;margin-top:2.2rem}
+h4{font-size:1.02rem;font-weight:600;margin-top:1.2rem}
+p,li{max-width:74ch}
+p{margin:.7rem 0}
+.small{font-size:.86rem}
+.muted{color:var(--muted)}
+.eyebrow{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+code,kbd{font-family:var(--font-mono);font-size:.88em;background:var(--surface-2);padding:.08em .32em;border-radius:4px}
+kbd{border:1px solid var(--line);border-bottom-width:2px}
+ul,ol{padding-left:1.3rem}
+li{margin:.3rem 0}
+strong{font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:start;padding-top:8px}
+@media (max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-sub{font-family:var(--font-head);font-size:1.18rem;color:var(--muted);margin:.6rem 0 0;max-width:60ch}
+.intro{font-size:1.06rem;margin-top:1rem}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:1.2rem 0 .4rem}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 .92rem/1 var(--font-body);padding:11px 16px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small-btn{padding:6px 10px;font-size:.8rem}
+.btn[disabled]{opacity:.6;cursor:default}
+.titleblock{border:1.5px solid var(--ink);background:var(--surface);font-family:var(--font-mono);font-size:.74rem}
+.titleblock table{width:100%;border-collapse:collapse}
+.titleblock th,.titleblock td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.titleblock th{width:34%;color:var(--muted);font-weight:500;letter-spacing:.05em}
+.titleblock caption{caption-side:top;text-align:left;padding:7px 8px;border-bottom:1.5px solid var(--ink);font-weight:500;letter-spacing:.08em}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:1.6rem 0 0}
+.specs div{background:var(--surface);padding:12px 14px}
+.specs dt{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.specs dd{margin:4px 0 0;font-weight:600;font-size:.95rem;line-height:1.35}
+
+/* sections */
+section.chapter{padding-top:56px;margin-top:56px;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.sec-tag{font-family:var(--font-mono);font-size:.82rem;font-weight:500;color:var(--accent);border:1.5px solid var(--accent);border-radius:5px;padding:2px 8px;letter-spacing:.04em;flex:none}
+.kicker{color:var(--muted);font-size:1.02rem;margin-top:.5rem}
+
+/* notes */
+.note{border-radius:8px;padding:14px 16px;margin:1.2rem 0;background:var(--surface);border:1px solid var(--line);max-width:80ch}
+.note > :first-child{margin-top:0}.note > :last-child{margin-bottom:0}
+.note .label{display:block;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;font-weight:500;margin-bottom:6px}
+.note.call{background:var(--accent-soft);border-color:transparent}.note.call .label{color:var(--accent)}
+.note.warn{background:var(--warn-soft);border-color:transparent}.note.warn .label{color:var(--warn)}
+.note.danger{background:var(--danger-soft);border-color:transparent}.note.danger .label{color:var(--danger)}
+.note.ok{background:var(--ok-soft);border-color:transparent}.note.ok .label{color:var(--ok)}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;line-height:1.45}
+.tbl th,.tbl td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl thead th{background:var(--surface-2);font-weight:600;font-size:.82rem;white-space:nowrap}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl td.r,.tbl th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td.nw{white-space:nowrap}
+.tbl .cat td{background:var(--surface-2);font-family:var(--font-mono);font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--font-mono);font-size:.85em}
+
+/* chips */
+.chip{display:inline-block;font-family:var(--font-mono);font-size:.7rem;font-weight:500;letter-spacing:.04em;padding:2px 7px;border-radius:999px;white-space:nowrap;vertical-align:1px}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--danger-soft);color:var(--danger)}
+.chip.s1{background:var(--tendon-soft);color:var(--tendon)}
+.chip.s2{background:var(--accent-soft);color:var(--accent)}
+.chip.both{background:var(--ok-soft);color:var(--ok)}
+
+/* figures */
+figure{margin:1.4rem 0}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.fig-scroll{overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto;min-width:660px}
+.fig.tall svg{min-width:520px;max-width:640px;margin:0 auto}
+figcaption{font-size:.86rem;color:var(--muted);margin-top:10px;max-width:90ch}
+figcaption b{color:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.82rem;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
+.screenshot{display:block;max-width:100%;height:auto;border-radius:6px;border:1px solid var(--line)}
+
+/* svg vocabulary */
+.sv-t{fill:var(--ink);font-family:var(--font-body);font-size:12.5px}
+.sv-b{fill:var(--ink);font-family:var(--font-head);font-weight:600;font-size:14px}
+.sv-s{fill:var(--muted);font-family:var(--font-body);font-size:11.5px}
+.sv-m{fill:var(--muted);font-family:var(--font-mono);font-size:11px}
+.sv-w{fill:var(--on-blue);font-family:var(--font-head);font-weight:600;font-size:13px}
+.sv-ws{fill:var(--on-blue);font-family:var(--font-mono);font-size:10.5px}
+.blk{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.blk2{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2}
+.frame{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:6 5}
+.part{fill:var(--part);stroke:var(--ink);stroke-width:1.3}
+.wood{fill:var(--wood);stroke:var(--wood-line);stroke-width:1.3}
+.servo{fill:var(--servo);stroke:none}
+.board{fill:var(--board);stroke:none}
+.skin{fill:var(--surface-2);stroke:var(--muted);stroke-width:1.3}
+.crease{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;fill:none}
+.guide{fill:var(--surface);stroke:var(--ink);stroke-width:1.2}
+.cap{fill:var(--tendon-soft);stroke:var(--tendon);stroke-width:1.2}
+.tendon{fill:none;stroke:var(--tendon);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tendon-dot{fill:var(--tendon)}
+.elastic{fill:none;stroke:var(--elastic);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.sheath{fill:none;stroke:var(--sheath);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.bundle{fill:none;stroke:var(--sheath);stroke-width:15;stroke-linecap:round;opacity:.85}
+.ldr{fill:none;stroke:var(--muted);stroke-width:1}
+.dim{fill:none;stroke:var(--muted);stroke-width:1;marker-start:url(#dimA);marker-end:url(#dimA)}
+.ext{fill:none;stroke:var(--muted);stroke-width:.8;stroke-dasharray:2 3}
+.arrow{fill:none;stroke:var(--muted);stroke-width:1.6;marker-end:url(#ah)}
+.arrow2{fill:none;stroke:var(--muted);stroke-width:1.6;marker-end:url(#ah);marker-start:url(#ah)}
+.mk{fill:var(--muted)}
+.mk-dim{fill:none;stroke:var(--muted);stroke-width:1.3}
+.w-red{fill:none;stroke:var(--w-red);stroke-width:2.4;stroke-linejoin:round}
+.w-gnd{fill:none;stroke:var(--w-gnd);stroke-width:2.4;stroke-linejoin:round}
+.w-sig{fill:none;stroke:var(--w-sig);stroke-width:2.2;stroke-linejoin:round}
+.w-in{fill:none;stroke:var(--w-in);stroke-width:2.2;stroke-linejoin:round}
+.w-brn{fill:none;stroke:var(--wood-line);stroke-width:2.2}
+.dot-red{fill:var(--w-red)}.dot-gnd{fill:var(--w-gnd)}.dot-in{fill:var(--w-in)}
+.res{fill:var(--surface);stroke:var(--ink);stroke-width:1.3}
+.pin{fill:var(--on-blue)}
+.st{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.st-run{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+.st-stop{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.4}
+.st-e{fill:var(--danger-soft);stroke:var(--danger);stroke-width:1.4}
+.protr{fill:none;stroke:var(--muted);stroke-width:.9;stroke-dasharray:4 4;opacity:.8}
+.hinge{fill:var(--muted)}
+.bead{fill:var(--tendon-soft);stroke:var(--tendon);stroke-width:1.6}
+.eye{fill:none;stroke:var(--ink);stroke-width:1.5}
+.screwhead{fill:var(--surface);stroke:var(--ink);stroke-width:1.2}
+
+/* steps */
+ol.steps{list-style:none;padding:0;counter-reset:step;display:grid;gap:14px;margin:1.2rem 0}
+ol.steps > li{counter-increment:step;display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;max-width:none}
+ol.steps > li::before{content:counter(step);font-family:var(--font-mono);font-weight:500;font-size:.85rem;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1.5px solid var(--ink)}
+ol.steps > li > div{min-width:0}
+ol.steps > li h4{margin:.25rem 0 .2rem}
+ol.steps > li p{margin:.35rem 0}
+ol.steps.cont{counter-reset:step var(--start,0)}
+
+/* two-column */
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:1rem 0}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.panel h4{margin-top:0}
+.panel > :last-child{margin-bottom:0}
+
+/* code */
+.codebox{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:1.2rem 0;background:var(--code-bg)}
+.codebar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.codebar .fname{font-family:var(--font-mono);font-size:.82rem;font-weight:500;overflow-wrap:anywhere;min-width:0}
+.codebar .meta{font-size:.78rem;color:var(--muted)}
+.codebox pre{margin:0;padding:14px 16px;overflow:auto;max-height:620px;font:12.8px/1.55 var(--font-mono);color:var(--code-ink);background:var(--code-bg);tab-size:2}
+.codebox pre code{background:none;padding:0;font-size:inherit;color:inherit}
+pre.cmd{margin:.8rem 0;padding:10px 14px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);overflow:auto;font:13px/1.5 var(--font-mono);color:var(--code-ink)}
+.hljs-keyword,.hljs-meta .hljs-keyword{color:var(--hl-kw)}
+.hljs-string,.hljs-meta .hljs-string{color:var(--hl-str)}
+.hljs-comment{color:var(--hl-com);font-style:italic}
+.hljs-number,.hljs-literal{color:var(--hl-num)}
+.hljs-title.function_,.hljs-title{color:var(--hl-fn)}
+.hljs-type,.hljs-built_in,.hljs-title.class_{color:var(--hl-type)}
+.hljs-meta{color:var(--hl-com)}
+
+/* calculators */
+.tool{background:var(--surface);border:1.5px solid var(--ink);border-radius:10px;padding:18px;margin:1.4rem 0}
+.tool h4{margin:0 0 4px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 16px;margin:14px 0}
+.field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:4px}
+.field .hint{display:block;font-size:.75rem;color:var(--muted);margin-top:3px}
+input[type=number],input[type=text]{width:100%;font:500 .95rem var(--font-mono);padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+select{font:500 .9rem var(--font-body);padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.results div{background:var(--surface-2);padding:10px 12px}
+.results dt{font-size:.74rem;color:var(--muted)}
+.results dd{margin:2px 0 0;font:600 1.15rem var(--font-mono);font-variant-numeric:tabular-nums}
+.results dd small{font:400 .78rem var(--font-body);color:var(--muted);display:block}
+
+/* budget */
+.budget-summary{display:grid;gap:10px;padding:14px 16px;background:var(--surface);border:1.5px solid var(--ink);border-radius:10px;margin:1rem 0}
+.budget-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 20px}
+.budget-total{font:700 1.7rem var(--font-mono);font-variant-numeric:tabular-nums}
+.meter{position:relative;height:14px;background:var(--surface-2);border-radius:7px;overflow:visible;margin:6px 0 18px}
+.meter .fill{position:absolute;inset:0 auto 0 0;border-radius:7px;background:var(--accent);width:0%}
+.meter .fill.over{background:var(--danger)}
+.meter .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.meter .mark span{position:absolute;top:20px;transform:translateX(-50%);font:500 .7rem var(--font-mono);color:var(--muted);white-space:nowrap}
+.meter .mark.end span{transform:translateX(-100%)}
+.budget-table input[type=number]{width:92px;padding:5px 7px;font-size:.85rem;text-align:right}
+.budget-table input.qty{width:60px}
+.budget-table td.item{min-width:240px}
+.budget-table td.item small{display:block;color:var(--muted);font-size:.78rem}
+.budget-table tr.off td:not(:first-child){opacity:.45}
+.preset-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* checklist */
+.checklist{list-style:none;padding:0;margin:1rem 0;display:grid;gap:6px}
+.checklist li{max-width:none}
+.checklist label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:7px;background:var(--surface);border:1px solid var(--line);cursor:pointer}
+.checklist input{margin-top:4px;width:17px;height:17px;accent-color:var(--ok);flex:none}
+.checklist input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--muted)}
+.progress-line{font:500 .85rem var(--font-mono);color:var(--muted)}
+
+/* stage cards */
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+.stage-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px}
+.stage-num{font:500 .8rem var(--font-mono);color:var(--muted);letter-spacing:.06em}
+.stage-head h3{margin:0;font-size:1.22rem}
+.stage-meta{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px;margin-top:12px}
+@media (max-width:760px){.stage-grid{grid-template-columns:minmax(0,1fr)}}
+.stage-grid h4{margin:0 0 4px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.stage-grid ul,.stage-grid ol{margin:0;font-size:.93rem}
+.stage-grid p{margin:0;font-size:.93rem}
+
+/* gantt */
+.gantt{display:grid;grid-template-columns:minmax(150px,1.6fr) repeat(10,minmax(28px,1fr));min-width:640px;font-size:.82rem;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.gantt > div{padding:6px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.gantt .gh{background:var(--surface-2);font:500 .72rem var(--font-mono);text-align:center;color:var(--muted)}
+.gantt .gl{font-weight:500}
+.gantt .c{padding:6px 2px}
+.gantt .c i{display:block;height:14px;border-radius:3px}
+.gantt .c.s1 i{background:var(--tendon)}
+.gantt .c.s2 i{background:var(--accent)}
+.gantt .c.both i{background:var(--elastic)}
+
+/* layers */
+ol.layers{list-style:none;padding:0;margin:1rem 0;display:grid;gap:8px;counter-reset:layer}
+ol.layers li{counter-increment:layer;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline;max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+ol.layers li::before{content:"Layer " counter(layer);font:500 .72rem var(--font-mono);letter-spacing:.06em;color:var(--muted);grid-row:span 2;padding-top:2px}
+ol.layers li b{font-family:var(--font-head);font-size:1.02rem}
+ol.layers li span{color:var(--muted);font-size:.92rem}
+
+dl.gloss{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;margin:1rem 0}
+@media (max-width:760px){dl.gloss{grid-template-columns:minmax(0,1fr)}}
+dl.gloss div{border-top:1px solid var(--line);padding-top:8px}
+dl.gloss dt{font-weight:600;font-family:var(--font-head)}
+dl.gloss dd{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+footer.end{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
+</style>
+<!--BODY-->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="dimA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path class="mk-dim" d="M1,1.5 L9,5 L1,8.5"/></marker>
+  </defs>
+</svg>
+
+<details class="mobile-toc" id="mtoc">
+  <summary>Contents</summary>
+  <ul class="toc" data-toc></ul>
+</details>
+
+<div class="shell">
+<nav class="sidenav" aria-label="Chapters">
+  <p class="brand">Robotic Glove</p>
+  <p class="brand-sub">Build guide · prototype v1</p>
+  <ul class="toc" data-toc>
+    <li><a href="#start"><span class="k">00</span><span>Start here</span></a></li>
+    <li><a href="#review"><span class="k">R</span><span>Design review</span></a></li>
+    <li><a href="#mechanical"><span class="k">A</span><span>Mechanical design</span></a></li>
+    <li><a href="#stage1"><span class="k">S1</span><span>Stage 1: one artificial finger</span></a></li>
+    <li><a href="#electronics"><span class="k">B</span><span>Electronics</span></a></li>
+    <li><a href="#firmware"><span class="k">C</span><span>Arduino program</span></a></li>
+    <li><a href="#pc-app"><span class="k">D</span><span>PC software</span></a></li>
+    <li><a href="#stages"><span class="k">E</span><span>Construction stages</span></a></li>
+    <li><a href="#budget"><span class="k">F</span><span>Budget (IQD)</span></a></li>
+    <li><a href="#testing"><span class="k">G</span><span>Testing and safety</span></a></li>
+    <li><a href="#future"><span class="k">H</span><span>Future development</span></a></li>
+    <li><a href="#team"><span class="k">T</span><span>Teamwork and schedule</span></a></li>
+    <li><a href="#troubleshooting"><span class="k">?</span><span>Troubleshooting</span></a></li>
+    <li><a href="#demo"><span class="k">10</span><span>Demo day</span></a></li>
+    <li><a href="#glossary"><span class="k">Gl</span><span>Glossary</span></a></li>
+  </ul>
+</nav>
+
+<main>
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+  <div>
+    <p class="eyebrow">Medical Devices Technology Engineering · Year 2 practical project</p>
+    <h1>Robotic Glove Build Guide</h1>
+    <p class="hero-sub">Design and Development of a Low-Cost Automatic Robotic Glove for Finger Movement Assistance and Rehabilitation</p>
+    <p class="intro">Two small servos pull thin tendons along the palm side of the fingers to bend them. Elastic bands on the back of the hand straighten them again. An Arduino repeats the movement inside safe limits, and a Python app on your PC starts it, shows what it is doing and records every test in a CSV file. This page is written as your engineering supervisor: it reviews your concept, fixes the weak points, and takes you from zero to a working prototype, one stage at a time.</p>
+    <div class="actions">
+      <a class="btn primary" href="#stage1">Start Stage 1: the artificial finger</a>
+      <a class="btn" href="#review">Read the design review</a>
+      <button class="btn" id="dl-zip" type="button" hidden>Download all code (.zip)</button>
+      <a class="btn" id="dl-link" href="robotic-glove-project.zip" hidden>Download all code (.zip)</a>
+    </div>
+    <p class="small muted" id="dl-note">All code on this page is also in your GitHub repository, in the <code>robotic-glove/</code> folder: two Arduino sketches and the Python app.</p>
+  </div>
+  <aside class="titleblock" aria-label="Project title block">
+    <table>
+      <caption>TITLE BLOCK</caption>
+      <tr><th>PROJECT</th><td>Tendon-driven assistance glove</td></tr>
+      <tr><th>DOC</th><td>RG-V1 build guide</td></tr>
+      <tr><th>REV</th><td>A · 24 Nov 2026</td></tr>
+      <tr><th>TEAM</th><td>S1 mechanical<br>S2 electronics + software</td></tr>
+      <tr><th>STATUS</th><td>Stage 1 of 10</td></tr>
+      <tr><th>BUDGET</th><td>&lt; 100,000 IQD</td></tr>
+      <tr><th>USE</th><td>Research and teaching only</td></tr>
+    </table>
+  </aside>
+</header>
+
+<dl class="specs">
+  <div><dt>Actuators</dt><dd>2 servos: four fingers + thumb</dd></div>
+  <div><dt>Tendons</dt><dd>Braided line in Bowden sheaths</dd></div>
+  <div><dt>Return</dt><dd>Elastic on the back of each finger</dd></div>
+  <div><dt>Control</dt><dd>Arduino Nano + PC app over USB</dd></div>
+  <div><dt>Parts estimate</dt><dd>≈ 84,000 IQD full v1<br>≈ 47,000 IQD Stage 1</dd></div>
+  <div><dt>Test object</dt><dd>Artificial finger, then artificial hand</dd></div>
+</dl>
+
+<div class="note danger">
+  <span class="label">Not a medical device</span>
+  <p>This is an education and research prototype. It is not clinically approved and must not be presented as a treatment for ALS, stroke or any other condition. All powered tests run on the artificial finger and the artificial hand. No patients.</p>
+</div>
+
+<!-- ============================== START ============================== -->
+<section class="chapter" id="start">
+  <div class="sec-head"><span class="sec-tag">00</span><h2>Start here</h2></div>
+  <p class="kicker">How to use this guide, and exactly what to do in the next two weeks.</p>
+
+  <p>Work through the chapters in order the first time. After that, use the left rail as a reference. Each chapter matches a part of your brief: <b>A</b> mechanical, <b>B</b> electronics, <b>C</b> Arduino, <b>D</b> PC software, <b>E</b> stages, <b>F</b> budget, <b>G</b> testing and safety, <b>H</b> future work. Stage 1 has its own detailed chapter because you start there.</p>
+
+  <h3>Your plan for the next two weeks</h3>
+  <ol class="steps">
+    <li><div><h4>Read the design review together (20 minutes)</h4><p>It changes a few of your original choices. Agree on them before you buy anything.</p></div></li>
+    <li><div><h4>Buy only the Stage 1 list</h4><p>About 47,000 IQD by my estimates, less if you borrow the luggage scale and multimeter. Open the <a href="#budget">budget tool</a> and press <b>Stage 1 shopping list</b>. Check prices in two shops first.</p></div></li>
+    <li><div><h4>Split the first week</h4><p><span class="chip s1">Student 1</span> builds the wooden test finger (Stage 1, steps 1 to 9). <span class="chip s2">Student 2</span> installs the Arduino IDE and Python, runs the PC app in simulator mode, and wires the Stage 1 circuit on the breadboard.</p></div></li>
+    <li><div><h4>Measure together in the second week</h4><p>Measure tendon force and travel by hand, calibrate the servo, run 100 cycles, and fill in the data sheets.</p></div></li>
+    <li><div><h4>Decide the motor with numbers</h4><p>Put your measurements into the <a href="#calc">sizing calculator</a>. Only then buy the four-finger motor, the glove and the sheaths.</p></div></li>
+  </ol>
+  <div class="note call">
+    <span class="label">Supervisor's rule</span>
+    <p>Do not buy the MG996R, the glove, the sheaths or the Velcro until Stage 1 is finished. The numbers you measure in Stage 1 decide them. This is how real device development works: test cheaply, then commit money.</p>
+  </div>
+</section>
+
+<!-- ============================== REVIEW ============================== -->
+<section class="chapter" id="review">
+  <div class="sec-head"><span class="sec-tag">R</span><h2>Design review</h2></div>
+  <p class="kicker">Your concept is sound. Research soft gloves are built the same way: tendons on the palm side, motors off the hand, passive elastic return. Here is what I would change before you build.</p>
+
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>#</th><th>Weak point</th><th>Why it matters</th><th>Fix (cost impact)</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><b>One SG90 for four fingers is too weak</b></td><td>SG90 stall torque is about 1.8 kg·cm (0.18 N·m). On a 13 mm drum that is about 14 N of tendon pull at stall, and only about 5 N you can use continuously, so roughly 1.4 N per finger. A hand inside a glove plus the elastic return will very likely need more. Plastic gears strip when the servo stalls.</td><td>Keep SG90 for Stage 1 and for the thumb. Plan an MG996R (about 9.4 kg·cm, metal gears) for the four-finger tendon, and confirm it with your Stage 1 measurement. <span class="chip warn">+≈12,500 IQD</span></td></tr>
+      <tr><td>2</td><td><b>Tendon tied to the servo arm</b></td><td>An arm pulls along a changing angle, so travel and force change through the motion and the line can slip off.</td><td>Wind the tendon on a round drum (bottle cap or spool) with side flanges. Travel is then simply x = r·θ and force stays constant. <span class="chip ok">≈ free</span></td></tr>
+      <tr><td>3</td><td><b>Plain nylon fishing line</b></td><td>Monofilament stretches and creeps under constant load, so the finger closes less every day, and its knots slip.</td><td>Use braided PE fishing line 0.2 to 0.3 mm (30 to 50 lb). It barely stretches and slides well in tubes. Keep 0.5 mm mono only as a fallback. <span class="chip ok">same cost</span></td></tr>
+      <tr><td>4</td><td><b>Tendons running free across the wrist</b></td><td>When the wrist bends, the tendon path length changes, so the fingers open or close by themselves.</td><td>Run each tendon inside a Bowden sheath (a tube) from the palm to the actuator. Wrist motion then has no effect. <span class="chip ok">+≈5,000 IQD</span></td></tr>
+      <tr><td>5</td><td><b>Four fingers on one tendon, no adjustment</b></td><td>Fingers have different lengths. One finger tightens first and takes all the force while the others stay open.</td><td>Join the four tendons on a small <i>tendon bar</i> with one screw clamp per finger, so each length can be set separately.</td></tr>
+      <tr><td>6</td><td><b>Thumb can be trapped</b></td><td>If the thumb closes first, the fingers close on top of it.</td><td>The firmware closes the fingers first and the thumb 0.3 s later, and opens the thumb first.</td></tr>
+      <tr><td>7</td><td><b>Servos powered from the Arduino or USB</b></td><td>Servo current spikes reset the Arduino, cause jitter, and can damage the USB port.</td><td>Separate regulated 5 V supply for the servos, a 1000 µF capacitor, a fuse, and a common ground with the Arduino.</td></tr>
+      <tr><td>8</td><td><b>"Emergency power switch" is not enough by itself</b></td><td>Cutting power stops the motors, but a hobby servo's gears hold their position. The hand stays closed.</td><td>Keep the latching emergency switch, and add a mechanical quick-release (Velcro palm plate and a snap clip). The firmware also refuses to restart until someone presses START.</td></tr>
+      <tr><td>9</td><td><b>No sensors</b></td><td>The Arduino cannot know the real finger angle or force. A software bug could pull too far.</td><td>Three independent limits: calibrated angle limits in code, a mechanical travel stop on each tendon, and a motor whose maximum force on your drum is known. Sensors come in a later version.</td></tr>
+      <tr><td>10</td><td><b>Office rubber bands for return</b></td><td>They dry out, lose tension and snap within days.</td><td>Sewing elastic (8 to 10 mm flat) or 2 mm shock cord, with an adjustable end. <span class="chip ok">≈ 1,500 IQD</span></td></tr>
+      <tr><td>11</td><td><b>Testing the full glove first</b></td><td>When something fails you cannot tell whether the cause is the glove, the tendon, the motor or the code.</td><td>Build one wooden finger first (Stage 1), then a wooden artificial hand that wears the glove.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Verdict on the components you proposed</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Component</th><th>Verdict</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Arduino Nano</td><td><span class="chip ok">Keep</span></td><td>Cheap, fits a breadboard, enough pins. Clones use a CH340 USB chip that may need a driver on Windows.</td></tr>
+      <tr><td>Two SG90 servos</td><td><span class="chip warn">Change one</span></td><td>Fine for the Stage 1 finger and for the thumb. Too weak and fragile for four fingers; see review point 1.</td></tr>
+      <tr><td>Nylon fishing line</td><td><span class="chip warn">Change</span></td><td>Use braided PE line. See point 3.</td></tr>
+      <tr><td>Fabric glove</td><td><span class="chip ok">Keep</span></td><td>A snug cotton or knit work glove. Avoid loose gloves (the tendons shift) and very stretchy ones (the force goes into stretching the fabric).</td></tr>
+      <tr><td>Elastic bands</td><td><span class="chip warn">Change</span></td><td>Use sewing elastic or shock cord. See point 10.</td></tr>
+      <tr><td>Regulated 5 V supply</td><td><span class="chip ok">Keep</span></td><td>Essential. At least 3 A; 5 A if you use an MG996R. Never a 9 V or 12 V adapter.</td></tr>
+      <tr><td>Start and Stop buttons</td><td><span class="chip ok">Keep</span></td><td>Add an optional third button for mode selection.</td></tr>
+      <tr><td>Emergency power switch</td><td><span class="chip ok">Keep + add</span></td><td>Latching type, in the motor supply only. Add the mechanical quick-release from point 8.</td></tr>
+      <tr><td>Wires and basic parts</td><td><span class="chip ok">Keep + add</span></td><td>Add a fuse, a 1000 µF capacitor, two 330 Ω signal resistors and a 10 kΩ/10 kΩ divider for power sensing.</td></tr>
+      <tr><td>Supports and tendon guides</td><td><span class="chip ok">Keep + add</span></td><td>Add drums, a tendon bar with adjusters, travel stops and Bowden sheaths.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Recommended v1 design in one view</h3>
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 940 350" role="img" aria-labelledby="d1t">
+      <title id="d1t">System block diagram: PC, Arduino, buttons, power chain with emergency stop, actuator pack with two servos, and the glove on the artificial hand</title>
+      <rect class="blk" x="20" y="34" width="180" height="76" rx="8"/>
+      <text class="sv-b" x="34" y="62">PC · Python app</text>
+      <text class="sv-s" x="34" y="82">settings, live status,</text>
+      <text class="sv-s" x="34" y="97">CSV test log</text>
+
+      <rect class="board" x="290" y="34" width="190" height="116" rx="8"/>
+      <text class="sv-w" x="306" y="60">Arduino Nano</text>
+      <text class="sv-ws" x="306" y="82">state machine</text>
+      <text class="sv-ws" x="306" y="99">angle + speed limits</text>
+      <text class="sv-ws" x="306" y="116">E-stop detection</text>
+      <text class="sv-ws" x="306" y="133">USB serial 115200</text>
+
+      <rect class="blk" x="290" y="178" width="120" height="50" rx="8"/>
+      <text class="sv-t" x="302" y="199">Buttons</text>
+      <text class="sv-s" x="302" y="216">START STOP MODE</text>
+
+      <rect class="blk" x="20" y="262" width="180" height="62" rx="8"/>
+      <text class="sv-b" x="34" y="288">5 V adapter</text>
+      <text class="sv-s" x="34" y="307">3 A (5 A with MG996R)</text>
+
+      <rect class="blk" x="290" y="262" width="190" height="62" rx="8"/>
+      <text class="sv-b" x="304" y="288">Fuse → E-STOP</text>
+      <text class="sv-s" x="304" y="307">cuts motor power only</text>
+
+      <rect class="frame" x="560" y="20" width="200" height="316" rx="10"/>
+      <text class="sv-m" x="574" y="40">ACTUATOR PACK (on table)</text>
+      <rect class="servo" x="580" y="62" width="160" height="62" rx="7"/>
+      <text class="sv-w" x="594" y="88">Servo F</text>
+      <text class="sv-ws" x="594" y="107">4 fingers · drum</text>
+      <rect class="servo" x="580" y="164" width="160" height="62" rx="7"/>
+      <text class="sv-w" x="594" y="190">Servo T</text>
+      <text class="sv-ws" x="594" y="209">thumb · drum</text>
+      <text class="sv-s" x="580" y="258">travel stops</text>
+      <text class="sv-s" x="580" y="275">length adjusters</text>
+      <text class="sv-s" x="580" y="292">quick-release clips</text>
+
+      <rect class="skin" x="820" y="34" width="104" height="290" rx="14"/>
+      <text class="sv-b" x="834" y="62">Glove</text>
+      <text class="sv-s" x="834" y="80">on artificial</text>
+      <text class="sv-s" x="834" y="95">hand</text>
+      <line class="tendon" x1="846" y1="130" x2="846" y2="210"/>
+      <text class="sv-s" x="856" y="160">tendons</text>
+      <text class="sv-s" x="856" y="175">flex</text>
+      <line class="elastic" x1="846" y1="236" x2="846" y2="300"/>
+      <text class="sv-s" x="856" y="262">elastics</text>
+      <text class="sv-s" x="856" y="277">extend</text>
+
+      <line class="arrow2" x1="204" y1="72" x2="286" y2="72"/>
+      <text class="sv-m" x="226" y="64">USB</text>
+      <text class="sv-s" x="212" y="92">data + 5 V</text>
+      <line class="arrow" x1="350" y1="176" x2="350" y2="154"/>
+      <text class="sv-m" x="358" y="170">D2 D3 D4</text>
+      <path class="w-sig" d="M480 80 H580"/>
+      <text class="sv-m" x="496" y="72">D9 signal</text>
+      <path class="w-sig" d="M480 118 H530 V190 H539 a6 6 0 0 1 12 0 H580"/>
+      <text class="sv-m" x="488" y="140">D10</text>
+      <path class="w-red" d="M200 293 H290"/>
+      <text class="sv-m" x="222" y="285">+5 V</text>
+      <path class="w-red" d="M480 293 H545 V112 H580 M545 214 H580"/>
+      <text class="sv-m" x="486" y="314">motor rail</text>
+      <path class="w-in" d="M455 262 V154" stroke-dasharray="5 4"/>
+      <text class="sv-m" x="418" y="250">A0</text>
+      <path class="sheath" d="M740 93 H820"/><path class="tendon" d="M740 93 H820"/>
+      <path class="sheath" d="M740 195 H820"/><path class="tendon" d="M740 195 H820"/>
+      <text class="sv-s" x="748" y="128">Bowden</text>
+      <text class="sv-s" x="748" y="143">sheaths</text>
+      <text class="sv-m" x="20" y="344">All grounds are joined: adapter −, servos −, Arduino GND (common ground).</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 1. System architecture.</b> Two power domains: the Arduino runs from USB, the servos from a separate 5 V adapter through a fuse and the emergency switch. A0 watches the motor supply so the program knows when the emergency switch has been pressed.</figcaption>
+  </figure>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>Mechanics</h4>
+      <ul>
+        <li>Servo F (four fingers): MG996R, unless your Stage 1 numbers prove a smaller servo is enough.</li>
+        <li>Servo T (thumb): SG90 for the artificial hand, MG90S (metal gears) if you can.</li>
+        <li>Drums Ø 25 to 30 mm with flanges.</li>
+        <li>Braided PE tendons, PTFE Bowden sheaths, guide tubes sewn between joint creases.</li>
+        <li>Flat elastic on the back of each finger.</li>
+        <li>Tendon bar with four length adjusters, travel stops, quick-release.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Electronics and software</h4>
+      <ul>
+        <li>Arduino Nano on USB (PC or power bank).</li>
+        <li>5 V 3 to 5 A adapter → T3A fuse → latching E-stop → servo rail with 1000 µF.</li>
+        <li>START, STOP and MODE buttons with internal pull-ups.</li>
+        <li>A0 senses the motor rail through a 10 kΩ/10 kΩ divider.</li>
+        <li>Firmware: non-blocking state machine, smooth S-curve motion, hard limits.</li>
+        <li>Python + Tkinter app with a simulator and CSV logging.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== A. MECHANICAL ============================== -->
+<section class="chapter" id="mechanical">
+  <div class="sec-head"><span class="sec-tag">A</span><h2>Mechanical design</h2></div>
+  <p class="kicker">How the glove bends the fingers, where every part goes, and how to build it.</p>
+
+  <h3>A1. How a tendon bends a finger</h3>
+  <p>Each finger has three joints: <b>MCP</b> (knuckle at the base), <b>PIP</b> (middle) and <b>DIP</b> (near the tip). A tendon tied at the fingertip runs along the <b>palm side</b> through small guide tubes. Because the tendon sits a small distance <i>d</i> below each joint's axis, pulling it creates a turning effect (torque = force × d) at all three joints, and the finger curls. This is called <i>flexion</i>.</p>
+  <p>One tendon drives three joints, so the finger is <i>underactuated</i>: the joints share the movement according to how stiff each one is. That is good for grasping, because a finger that touches an object stops while the others keep closing. When the servo unwinds, elastic on the <b>back</b> of the finger pulls it straight again. That is <i>extension</i>.</p>
+
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 820 270" role="img" aria-labelledby="d3t">
+      <title id="d3t">Side view of one gloved finger with the tendon on the palm side, guide tubes between the joints, and elastic on the back</title>
+      <rect class="skin" x="32" y="92" width="560" height="72" rx="34"/>
+      <rect class="part" x="46" y="110" width="200" height="36" rx="10"/>
+      <rect class="part" x="258" y="110" width="140" height="36" rx="10"/>
+      <rect class="part" x="410" y="110" width="80" height="36" rx="10"/>
+      <rect class="part" x="502" y="110" width="66" height="36" rx="16"/>
+      <circle class="guide" cx="252" cy="128" r="5"/><circle class="guide" cx="404" cy="128" r="5"/><circle class="guide" cx="496" cy="128" r="5"/>
+      <text class="sv-m" x="240" y="78">MCP</text><text class="sv-m" x="393" y="78">PIP</text><text class="sv-m" x="485" y="78">DIP</text>
+      <line class="crease" x1="252" y1="82" x2="252" y2="196"/><line class="crease" x1="404" y1="82" x2="404" y2="196"/><line class="crease" x1="496" y1="82" x2="496" y2="196"/>
+      <rect class="guide" x="314" y="165" width="30" height="11" rx="3"/>
+      <rect class="guide" x="436" y="165" width="28" height="11" rx="3"/>
+      <rect class="cap" x="532" y="160" width="44" height="14" rx="6"/>
+      <rect class="part" x="150" y="165" width="82" height="13" rx="3"/>
+      <path class="sheath" d="M150 171 H70 C48 171 36 182 24 204"/>
+      <path class="tendon" d="M558 169 H232 M150 171 H70 C48 171 36 182 24 204"/>
+      <circle class="tendon-dot" cx="558" cy="169" r="3.5"/>
+      <path class="elastic" d="M560 92 H140 L130 82 L120 92 L110 82 L100 92 L90 82 L80 92 H60"/>
+      <rect class="guide" x="318" y="82" width="20" height="10" rx="3"/><rect class="guide" x="440" y="82" width="20" height="10" rx="3"/>
+      <rect class="part" x="44" y="80" width="14" height="24" rx="3"/>
+      <line class="dim" x1="404" y1="131" x2="404" y2="166"/>
+      <path class="ldr" d="M406 150 L420 244"/>
+      <text class="sv-t" x="360" y="260">moment arm d ≈ 10 mm <tspan class="sv-s">(joint axis to tendon)</tspan></text>
+      <path class="ldr" d="M560 92 L612 52"/><text class="sv-t" x="616" y="50">Elastic on the back</text><text class="sv-s" x="616" y="65">pulls the finger straight</text>
+      <path class="ldr" d="M574 168 L612 118"/><text class="sv-t" x="616" y="116">Fingertip anchor</text><text class="sv-s" x="616" y="131">sewn cap spreads the load</text>
+      <path class="ldr" d="M452 177 L612 210"/><text class="sv-t" x="616" y="214">Guide tubes on the bones,</text><text class="sv-s" x="616" y="229">never on a joint crease</text>
+      <path class="ldr" d="M190 179 L190 222"/><text class="sv-t" x="150" y="238">Palm plate: sheath ends here</text>
+      <text class="sv-t" x="24" y="222">to actuator</text>
+      <text class="sv-s" x="60" y="72">back-of-hand strap</text>
+    </svg>
+    </div>
+    <div class="legend"><span style="--c:var(--tendon)">tendon (flexion)</span><span style="--c:var(--elastic)">elastic (extension)</span><span style="--c:var(--sheath)">Bowden sheath</span></div>
+    <figcaption><b>Figure 2. One finger, side view.</b> Palm side down. The tendon is pulled toward the left. Guides sit over the bones so the joints stay free to bend.</figcaption>
+  </figure>
+
+  <h3>A2. Where the servo motors go</h3>
+  <p>Put both servos in an <b>actuator pack</b>: a small board or plastic box that sits on the table during all artificial-hand testing. Do not mount motors on the hand. A motor on the hand adds weight, heat and pinch points, and its cable pulls on the glove. The pack connects to the glove only through Bowden sheaths, so it can later be strapped to the forearm if your instructor approves a wearable demonstration.</p>
+
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 860 340" role="img" aria-labelledby="d4t">
+      <title id="d4t">Top view of the actuator pack: two servos with drums, quick-release clips, travel-stop blocks, a tendon bar with four adjusters, a sheath-stop block and the sheaths leaving toward the glove</title>
+      <rect class="blk2" x="10" y="10" width="840" height="320" rx="10"/>
+      <rect class="frame" x="24" y="44" width="200" height="262" rx="8"/>
+      <text class="sv-m" x="30" y="322">cover over the drums: fingers and hair stay out</text>
+      <rect class="servo" x="40" y="62" width="110" height="102" rx="6"/>
+      <circle class="part" cx="95" cy="110" r="37"/><circle class="blk" cx="95" cy="110" r="30"/><circle class="part" cx="95" cy="110" r="5"/>
+      <text class="sv-ws" x="58" y="159">SERVO F</text>
+      <path class="tendon" d="M95 80 H345"/>
+      <ellipse class="blk" cx="175" cy="80" rx="11" ry="6"/>
+      <text class="sv-t" x="165" y="58" text-anchor="middle">quick-release snap</text>
+      <rect class="part" x="255" y="50" width="18" height="60" rx="2"/>
+      <text class="sv-t" x="264" y="128" text-anchor="middle">travel stop</text>
+      <line class="dim" x1="275" y1="146" x2="343" y2="146"/>
+      <text class="sv-s" x="309" y="164" text-anchor="middle">gap = max travel</text>
+      <rect class="wood" x="345" y="38" width="16" height="84" rx="2"/>
+      <circle class="screwhead" cx="353" cy="50" r="4"/><circle class="screwhead" cx="353" cy="70" r="4"/><circle class="screwhead" cx="353" cy="90" r="4"/><circle class="screwhead" cx="353" cy="110" r="4"/>
+      <text class="sv-t" x="353" y="28" text-anchor="middle">tendon bar: one screw clamp per finger</text>
+      <path class="tendon" d="M357 50 H540 M357 70 H540 M357 90 H540 M357 110 H540"/>
+      <rect class="part" x="540" y="38" width="16" height="84" rx="2"/>
+      <text class="sv-t" x="590" y="28" text-anchor="middle">sheath stop + washers</text>
+      <path class="sheath" d="M556 50 C660 50 700 66 840 70 M556 70 C660 70 700 76 840 78 M556 90 C660 90 700 86 840 86 M556 110 C660 110 700 96 840 94"/>
+      <path class="tendon" style="stroke-width:1.4" d="M556 50 C660 50 700 66 840 70 M556 70 C660 70 700 76 840 78 M556 90 C660 90 700 86 840 86 M556 110 C660 110 700 96 840 94"/>
+      <text class="sv-t" x="700" y="128">4 sheaths → fingers</text>
+      <rect class="servo" x="55" y="196" width="80" height="96" rx="6"/>
+      <circle class="part" cx="95" cy="247" r="28"/><circle class="blk" cx="95" cy="247" r="22"/><circle class="part" cx="95" cy="247" r="4"/>
+      <text class="sv-ws" x="62" y="288">SERVO T</text>
+      <path class="tendon" d="M95 225 H540"/>
+      <ellipse class="blk" cx="175" cy="225" rx="11" ry="6"/>
+      <rect class="part" x="255" y="200" width="18" height="50" rx="2"/>
+      <circle class="bead" cx="330" cy="225" r="8"/>
+      <text class="sv-t" x="330" y="268" text-anchor="middle">bead = thumb travel stop</text>
+      <rect class="part" x="540" y="203" width="16" height="44" rx="2"/>
+      <path class="sheath" d="M556 225 H840"/><path class="tendon" style="stroke-width:1.4" d="M556 225 H840"/>
+      <text class="sv-t" x="700" y="210">thumb sheath → thumb</text>
+      <text class="sv-s" x="30" y="190">Ø 25–30 mm drums with flanges</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 3. Actuator pack, top view, fingers open.</b> When Servo F winds, the tendon bar moves left. If the program ever asked for too much, the bar hits the travel-stop block and the finger is not pulled further. The stop block, not the finger, takes the motor's force.</figcaption>
+  </figure>
+
+  <h3>A3. Tendon routing on the glove</h3>
+  <figure class="fig tall">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 640 600" role="img" aria-labelledby="d2t">
+      <title id="d2t">Palm view of the glove showing fingertip anchors, guide tubes, joint creases, the palm plate, sheaths and the thumb tendon</title>
+      <rect class="skin" x="180" y="420" width="120" height="180" rx="10"/>
+      <rect class="skin" x="130" y="250" width="214" height="190" rx="44"/>
+      <g transform="rotate(-38 152 402)">
+        <rect class="skin" x="128" y="258" width="48" height="150" rx="22"/>
+        <rect class="cap" x="132" y="261" width="40" height="26" rx="13"/>
+        <line class="crease" x1="132" y1="320" x2="172" y2="320"/>
+        <rect class="guide" x="147" y="340" width="10" height="16" rx="3"/>
+        <path class="tendon" d="M152 278 V396"/>
+        <circle class="tendon-dot" cx="152" cy="278" r="3"/>
+      </g>
+      <rect class="skin" x="134" y="100" width="44" height="172" rx="22"/>
+      <rect class="skin" x="186" y="72" width="44" height="200" rx="22"/>
+      <rect class="skin" x="238" y="92" width="44" height="180" rx="22"/>
+      <rect class="skin" x="290" y="135" width="44" height="137" rx="22"/>
+      <g>
+        <rect class="cap" x="138" y="103" width="36" height="26" rx="13"/><rect class="cap" x="190" y="75" width="36" height="26" rx="13"/><rect class="cap" x="242" y="95" width="36" height="26" rx="13"/><rect class="cap" x="294" y="138" width="36" height="26" rx="13"/>
+        <path class="crease" d="M138 185 H174 M138 143 H174 M190 173 H226 M190 123 H226 M242 182 H278 M242 138 H278 M294 201 H330 M294 169 H330 M140 255 H332"/>
+        <rect class="guide" x="151" y="212" width="10" height="16" rx="3"/><rect class="guide" x="151" y="156" width="10" height="16" rx="3"/>
+        <rect class="guide" x="203" y="206" width="10" height="16" rx="3"/><rect class="guide" x="203" y="140" width="10" height="16" rx="3"/>
+        <rect class="guide" x="255" y="210" width="10" height="16" rx="3"/><rect class="guide" x="255" y="152" width="10" height="16" rx="3"/>
+        <rect class="guide" x="307" y="220" width="10" height="16" rx="3"/><rect class="guide" x="307" y="177" width="10" height="16" rx="3"/>
+      </g>
+      <path class="tendon" d="M156 120 V296 M208 92 V296 M260 112 V296 M312 155 V296"/>
+      <circle class="tendon-dot" cx="156" cy="120" r="3"/><circle class="tendon-dot" cx="208" cy="92" r="3"/><circle class="tendon-dot" cx="260" cy="112" r="3"/><circle class="tendon-dot" cx="312" cy="155" r="3"/>
+      <rect class="part" x="142" y="292" width="186" height="40" rx="7"/>
+      <circle class="blk" cx="156" cy="312" r="4"/><circle class="blk" cx="208" cy="312" r="4"/><circle class="blk" cx="260" cy="312" r="4"/><circle class="blk" cx="312" cy="312" r="4"/>
+      <path class="sheath" d="M156 334 C156 400 232 400 236 452 M208 334 C208 390 236 400 238 452 M260 334 C260 390 240 400 240 452 M312 334 C312 400 246 400 242 452 M152 402 C170 430 226 430 234 452"/>
+      <path class="bundle" d="M238 452 V600"/>
+      <rect class="frame" x="176" y="470" width="128" height="30" rx="4"/>
+      <path class="ldr" d="M334 151 L414 130"/><text class="sv-t" x="418" y="128">Fingertip anchor</text><text class="sv-s" x="418" y="143">sewn cap, tendon tied here</text>
+      <path class="ldr" d="M330 169 L414 174"/><text class="sv-t" x="418" y="176">Joint creases (dashed)</text><text class="sv-s" x="418" y="191">keep them free</text>
+      <path class="ldr" d="M318 185 L414 232 M318 228 L414 236"/><text class="sv-t" x="418" y="236">Guide tubes 8–10 mm</text><text class="sv-s" x="418" y="251">on the bone, between creases</text>
+      <path class="ldr" d="M328 312 L414 312"/><text class="sv-t" x="418" y="310">Palm anchor plate</text><text class="sv-s" x="418" y="325">on Velcro = quick release</text>
+      <path class="ldr" d="M290 380 L414 374"/><text class="sv-t" x="418" y="372">Tendons continue inside</text><text class="sv-s" x="418" y="387">Bowden sheaths</text>
+      <path class="ldr" d="M304 485 L414 470"/><text class="sv-t" x="418" y="468">Wrist strap holds the bundle</text>
+      <path class="ldr" d="M250 560 L414 540"/><text class="sv-t" x="418" y="538">Bundle to the actuator pack</text>
+      <path class="ldr" d="M70 300 L26 452"/><text class="sv-t" x="16" y="472">Thumb: anchor at the tip,</text><text class="sv-s" x="16" y="488">one guide, sheath ends at</text><text class="sv-s" x="16" y="503">the base of the thumb</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 4. Palm side of the glove.</b> Four finger tendons and one thumb tendon. Each runs alone in its own guides and sheath, so nothing can tangle.</figcaption>
+  </figure>
+
+  <ul>
+    <li><b>Fingertip anchor:</b> a small cap of strong fabric or thin leather sewn over each glove fingertip. The tendon is tied to it. A cap spreads the pull over the whole tip, so the glove fabric does not tear.</li>
+    <li><b>Guides:</b> two per finger (proximal and middle phalanx), one on the thumb. Short tubes, 8 to 10 mm long, on the centre line of the finger. Never over a joint crease, or the finger cannot bend.</li>
+    <li><b>Palm plate:</b> where the sheaths end. The tendon leaves the sheath here and runs free to the guides.</li>
+    <li><b>Thumb:</b> anchor at the thumb tip, one guide on the proximal phalanx, sheath end at the base of the thumb. Moving the sheath end toward the base of the little finger adds more opposition (thumb crossing the palm). Try two positions on the artificial hand.</li>
+  </ul>
+
+  <h3>A4. Keeping the tendons from tangling</h3>
+  <ul>
+    <li>One tendon per guide and per sheath. Tendons never cross each other.</li>
+    <li>Drums have flanges on both sides, so a slack line cannot jump off.</li>
+    <li>Set the OPEN angle so each tendon is just tight with the fingers straight. A slightly tight tendon cannot form loops.</li>
+    <li>Colour-tag each tendon end with a marker: F1 to F4 and T.</li>
+    <li>Keep braided line away from Velcro hooks; it catches on them. Cover hook Velcro near tendons.</li>
+    <li>Bundle the sheaths with tape every 10 cm and avoid bends tighter than about 5 cm radius. Tight bends add friction.</li>
+    <li>Keep the drum area covered so loose ends cannot wrap around it.</li>
+  </ul>
+
+  <h3>A5. How far and how hard: the two numbers that size everything</h3>
+  <div class="cols">
+    <div class="panel">
+      <h4>Travel (how far the tendon must move)</h4>
+      <p class="mono">x = d × (θ<sub>MCP</sub> + θ<sub>PIP</sub> + θ<sub>DIP</sub>) &nbsp;[angles in radians]</p>
+      <p>Example: d = 10 mm, a functional grasp of MCP 60°, PIP 70°, DIP 40° = 170° = 2.97 rad, so x ≈ <b>30 mm</b>.</p>
+      <p class="mono">drum radius r = x ÷ θ<sub>servo</sub></p>
+      <p>If the servo turns 130° (2.27 rad) between OPEN and CLOSED: r = 30 ÷ 2.27 ≈ <b>13 mm</b>, a drum about 26 mm across.</p>
+    </div>
+    <div class="panel">
+      <h4>Force (how hard the tendon can pull)</h4>
+      <p class="mono">F = T ÷ r &nbsp;&nbsp; T[N·m] = kg·cm × 0.0981</p>
+      <p>A smaller drum gives more force but less travel. A bigger drum gives more travel but less force. Force × travel is fixed by the motor, so choose the drum from the travel you need, then check that the force is enough.</p>
+      <p>Rule of thumb: in continuous use, load a hobby servo to no more than about <b>40 %</b> of its stall torque.</p>
+    </div>
+  </div>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Servo (datasheet stall torque)</th><th class="r">Stall pull at r = 13 mm</th><th class="r">Usable (40 %)</th><th class="r">Per finger, 4 fingers</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>SG90 · 1.8 kg·cm, plastic gears</td><td class="r">13.6 N</td><td class="r">5.4 N</td><td class="r">1.4 N</td><td>Stage 1 finger, thumb on the artificial hand</td></tr>
+      <tr><td>MG90S · ≈1.8–2.2 kg·cm, metal gears</td><td class="r">13.6–16.6 N</td><td class="r">5.4–6.6 N</td><td class="r">1.4–1.7 N</td><td>Same size as SG90, much more durable</td></tr>
+      <tr><td>MG996R · 9.4 kg·cm at 4.8 V</td><td class="r">70.9 N</td><td class="r">28.4 N</td><td class="r">7.1 N</td><td>Recommended four-finger motor; clones vary</td></tr>
+      <tr><td>DS3218 · ≈19 kg·cm (future)</td><td class="r">143 N</td><td class="r">57 N</td><td class="r">14 N</td><td>Upgrade for stiffer hands</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Datasheet values are stall torques at the stated voltage. Cheap clones are often weaker, so the calculator in Stage 1 uses a safety factor. Put your own measured force into the <a href="#calc">sizing calculator</a>.</p>
+
+  <h3>A6. Comfort and adjustability</h3>
+  <ul>
+    <li>Choose a glove that fits snugly: tendons in a loose glove move sideways and lose force.</li>
+    <li>Velcro wrist strap and a Velcro strap around the palm hold the glove in place against the tendon pull.</li>
+    <li>A 3 to 5 mm foam pad under the palm plate. Smooth, rounded tube ends (sand them).</li>
+    <li>Tendon length: adjusted at the tendon bar, one finger at a time, without taking the glove off.</li>
+    <li>Elastic tension: adjustable with a sliding buckle or a knot loop at the back-of-hand strap.</li>
+    <li>Nothing heavy on the hand. Motors, electronics and cables stay in the pack.</li>
+  </ul>
+
+  <h3>A7. Building the glove, step by step</h3>
+  <ol class="steps">
+    <li><div><h4>Mark the glove</h4><p>Put the glove on the artificial hand (or a team member's hand, only for marking). With a fabric marker, draw the centre line of each finger and the three joint creases on the palm side.</p></div></li>
+    <li><div><h4>Sew the fingertip caps</h4><p>Cut five pieces of strong fabric or thin leather, about 25 × 35 mm. Fold each over a fingertip, palm side, and sew it with strong nylon thread using a box-and-X stitch. Leave a small loop of thread or a tiny button on the palm side to tie the tendon to.</p></div></li>
+    <li><div><h4>Make and fit the guides</h4><p>Cut PTFE tube (2 mm inside) or empty ballpoint refill tubes into 8 to 10 mm pieces and sand the ends smooth. Sew each one on the centre line over the middle of the proximal and middle phalanx, with 4 to 6 stitches around the tube, then add a drop of fabric glue. Check that every guide is between two crease lines.</p></div></li>
+    <li><div><h4>Make the palm plate</h4><p>Cut a 50 × 60 mm plate from 2 mm plastic sheet (or a stiff food-container lid). Drill five 4 mm holes where the tendons leave the fingers and the thumb base. Glue an M3 washer over each hole on the finger side: the sheath pushes against the washer, the tendon passes through its hole. Glue foam under the plate, then sew hook Velcro on the glove palm and loop Velcro on the plate.</p></div></li>
+    <li><div><h4>Fit the elastic return</h4><p>Sew one end of 8 to 10 mm flat elastic to the back of each fingertip cap. Run it along the back of the finger to a strap across the back of the hand and fix it with a sliding buckle or safety pin. Tension rule: from half-closed, the finger straightens by itself in about one second.</p></div></li>
+    <li><div><h4>Tie in the tendons</h4><p>Cut five tendons of about 80 cm. Tie each to its fingertip anchor with a Palomar knot and add a drop of superglue. Thread it through its guides, through the palm plate washer, and into its sheath.</p></div></li>
+    <li><div><h4>Route the sheaths</h4><p>Cut five PTFE sheaths to reach the actuator pack (30 to 50 cm). Tape them together every 10 cm. The wrist strap holds the bundle so its weight never pulls on the palm plate.</p></div></li>
+  </ol>
+
+  <h3>A8. Building the actuator pack, step by step</h3>
+  <ol class="steps">
+    <li><div><h4>Base</h4><p>A 20 × 12 cm piece of plywood, acrylic or PVC board, or a plastic food box with a lid.</p></div></li>
+    <li><div><h4>Drums</h4><p>Glue a 25 to 30 mm bottle cap or spool section on the round servo horn with epoxy and add two small screws through the horn. Add a flange on each side. Drill a 1.5 mm hole near the rim to anchor the line.</p></div></li>
+    <li><div><h4>Mount the servos</h4><p>Screw each servo by its tabs onto wooden risers so the drum edge is level with the tendon path.</p></div></li>
+    <li><div><h4>Finger line</h4><p>Drum → main line → fishing snap swivel (quick-release) → main line through the travel-stop block → tendon bar. The bar is a 40 × 15 mm strip with four M3 screws and washers; each finger tendon is clamped under one washer, so its length can be adjusted.</p></div></li>
+    <li><div><h4>Sheath stop</h4><p>A block with four holes and washers, like the palm plate. The four sheaths push against it.</p></div></li>
+    <li><div><h4>Thumb line</h4><p>Drum → snap swivel → stop block → bead or crimp sleeve on the line → sheath stop → sheath.</p></div></li>
+    <li><div><h4>Set the travel stops</h4><p>After calibration, set the gap between the tendon bar (or bead) and its stop block so it touches the block about 3 mm of tendon travel <i>after</i> the CLOSED angle. The stop then only acts if something goes wrong.</p></div></li>
+    <li><div><h4>Cover and cables</h4><p>Cover the drums. Lead the servo cables out through one hole and fix them with a cable tie as strain relief.</p></div></li>
+  </ol>
+
+  <h3>A9. The artificial hand that wears the glove</h3>
+  <p>Your brief says test on an artificial hand. A display mannequin hand cannot bend, so build one: four wooden fingers and a two-segment thumb, hinged exactly like the Stage 1 finger, screwed to a palm board. The hand has no tendons of its own: the glove's tendons and elastics move it. Your Stage 1 finger becomes its index finger (remove its screw eyes).</p>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Part (20 × 20 mm section)</th><th class="r">Proximal</th><th class="r">Middle</th><th class="r">Distal</th><th>Hinges</th></tr></thead>
+    <tbody>
+      <tr><td>Index (Stage 1 finger)</td><td class="r">45 mm</td><td class="r">28 mm</td><td class="r">22 mm</td><td>3</td></tr>
+      <tr><td>Middle</td><td class="r">50 mm</td><td class="r">32 mm</td><td class="r">24 mm</td><td>3</td></tr>
+      <tr><td>Ring</td><td class="r">47 mm</td><td class="r">30 mm</td><td class="r">23 mm</td><td>3</td></tr>
+      <tr><td>Little</td><td class="r">38 mm</td><td class="r">22 mm</td><td class="r">20 mm</td><td>3</td></tr>
+      <tr><td>Thumb, mounted at about 40° on the palm side</td><td class="r">35 mm</td><td class="r">—</td><td class="r">28 mm</td><td>2</td></tr>
+      <tr><td>Palm board: 85 × 100 mm, 18 mm plywood, rounded edges</td><td class="r" colspan="3">fingers 2 mm apart</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p>Sand every edge round so the glove slides on. Tighten the hinge screws a little so the fingers do not flop, but still bend with one light touch. Mount the hand upright on a stand so the audience can see it move.</p>
+</section>
+
+<!-- ============================== STAGE 1 ============================== -->
+<section class="chapter" id="stage1">
+  <div class="sec-head"><span class="sec-tag">S1</span><h2>Stage 1: build and test one artificial finger</h2></div>
+  <p class="kicker">One cheap wooden finger proves the tendon idea, teaches you calibration, and gives you the two numbers that decide which motor to buy.</p>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>Goal</h4>
+      <p>A three-joint finger that a servo bends and an elastic straightens, smoothly and safely, for 100 cycles in a row.</p>
+    </div>
+    <div class="panel">
+      <h4>What you hand in at the end of Stage 1</h4>
+      <ul>
+        <li>The working finger rig, with photos and a short video</li>
+        <li>Force–travel table (measured, 3 trials)</li>
+        <li>Calibrated OPEN and CLOSED angles</li>
+        <li>100-cycle endurance record</li>
+        <li>Motor decision with the calculation behind it</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Materials and tools for Stage 1</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Item</th><th>Qty</th><th>Where (typical)</th></tr></thead>
+    <tbody>
+      <tr><td>Square wooden stick 20 × 20 mm</td><td>40 cm</td><td>Carpentry or hardware shop</td></tr>
+      <tr><td>Plywood or MDF board, about 35 × 20 cm, 9 to 12 mm</td><td>1</td><td>Carpentry shop offcut</td></tr>
+      <tr><td>Mini hinges 20 to 25 mm, with screws</td><td>3</td><td>Hardware shop</td></tr>
+      <tr><td>Small screw eyes (about 10 mm)</td><td>9</td><td>Hardware shop</td></tr>
+      <tr><td>Braided PE fishing line 0.2 to 0.3 mm</td><td>1 m</td><td>Fishing-tackle shop</td></tr>
+      <tr><td>Elastic cord 2 mm</td><td>40 cm</td><td>Tailoring supplies</td></tr>
+      <tr><td>SG90 servo with its horns and screws</td><td>1</td><td>Electronics shop</td></tr>
+      <tr><td>Bottle cap or thread spool 25 to 30 mm, epoxy or superglue, 2 small bead or crimp sleeves</td><td>1 set</td><td>Home, hardware shop</td></tr>
+      <tr><td>Arduino Nano + USB cable, breadboard, jumper wires</td><td>1 set</td><td>Electronics shop</td></tr>
+      <tr><td>5 V adapter 3 A + jack adapter, rocker or E-stop switch, 1000 µF capacitor, 330 Ω resistor</td><td>1 set</td><td>Electronics shop</td></tr>
+      <tr><td>Digital luggage scale (0 to 50 kg, 10 g steps)</td><td>1</td><td>Borrow, or a luggage shop</td></tr>
+      <tr><td>Tools: fine saw, try square, hand drill with 1.5 / 2 / 3 mm bits, small screwdrivers, sandpaper, ruler, printed protractor, marker, phone camera, multimeter</td><td>—</td><td>Workshop or university lab</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cut list and layout</h3>
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 900 320" role="img" aria-labelledby="d5t">
+      <title id="d5t">Top view of the Stage 1 test board: a wooden three-joint finger lying on its side, mini hinges on the palm side, screw-eye tendon guides, elastic on the back, a stopper bead and an SG90 with a drum</title>
+      <rect class="blk2" x="10" y="16" width="880" height="296" rx="8"/>
+      <path class="protr" d="M441.5 173 L545.4 233 M441.5 173 L501.5 276.9 M441.5 173 L441.5 293 M561.5 173 A120 120 0 0 1 441.5 293"/>
+      <text class="sv-m" x="550" y="244">30°</text><text class="sv-m" x="506" y="292">60°</text><text class="sv-m" x="426" y="306">90°</text>
+      <rect class="wood" x="200" y="110" width="240" height="60" rx="3"/>
+      <rect class="wood" x="443" y="110" width="135" height="60" rx="3"/>
+      <rect class="wood" x="581" y="110" width="84" height="60" rx="3"/>
+      <path class="wood" d="M668 110 H710 A24 30 0 0 1 710 170 H668 Z"/>
+      <circle class="screwhead" cx="232" cy="140" r="5"/><circle class="screwhead" cx="390" cy="140" r="5"/>
+      <text class="sv-s" x="311" y="144" text-anchor="middle">base: screwed to board</text>
+      <rect class="hinge" x="427" y="169" width="29" height="5" rx="1"/><circle class="screwhead" cx="441.5" cy="174" r="3.5"/>
+      <rect class="hinge" x="565" y="169" width="29" height="5" rx="1"/><circle class="screwhead" cx="579.5" cy="174" r="3.5"/>
+      <rect class="hinge" x="652" y="169" width="29" height="5" rx="1"/><circle class="screwhead" cx="666.5" cy="174" r="3.5"/>
+      <path class="ext" d="M215 170 V178 M420 170 V178 M510 170 V178 M623 170 V178 M712 170 V178"/>
+      <circle class="eye" cx="215" cy="183" r="5"/><circle class="eye" cx="420" cy="183" r="5"/><circle class="eye" cx="510" cy="183" r="5"/><circle class="eye" cx="623" cy="183" r="5"/><circle class="eye" cx="712" cy="183" r="5"/>
+      <path class="tendon" d="M712 183 H110"/>
+      <circle class="tendon-dot" cx="712" cy="183" r="3"/>
+      <circle class="bead" cx="305" cy="183" r="6.5"/>
+      <line class="dim" x1="221" y1="203" x2="299" y2="203"/>
+      <text class="sv-s" x="260" y="220" text-anchor="middle">max travel + 3 mm</text>
+      <text class="sv-t" x="305" y="238" text-anchor="middle">stopper bead = travel stop</text>
+      <rect class="servo" x="62" y="186" width="96" height="84" rx="6"/>
+      <circle class="part" cx="110" cy="213" r="36"/><circle class="blk" cx="110" cy="213" r="30"/><circle class="part" cx="110" cy="213" r="5"/>
+      <text class="sv-ws" x="88" y="264">SG90</text>
+      <text class="sv-t" x="110" y="292" text-anchor="middle">drum Ø 25–30 mm</text>
+      <path class="ext" d="M510 110 V102 M623 110 V102 M712 110 V102"/>
+      <circle class="eye" cx="510" cy="97" r="5"/><circle class="eye" cx="623" cy="97" r="5"/><circle class="eye" cx="712" cy="97" r="5"/>
+      <circle class="screwhead" cx="250" cy="97" r="5"/>
+      <path class="elastic" d="M712 97 H420 L410 89 L400 97 L390 89 L380 97 L370 89 L360 97 H250"/>
+      <text class="sv-s" x="250" y="82" text-anchor="middle">tension screw</text>
+      <path class="ext" d="M200 110 V40 M440 110 V40 M578 110 V40 M665 110 V40 M734 110 V40"/>
+      <line class="dim" x1="200" y1="50" x2="440" y2="50"/><text class="sv-m" x="320" y="44" text-anchor="middle">80</text>
+      <line class="dim" x1="441" y1="50" x2="578" y2="50"/><text class="sv-m" x="510" y="44" text-anchor="middle">45</text>
+      <line class="dim" x1="579" y1="50" x2="665" y2="50"/><text class="sv-m" x="622" y="44" text-anchor="middle">28</text>
+      <line class="dim" x1="666" y1="50" x2="734" y2="50"/><text class="sv-m" x="700" y="44" text-anchor="middle">22</text>
+      <text class="sv-m" x="745" y="44">mm</text>
+      <line class="dim" x1="752" y1="111" x2="752" y2="169"/><text class="sv-m" x="760" y="144">20</text>
+      <text class="sv-m" x="446" y="76">MCP</text><text class="sv-m" x="584" y="76">PIP</text><text class="sv-m" x="671" y="76">DIP</text>
+      <path class="ldr" d="M717 188 L790 210"/><text class="sv-t" x="794" y="214">fingertip</text><text class="sv-t" x="794" y="229">anchor eye</text>
+      <path class="ldr" d="M628 188 L790 252"/><text class="sv-t" x="794" y="256">screw-eye</text><text class="sv-t" x="794" y="271">guides (V side)</text>
+      <path class="ldr" d="M716 97 L790 100"/><text class="sv-t" x="794" y="96">elastic</text><text class="sv-t" x="794" y="111">return</text>
+      <path class="ldr" d="M681 176 L790 156"/><text class="sv-t" x="794" y="150">mini hinge,</text><text class="sv-t" x="794" y="165">pin on joint</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 5. Stage 1 test board, seen from above.</b> The finger lies on its side so it bends across the board: gravity neither helps nor fights it, and a phone held above can film the angles on the paper protractor. Dimensions in mm; all blocks 20 × 20 mm.</figcaption>
+  </figure>
+
+  <h3>Build the finger (Student 1 leads)</h3>
+  <ol class="steps">
+    <li><div><h4>Cut the four blocks</h4><p>From the 20 × 20 mm stick cut the base 80 mm, proximal 45 mm, middle 28 mm and distal 22 mm. Use a try square and a fine saw, then sand the ends flat and square. Crooked ends make the finger bend sideways. Round the distal tip and soften the long edges; later this finger goes inside a glove.</p></div></li>
+    <li><div><h4>Mark the palm face</h4><p>Draw a centre line along one face of every block and write <b>V</b> (volar, palm side). Hinges and tendon eyes go on the V face. The elastic goes on the opposite face, the back.</p></div></li>
+    <li><div><h4>Fit the three hinges</h4><p>Lay the base and proximal blocks end to end, V face up, ends touching. Centre a mini hinge across the joint so its pin lies exactly over the gap. Drill 1.5 mm pilot holes first (without them the wood splits), then screw. Repeat for proximal–middle (PIP) and middle–distal (DIP).</p><p><b>Check:</b> each joint bends at least 90° toward the V side, has no sideways wobble, and stops when straight because the blocks touch on the back. That stop protects against over-straightening, like the ligaments of a real finger.</p></div></li>
+    <li><div><h4>Fit the tendon eyes</h4><p>Screw small eyes into the V centre line: a rear eye 15 mm from the back end of the base, a front eye 20 mm before the MCP hinge, one at the middle of the proximal block, one at the middle of the middle block, and the anchor eye 10 mm from the fingertip. Turn every eye so its hole lines up along the centre line. The height of an eye's hole above the hinge pin is the moment arm <i>d</i>: aim for 6 to 8 mm, the same at every joint.</p></div></li>
+    <li><div><h4>Fit the elastic return</h4><p>On the back face, add eyes at the middle of the proximal and middle blocks and at the fingertip, and a screw on the base block about 190 mm behind the tip. Tie the 2 mm elastic cord to the tip eye, thread it through the eyes and wrap it twice round the screw. <b>Tension rule:</b> the finger straightens by itself from any position in under a second, but one fingertip can still bend it easily.</p></div></li>
+    <li><div><h4>Mount the finger on the board</h4><p>Lay it on its side and screw the base block down with two screws from below. Tape a printed paper protractor under the MCP joint, centred on the hinge pin.</p></div></li>
+    <li><div><h4>Make the drum</h4><p>Glue a 25 to 30 mm bottle cap or spool piece centred on a servo horn (epoxy, plus two small screws through the horn). Add a flange on each side so the line cannot slip off. Drill a 1.5 mm hole near the rim. Measure the diameter where the line wraps and write down <b>r = diameter ÷ 2</b>.</p></div></li>
+    <li><div><h4>Mount the servo</h4><p>Screw the SG90 by its tabs onto a small wooden block, 10 to 15 cm behind the rear eye, with the drum in line with the tendon. Do not press the drum onto the servo shaft yet; you will do that during calibration.</p></div></li>
+    <li><div><h4>Tie the tendon</h4><p>Cut 60 cm of braided line. Tie it to the fingertip eye with a Palomar knot and add a drop of superglue. Thread it through all the V eyes from tip to rear. Slide one bead onto the line between the rear eye and the front eye; do not fix it yet. Leave the free end loose for the force test.</p></div></li>
+  </ol>
+
+  <h3>Wire the Stage 1 circuit (Student 2 leads)</h3>
+  <p>Stage 1 needs only part of the full circuit in <a href="#electronics">chapter B</a>: the 5 V adapter, the switch, the capacitor and one servo. Buttons and the A0 divider can wait.</p>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Connection</th><th>Wire</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Adapter + → switch → breadboard + rail</td><td>red</td><td>The switch is your emergency stop from day one</td></tr>
+      <tr><td>Adapter − → breadboard − rail</td><td>black</td><td>Motor ground</td></tr>
+      <tr><td>1000 µF capacitor across the rails, stripe (−) to the − rail</td><td>—</td><td>Absorbs current spikes</td></tr>
+      <tr><td>SG90 red → + rail, SG90 brown → − rail</td><td>red / brown</td><td>Servo power from the adapter, never from the Arduino 5V pin</td></tr>
+      <tr><td>SG90 orange → 330 Ω → Arduino D9</td><td>orange</td><td>Control signal</td></tr>
+      <tr><td>Arduino GND → − rail</td><td>black</td><td>Common ground: without it the servo cannot read the signal</td></tr>
+      <tr><td>Arduino USB → PC</td><td>—</td><td>Logic power and programming</td></tr>
+    </tbody>
+  </table></div>
+  <p>Before switching on: with a multimeter, check there is no short between the + and − rails (the reading should not be close to 0 Ω), and that Arduino GND has continuity with the − rail. Then switch on the adapter alone and measure 4.8 to 5.3 V on the rails.</p>
+
+  <h3>Measure, calibrate and run (both students)</h3>
+  <ol class="steps cont" style="--start:9">
+    <li><div><h4>Measure tendon force and travel by hand</h4><p>Motor not connected. With the finger straight, make an ink mark on the line exactly at the rear eye. Hook the luggage scale to the free end and pull slowly in line with the tendon. Stop at four positions: about a quarter, half, three-quarters and full flexion (full = the most the finger can bend before blocks touch). At each stop, read the scale, read the joint angles on the protractor, and measure how far the ink mark has moved from the rear eye: that distance is the tendon travel <i>x</i>. Do 3 trials and average. Newtons = kg reading × 9.81.</p></div></li>
+    <li><div><h4>Upload the calibration sketch</h4><p>Upload <code>servo_calibration.ino</code> (chapter C), open the Serial Monitor at 115200 baud with "Newline". Switch on servo power: the servo goes to 90°. Now press the drum onto the shaft, tie the tendon through the drum hole with 2 to 3 wraps, leaving it slightly slack.</p></div></li>
+    <li><div><h4>Find OPEN and CLOSED</h4><p>Type <kbd>+</kbd> or <kbd>-</kbd> to nudge 2° at a time (or type an angle) toward the side that winds the line. <b>OPEN</b> is the angle where the tendon just becomes tight while the finger is still straight. Keep going 5° at a time: <b>CLOSED</b> is your target flexion, or the angle just before the servo starts to strain or buzz, whichever comes first. Write both down. Sanity check: |CLOSED − OPEN| × π/180 × r should be close to the travel you measured by hand.</p></div></li>
+    <li><div><h4>Set the travel stop</h4><p>With the servo at CLOSED, slide the bead to 3 mm in front of the rear eye (finger side) and fix it with a crimp, a knot or a drop of glue. Now the line can never be pulled more than 3 mm beyond CLOSED, whatever the software does.</p></div></li>
+    <li><div><h4>First powered run</h4><p>In <code>robotic_glove.ino</code> set <code>FINGERS_OPEN_DEG</code> and <code>FINGERS_CLOSED_DEG</code> to your numbers, and set <code>USE_MOTOR_SENSE = false</code> until the A0 divider is built. Upload, open the Serial Monitor and type, one line at a time: <kbd>MODE FINGERS</kbd>, <kbd>SPEED 20</kbd>, <kbd>RANGE 50</kbd>, <kbd>REPS 3</kbd>, <kbd>START</kbd>. Watch closely, hand on the switch. Then try <kbd>RANGE 80</kbd> and <kbd>RANGE 100</kbd>, then <kbd>SPEED 40</kbd>. The thumb servo is not connected yet; FINGERS mode never moves it.</p></div></li>
+    <li><div><h4>Endurance: 100 cycles</h4><p>Settings SPEED 40, RANGE 100, HOLD 1000, REST 1000. One cycle takes about 8.5 s, so 100 cycles take about 14 minutes. Every 25 cycles: STOP, touch the servo case, check the knots, the eyes and the ink mark, and write it down. If the PC app is ready, run it from the app so the CSV records the session.</p></div></li>
+    <li><div><h4>Decide the motor</h4><p>Enter your measured force and travel into the calculator below. Write the result and the reason in your logbook. That decision is the main output of Stage 1.</p></div></li>
+  </ol>
+
+  <h3>Data sheets: copy these into your logbook</h3>
+  <div class="cols">
+    <div class="table-wrap" style="margin:0"><table class="tbl">
+      <thead><tr><th>Position</th><th class="r">MCP °</th><th class="r">PIP °</th><th class="r">DIP °</th><th class="r">Travel x mm</th><th class="r">Force N</th></tr></thead>
+      <tbody>
+        <tr><td>Straight</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r"></td></tr>
+        <tr><td>¼ flexion</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>½ flexion</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>¾ flexion</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Full flexion</td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap" style="margin:0"><table class="tbl">
+      <thead><tr><th class="r">Cycles</th><th>Servo case</th><th class="r">Mark moved mm</th><th>Knots, eyes, notes</th></tr></thead>
+      <tbody>
+        <tr><td class="r">0</td><td>cool</td><td class="r">0</td><td></td></tr>
+        <tr><td class="r">25</td><td></td><td></td><td></td></tr>
+        <tr><td class="r">50</td><td></td><td></td><td></td></tr>
+        <tr><td class="r">75</td><td></td><td></td><td></td></tr>
+        <tr><td class="r">100</td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <p class="small muted">Force table: one table per trial, three trials. Endurance table: "servo case" is cool, warm, hot (cannot hold a finger on it for 5 s). Stop the test if it is hot.</p>
+
+  <div class="tool" id="calc">
+    <h4>Motor and drum sizing calculator</h4>
+    <p class="small muted">The values below are example placeholders, not measurements. Replace them with your Stage 1 numbers. For the four-finger servo use the force of one finger and 4 fingers; for the thumb use 1.</p>
+    <div class="form-grid">
+      <div class="field"><label for="c-force">Force per finger at full flexion (N)</label><input type="number" id="c-force" value="4" min="0.1" step="0.1"><span class="hint">from your force table</span></div>
+      <div class="field"><label for="c-travel">Tendon travel needed x (mm)</label><input type="number" id="c-travel" value="30" min="1" step="1"><span class="hint">from your force table</span></div>
+      <div class="field"><label for="c-n">Fingers on this servo</label><input type="number" id="c-n" value="4" min="1" max="5" step="1"><span class="hint">4 for Servo F, 1 for Servo T</span></div>
+      <div class="field"><label for="c-factor">Friction and safety factor</label><input type="number" id="c-factor" value="1.5" min="1" max="4" step="0.1"><span class="hint">guides, sheaths, glove fabric; 1.5 to 2</span></div>
+      <div class="field"><label for="c-angle">Servo angle used, OPEN to CLOSED (°)</label><input type="number" id="c-angle" value="130" min="20" max="170" step="5"><span class="hint">keep it under 160°</span></div>
+      <div class="field"><label for="c-usable">Max continuous load (% of stall)</label><input type="number" id="c-usable" value="40" min="10" max="80" step="5"><span class="hint">40 % is a sensible limit</span></div>
+    </div>
+    <dl class="results">
+      <div><dt>Drum radius r</dt><dd id="o-r">–</dd></div>
+      <div><dt>Total tendon force needed</dt><dd id="o-f">–</dd></div>
+      <div><dt>Torque needed at the servo</dt><dd id="o-t">–</dd></div>
+    </dl>
+    <div class="table-wrap"><table class="tbl" id="servo-table">
+      <thead><tr><th>Servo</th><th class="r">Stall torque</th><th class="r">Stall pull on this drum</th><th class="r">Load (% of stall)</th><th>Verdict</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="small muted" id="o-note">The stall pull is also your worst case: the most force this motor could ever put on the tendon with this drum. A much stronger motor than needed is not "safer"; it raises that worst case.</p>
+  </div>
+
+  <h3>Stage 1 is done when</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Check</th><th>Pass criterion</th></tr></thead>
+    <tbody>
+      <tr><td>Range at RANGE 100</td><td>MCP ≥ 60°, PIP ≥ 60°, DIP ≥ 30° on the wooden finger</td></tr>
+      <tr><td>Return</td><td>Back to straight (within 5°) after every cycle, in 1.5 s or less</td></tr>
+      <tr><td>Consistency</td><td>Closed position varies by no more than ±5° over 20 cycles</td></tr>
+      <tr><td>Endurance</td><td>100 of 100 cycles, no knot slip, ink mark moved ≤ 2 mm</td></tr>
+      <tr><td>Servo temperature</td><td>Warm is fine; you can keep a finger on the case for 5 s (roughly below 50 °C)</td></tr>
+      <tr><td>Stopping</td><td>STOP straightens the finger within 3 s; the switch stops motion immediately</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Common mistakes in Stage 1</h3>
+  <ul>
+    <li>Powering the servo from the Arduino 5V pin: the Arduino resets and the servo twitches.</li>
+    <li>No common ground: the servo does nothing or shakes.</li>
+    <li>Tying the tendon to the servo arm instead of a drum.</li>
+    <li>Eyes not in one straight line: the tendon rubs and the finger twists sideways.</li>
+    <li>Hinge pin not exactly on the joint line: the joint binds.</li>
+    <li>Elastic too strong: the servo cannot reach CLOSED, buzzes and gets hot.</li>
+    <li>Calibrating with the tendon already tied tight: the servo jumps to 90° at power-up and yanks the finger.</li>
+    <li>No pilot holes: the small blocks split.</li>
+    <li>Writing measurements down "later". Write them immediately, with the date.</li>
+  </ul>
+
+  <h3>Stage 1 checklist</h3>
+  <p class="progress-line" id="cl-progress">0 of 16 done</p>
+  <ul class="checklist" id="checklist">
+    <li><label><input type="checkbox" id="chk-c1" data-k="c1"><span>Blocks cut square: 80, 45, 28 and 22 mm</span></label></li>
+    <li><label><input type="checkbox" id="chk-c2" data-k="c2"><span>V (palm) face marked on every block</span></label></li>
+    <li><label><input type="checkbox" id="chk-c3" data-k="c3"><span>Three hinges fitted, pins on the joint lines, no sideways play</span></label></li>
+    <li><label><input type="checkbox" id="chk-c4" data-k="c4"><span>Straight finger: blocks touch on the back (over-straightening stop works)</span></label></li>
+    <li><label><input type="checkbox" id="chk-c5" data-k="c5"><span>Tendon eyes in one straight line, anchor eye near the tip</span></label></li>
+    <li><label><input type="checkbox" id="chk-c6" data-k="c6"><span>Elastic fitted; the finger straightens by itself</span></label></li>
+    <li><label><input type="checkbox" id="chk-c7" data-k="c7"><span>Finger screwed to the board, protractor under the MCP joint</span></label></li>
+    <li><label><input type="checkbox" id="chk-c8" data-k="c8"><span>Drum with flanges made, radius measured and written down</span></label></li>
+    <li><label><input type="checkbox" id="chk-c9" data-k="c9"><span>Servo mounted, tendon runs straight to the drum</span></label></li>
+    <li><label><input type="checkbox" id="chk-c10" data-k="c10"><span>Force–travel table measured, 3 trials</span></label></li>
+    <li><label><input type="checkbox" id="chk-c11" data-k="c11"><span>Circuit checked with a multimeter: no short, common ground</span></label></li>
+    <li><label><input type="checkbox" id="chk-c12" data-k="c12"><span>OPEN and CLOSED found with servo_calibration.ino</span></label></li>
+    <li><label><input type="checkbox" id="chk-c13" data-k="c13"><span>Stopper bead fixed 3 mm beyond CLOSED</span></label></li>
+    <li><label><input type="checkbox" id="chk-c14" data-k="c14"><span>robotic_glove.ino running in FINGERS mode at low speed</span></label></li>
+    <li><label><input type="checkbox" id="chk-c15" data-k="c15"><span>100-cycle endurance test recorded</span></label></li>
+    <li><label><input type="checkbox" id="chk-c16" data-k="c16"><span>Motor decision made with the calculator and written in the logbook</span></label></li>
+  </ul>
+  <p class="small muted">Ticks are saved in this browser only.</p>
+</section>
+
+<!-- ============================== B. ELECTRONICS ============================== -->
+<section class="chapter" id="electronics">
+  <div class="sec-head"><span class="sec-tag">B</span><h2>Electronics design</h2></div>
+  <p class="kicker">Two power domains that share one ground, an emergency switch that cuts only motor power, and a few cheap parts that prevent most failures.</p>
+
+  <p><b>Logic power</b> comes from USB (your PC, or a phone power bank when you run without a PC). <b>Motor power</b> comes from a separate regulated 5 V adapter. The two meet only at ground. This keeps servo current spikes away from the Arduino and the PC's USB port, and lets the Arduino keep running and reporting while the emergency switch has cut the motors.</p>
+
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 940 560" role="img" aria-labelledby="d6t">
+      <title id="d6t">Wiring diagram: Arduino Nano with START, STOP and MODE buttons to ground, D9 and D10 through 330 ohm resistors to the servo signals, a 5 volt adapter through a fuse and emergency stop to the motor rail, a 1000 microfarad capacitor, a 10k/10k divider to A0 and a common ground rail</title>
+      <g>
+        <line class="w-red" x1="20" y1="24" x2="44" y2="24"/><text class="sv-s" x="50" y="28">motor +5 V</text>
+        <line class="w-gnd" x1="140" y1="24" x2="164" y2="24"/><text class="sv-s" x="170" y="28">ground</text>
+        <line class="w-sig" x1="20" y1="46" x2="44" y2="46"/><text class="sv-s" x="50" y="50">servo signal</text>
+        <line class="w-in" x1="140" y1="46" x2="164" y2="46"/><text class="sv-s" x="170" y="50">button / sense</text>
+        <line class="w-brn" x1="20" y1="68" x2="44" y2="68"/><text class="sv-s" x="50" y="72">servo − (brown)</text>
+      </g>
+      <rect class="blk" x="380" y="12" width="160" height="42" rx="6"/>
+      <text class="sv-t" x="460" y="31" text-anchor="middle">PC or USB power bank</text>
+      <text class="sv-s" x="460" y="46" text-anchor="middle">logic power + data</text>
+      <line class="w-gnd" x1="460" y1="54" x2="460" y2="90" style="stroke-dasharray:4 3"/>
+      <rect class="blk2" x="442" y="86" width="36" height="14" rx="2"/>
+      <rect class="board" x="380" y="96" width="160" height="266" rx="8"/>
+      <text class="sv-w" x="460" y="296" text-anchor="middle">ARDUINO</text>
+      <text class="sv-w" x="460" y="314" text-anchor="middle">NANO</text>
+      <g class="sv-ws">
+        <text x="392" y="154">D2</text><text x="392" y="204">D3</text><text x="392" y="254">D4</text>
+        <text x="528" y="114" text-anchor="end">D10</text><text x="528" y="144" text-anchor="end">D9</text>
+        <text x="528" y="194" text-anchor="end">5V (unused)</text><text x="528" y="234" text-anchor="end">GND</text><text x="528" y="334" text-anchor="end">A0</text>
+      </g>
+      <rect class="pin" x="376" y="146" width="8" height="8"/><rect class="pin" x="376" y="196" width="8" height="8"/><rect class="pin" x="376" y="246" width="8" height="8"/>
+      <rect class="pin" x="536" y="106" width="8" height="8"/><rect class="pin" x="536" y="136" width="8" height="8"/><rect class="pin" x="536" y="186" width="8" height="8"/><rect class="pin" x="536" y="226" width="8" height="8"/><rect class="pin" x="536" y="326" width="8" height="8"/>
+      <path class="w-red" d="M548 186 l8 8 m0 -8 l-8 8"/>
+
+      <!-- buttons -->
+      <path class="w-in" d="M376 150 H250 M376 200 H250 M376 250 H250"/>
+      <path class="w-gnd" d="M200 150 H60 M200 200 H60 M200 250 H60 M60 150 V520"/>
+      <g>
+        <circle class="blk" cx="205" cy="150" r="3.5"/><circle class="blk" cx="245" cy="150" r="3.5"/><path class="ldr" style="stroke:var(--ink);stroke-width:1.6" d="M198 138 H252 M225 138 V128"/>
+        <circle class="blk" cx="205" cy="200" r="3.5"/><circle class="blk" cx="245" cy="200" r="3.5"/><path class="ldr" style="stroke:var(--ink);stroke-width:1.6" d="M198 188 H252 M225 188 V178"/>
+        <circle class="blk" cx="205" cy="250" r="3.5"/><circle class="blk" cx="245" cy="250" r="3.5"/><path class="ldr" style="stroke:var(--ink);stroke-width:1.6" d="M198 238 H252 M225 238 V228"/>
+      </g>
+      <text class="sv-t" x="225" y="170" text-anchor="middle">START</text>
+      <text class="sv-t" x="225" y="220" text-anchor="middle">STOP</text>
+      <text class="sv-t" x="225" y="270" text-anchor="middle">MODE (optional)</text>
+      <text class="sv-s" x="80" y="300">pin → button → GND</text>
+      <text class="sv-s" x="80" y="315">internal pull-up,</text>
+      <text class="sv-s" x="80" y="330">no resistor needed</text>
+      <circle class="dot-gnd" cx="60" cy="520" r="4"/>
+
+      <!-- servos -->
+      <rect class="servo" x="670" y="100" width="112" height="60" rx="6"/>
+      <text class="sv-w" x="726" y="126" text-anchor="middle">SERVO F</text><text class="sv-ws" x="726" y="144" text-anchor="middle">4 fingers</text>
+      <rect class="servo" x="800" y="100" width="112" height="60" rx="6"/>
+      <text class="sv-w" x="856" y="126" text-anchor="middle">SERVO T</text><text class="sv-ws" x="856" y="144" text-anchor="middle">thumb</text>
+      <path class="w-sig" d="M544 140 H592 M632 140 H670"/>
+      <rect class="res" x="592" y="133" width="40" height="14" rx="2"/><text class="sv-s" x="612" y="126" text-anchor="middle">330 Ω</text>
+      <path class="w-sig" d="M544 110 H560 V70 H736 M776 70 H856 V100"/>
+      <rect class="res" x="736" y="63" width="40" height="14" rx="2"/><text class="sv-s" x="756" y="56" text-anchor="middle">330 Ω</text>
+
+      <!-- power chain -->
+      <rect class="blk" x="110" y="410" width="120" height="84" rx="6"/>
+      <text class="sv-b" x="170" y="440" text-anchor="middle">5 V adapter</text>
+      <text class="sv-s" x="170" y="458" text-anchor="middle">regulated</text>
+      <text class="sv-s" x="170" y="473" text-anchor="middle">3 A (5 A w/ MG996R)</text>
+      <text class="sv-m" x="236" y="432">+</text><text class="sv-m" x="236" y="486">−</text>
+      <path class="w-red" d="M230 440 H272 M318 440 H352"/>
+      <rect class="res" x="272" y="433" width="46" height="14" rx="7"/><line class="ldr" x1="272" y1="440" x2="318" y2="440"/>
+      <text class="sv-s" x="295" y="424" text-anchor="middle">fuse T3A</text>
+      <circle class="blk" cx="356" cy="440" r="4"/><circle class="blk" cx="404" cy="440" r="4"/>
+      <path class="ldr" style="stroke:var(--danger);stroke-width:2" d="M358 437 L398 420"/>
+      <path class="st-e" d="M366 408 A14 9 0 0 1 394 408 Z"/>
+      <line class="ldr" style="stroke:var(--danger);stroke-width:2" x1="380" y1="408" x2="380" y2="427"/>
+      <text class="sv-t" x="380" y="396" text-anchor="middle" style="fill:var(--danger);font-weight:600">E-STOP</text>
+      <text class="sv-s" x="380" y="462" text-anchor="middle">latching</text>
+      <path class="w-red" d="M408 440 H900"/>
+      <text class="sv-m" x="420" y="460">MOTOR +5 V RAIL</text><text class="sv-s" x="420" y="475">live only while E-STOP is released</text>
+      <path class="w-gnd" d="M230 486 H246 V520"/>
+      <path class="w-gnd" d="M60 520 H900"/>
+      <text class="sv-m" x="270" y="512">GND RAIL: adapter −, servos −, Arduino GND</text>
+      <circle class="dot-gnd" cx="246" cy="520" r="4"/>
+
+      <!-- Arduino GND to rail -->
+      <path class="w-gnd" d="M544 230 H640 V430 M640 450 V520"/>
+      <path class="w-gnd" d="M640 430 a10 10 0 0 1 0 20"/>
+      <circle class="dot-gnd" cx="640" cy="520" r="4"/>
+      <!-- divider -->
+      <path class="w-in" d="M544 330 H570 V352"/>
+      <circle class="dot-in" cx="570" cy="400" r="4"/>
+      <path class="w-in" d="M570 352 V400"/>
+      <rect class="res" x="563" y="406" width="14" height="28" rx="2"/>
+      <path class="w-red" d="M570 400 V406 M570 434 V440"/>
+      <circle class="dot-red" cx="570" cy="440" r="4"/>
+      <rect class="res" x="590" y="393" width="36" height="14" rx="2"/>
+      <path class="w-gnd" d="M570 400 H590 M626 400 H640"/>
+      <circle class="dot-gnd" cx="640" cy="400" r="4"/>
+      <text class="sv-s" x="556" y="424" text-anchor="end">10 kΩ</text>
+      <text class="sv-s" x="608" y="386" text-anchor="middle">10 kΩ</text>
+      <text class="sv-s" x="562" y="380" text-anchor="end">A0 reads</text><text class="sv-s" x="562" y="394" text-anchor="end">½ of motor V</text>
+
+      <!-- servo power -->
+      <path class="w-red" d="M700 160 V440"/><circle class="dot-red" cx="700" cy="440" r="4"/>
+      <path class="w-brn" d="M752 160 V430 M752 450 V520"/><path class="w-brn" d="M752 430 a10 10 0 0 1 0 20"/><circle class="dot-gnd" cx="752" cy="520" r="4"/>
+      <path class="w-red" d="M830 160 V440"/><circle class="dot-red" cx="830" cy="440" r="4"/>
+      <path class="w-brn" d="M882 160 V430 M882 450 V520"/><path class="w-brn" d="M882 430 a10 10 0 0 1 0 20"/><circle class="dot-gnd" cx="882" cy="520" r="4"/>
+      <text class="sv-m" x="706" y="186">+</text><text class="sv-m" x="758" y="186">−</text><text class="sv-m" x="836" y="186">+</text><text class="sv-m" x="888" y="186">−</text>
+      <!-- capacitor -->
+      <path class="w-red" d="M790 440 V474"/><circle class="dot-red" cx="790" cy="440" r="4"/>
+      <line class="w-gnd" x1="778" y1="476" x2="802" y2="476"/><path class="w-gnd" d="M778 486 Q790 480 802 486"/>
+      <path class="w-gnd" d="M790 484 V520"/><circle class="dot-gnd" cx="790" cy="520" r="4"/>
+      <text class="sv-s" x="806" y="474">1000 µF 16 V</text><text class="sv-s" x="806" y="489">stripe (−) to GND</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 6. Complete wiring.</b> Small arcs mark wires that cross without connecting; dots mark real connections. Build it on the breadboard first and move to a soldered board only after everything works.</figcaption>
+  </figure>
+
+  <h3>Connection table</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>From</th><th>To</th><th>Wire</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr class="cat"><td colspan="4">Motor power</td></tr>
+      <tr><td>Adapter +</td><td>Fuse (T3A to T4A, slow-blow)</td><td>red</td><td>Through the barrel-jack screw adapter. Check polarity with a multimeter first.</td></tr>
+      <tr><td>Fuse</td><td>E-STOP switch input</td><td>red</td><td>Latching type. A mushroom E-stop button uses its NC (normally closed) contact.</td></tr>
+      <tr><td>E-STOP output</td><td>Motor + rail</td><td>red</td><td>Everything after this point is dead when the E-stop is pressed.</td></tr>
+      <tr><td>Motor + rail</td><td>Servo F red, Servo T red</td><td>red</td><td>Never from the Arduino 5V pin.</td></tr>
+      <tr><td>Motor + rail ↔ GND rail</td><td>1000 µF, 16 V electrolytic</td><td>—</td><td>Stripe (−) to GND. Reversed, it can burst.</td></tr>
+      <tr><td>Adapter −</td><td>GND rail</td><td>black</td><td></td></tr>
+      <tr><td>GND rail</td><td>Servo F brown, Servo T brown</td><td>brown</td><td></td></tr>
+      <tr><td>GND rail</td><td>Arduino GND</td><td>black</td><td><b>Common ground. Mandatory.</b></td></tr>
+      <tr class="cat"><td colspan="4">Signals</td></tr>
+      <tr><td>Arduino D9</td><td>330 Ω → Servo F orange</td><td>orange</td><td>Resistor limits current if a servo is unpowered or miswired.</td></tr>
+      <tr><td>Arduino D10</td><td>330 Ω → Servo T orange</td><td>orange</td><td></td></tr>
+      <tr><td>Arduino D2</td><td>START button → GND</td><td>blue</td><td>Internal pull-up: reads LOW when pressed.</td></tr>
+      <tr><td>Arduino D3</td><td>STOP button → GND</td><td>blue</td><td></td></tr>
+      <tr><td>Arduino D4</td><td>MODE button → GND</td><td>blue</td><td>Optional. Cycles FULL → FINGERS → THUMB while stopped.</td></tr>
+      <tr><td>Motor + rail</td><td>10 kΩ → A0, and A0 → 10 kΩ → GND</td><td>blue</td><td>Divider: 5 V becomes 2.5 V at A0. The code doubles it back.</td></tr>
+      <tr class="cat"><td colspan="4">Logic</td></tr>
+      <tr><td>Arduino USB</td><td>PC (or USB power bank)</td><td>USB</td><td>Logic power and data. A charge-only cable will not work.</td></tr>
+      <tr><td>Arduino 5V pin</td><td>Not connected</td><td>—</td><td>Never feed the servos from here.</td></tr>
+      <tr><td>Arduino D13</td><td>Built-in LED</td><td>—</td><td>Status blink codes, see chapter C.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Choosing the power supply</h3>
+  <p>SG90: about 0.1 to 0.3 A while moving, up to about 0.7 A when stalled. MG996R: about 0.5 to 0.9 A moving, up to about 2.5 A stalled. With both servos the worst case is about 3.2 A, so use a <b>regulated 5 V adapter of at least 3 A</b>, and <b>5 A</b> if you use an MG996R. Check the label says 5 V DC and measure it: some cheap adapters give 5.5 V or more with no load. Servos are rated 4.8 to 6 V; never use 9 V or 12 V.</p>
+
+  <h3>The emergency stop</h3>
+  <ul>
+    <li><b>Hardware:</b> a latching switch in the motor + line, after the fuse. A red 22 mm mushroom E-stop from an electrical-panel shop is best; a 5 A rocker switch is acceptable. It must stay off when pressed and need a deliberate action to reset.</li>
+    <li><b>Placement:</b> on top of the control box, within reach of the operator. During any test one person keeps a hand near it.</li>
+    <li><b>Software:</b> A0 sees the motor rail fall below 3.5 V. The program stops all motion, stops sending servo pulses, reports <code>EVENT ESTOP</code>, and blinks the LED fast. When power returns it still does nothing until someone presses START once to re-arm, and START again to run. It never restarts by itself.</li>
+    <li><b>What it cannot do:</b> open the hand. See the quick-release in chapter G.</li>
+  </ul>
+
+  <h3>Why a common ground matters</h3>
+  <p>The servo reads its signal as a voltage measured against <i>its own</i> ground. If the Arduino's ground and the adapter's ground are not joined, the servo sees a meaningless voltage: it twitches, drifts, or ignores you. Joining the grounds gives both sides the same 0 V reference. Only grounds are joined; the two + supplies stay separate.</p>
+
+  <h3>Protection against electrical problems</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Problem</th><th>Protection</th></tr></thead>
+    <tbody>
+      <tr><td>Short circuit in wiring</td><td>Slow-blow fuse T3A to T4A right after the adapter. If it blows in normal use, look for a short or a jammed (stalled) mechanism.</td></tr>
+      <tr><td>Voltage dips when servos start (Arduino resets, jitter)</td><td>Separate supply, 1000 µF capacitor close to the servo connectors, short thick power wires.</td></tr>
+      <tr><td>Current into a signal pin from an unpowered servo</td><td>330 Ω series resistors; the program also detaches the servos during E-stop.</td></tr>
+      <tr><td>Reverse polarity</td><td>Measure the adapter polarity before connecting; use a polarized jack and mark + in red. Optional: a 3 A Schottky diode (1N5822) in series, if the servo voltage stays above 4.6 V.</td></tr>
+      <tr><td>Wrong adapter voltage</td><td>Measure it before the first connection. Label the adapter "5 V ONLY".</td></tr>
+      <tr><td>Wires pulled loose</td><td>Strain relief with cable ties or hot glue at every cable exit; heat-shrink on joints.</td></tr>
+      <tr><td>Hot-plugging</td><td>Never connect or disconnect servos with motor power on.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Assembly order and first power-on</h3>
+  <ol class="steps">
+    <li><div><h4>Wire everything with all power off</h4><p>Adapter unplugged, USB unplugged.</p></div></li>
+    <li><div><h4>Check with a multimeter</h4><p>Continuity: Arduino GND to GND rail, adapter − to GND rail. Resistance between motor + rail and GND rail should not be close to 0 Ω.</p></div></li>
+    <li><div><h4>Power the adapter alone</h4><p>Servos unplugged. E-stop released: 4.8 to 5.3 V on the rail. E-stop pressed: 0 V.</p></div></li>
+    <li><div><h4>Connect USB and upload</h4><p>Upload the calibration sketch first. Then plug in the servos (motor power off), then switch motor power on.</p></div></li>
+    <li><div><h4>Watch, smell, touch</h4><p>For the first minute, watch for heat, smell or smoke. If anything is wrong, press the E-stop.</p></div></li>
+  </ol>
+</section>
+
+<!-- ============================== C. FIRMWARE ============================== -->
+<section class="chapter" id="firmware">
+  <div class="sec-head"><span class="sec-tag">C</span><h2>Arduino programming</h2></div>
+  <p class="kicker">Two sketches: a small calibration tool for Stage 1, and the full program. Both were compiled and run against a simulated Arduino before being given to you.</p>
+
+  <h3>Set up the Arduino IDE</h3>
+  <ol>
+    <li>Install Arduino IDE 2 from arduino.cc. The Servo library is built in.</li>
+    <li>Plug in the Nano. If no new COM port appears on Windows, install the <b>CH340</b> driver (clone boards use this USB chip).</li>
+    <li><b>Tools → Board → Arduino AVR Boards → Arduino Nano</b>.</li>
+    <li><b>Tools → Processor → ATmega328P</b>. If uploading fails with <code>not in sync</code>, choose <b>ATmega328P (Old Bootloader)</b>; most clones need it.</li>
+    <li><b>Tools → Port</b>: the new COM port.</li>
+    <li>Each sketch must be inside a folder with the same name, for example <code>robotic_glove/robotic_glove.ino</code>. The download keeps that structure.</li>
+  </ol>
+
+  <h3>Sketch 1: servo_calibration.ino</h3>
+  <p>Moves one servo slowly to any angle you type, so you can find OPEN and CLOSED safely. Use it in Stage 1 and again for each servo in Stage 6. Change <code>SERVO_PIN</code> to 10 for the thumb.</p>
+  <div class="codebox">
+    <div class="codebar"><span class="fname">firmware/servo_calibration/servo_calibration.ino</span><button class="btn small-btn" type="button" data-copy="code-cal">Copy</button></div>
+    <pre><code class="language-cpp" id="code-cal">{{CAL_CODE}}</code></pre>
+  </div>
+
+  <h3>Sketch 2: robotic_glove.ino (the full program)</h3>
+  <div class="codebox">
+    <div class="codebar"><span class="fname">firmware/robotic_glove/robotic_glove.ino</span><span class="meta">two servos · buttons · E-stop sense · USB protocol</span><button class="btn small-btn" type="button" data-copy="code-fw">Copy</button></div>
+    <pre><code class="language-cpp" id="code-fw">{{FW_CODE}}</code></pre>
+  </div>
+
+  <h3>How the program works, in plain language</h3>
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 860 270" role="img" aria-labelledby="d7t">
+      <title id="d7t">State machine: IDLE, FLEX, HOLD, EXTEND, REST repeating; STOPPING after a stop command; ESTOP when motor power is lost; re-arm returns to IDLE</title>
+      <rect class="st" x="20" y="62" width="100" height="40" rx="20"/><text class="sv-b" x="70" y="87" text-anchor="middle">IDLE</text>
+      <rect class="st-run" x="175" y="62" width="100" height="40" rx="20"/><text class="sv-b" x="225" y="87" text-anchor="middle">FLEX</text>
+      <rect class="st-run" x="330" y="62" width="100" height="40" rx="20"/><text class="sv-b" x="380" y="87" text-anchor="middle">HOLD</text>
+      <rect class="st-run" x="485" y="62" width="100" height="40" rx="20"/><text class="sv-b" x="535" y="87" text-anchor="middle">EXTEND</text>
+      <rect class="st-run" x="640" y="62" width="100" height="40" rx="20"/><text class="sv-b" x="690" y="87" text-anchor="middle">REST</text>
+      <line class="arrow" x1="120" y1="82" x2="172" y2="82"/><text class="sv-m" x="147" y="74" text-anchor="middle">START</text>
+      <line class="arrow" x1="275" y1="82" x2="327" y2="82"/><text class="sv-m" x="302" y="74" text-anchor="middle">arrived</text>
+      <line class="arrow" x1="430" y1="82" x2="482" y2="82"/><text class="sv-m" x="457" y="74" text-anchor="middle">hold ms</text>
+      <line class="arrow" x1="585" y1="82" x2="637" y2="82"/><text class="sv-m" x="612" y="74" text-anchor="middle">rep+1</text>
+      <path class="arrow" d="M690 60 C690 18 230 18 226 58"/><text class="sv-m" x="458" y="13" text-anchor="middle">rest ms, next repetition</text>
+      <path class="arrow" d="M535 104 C535 146 98 146 96 106"/><text class="sv-m" x="320" y="156" text-anchor="middle">all repetitions done → EVENT DONE</text>
+      <rect class="st-stop" x="330" y="178" width="120" height="40" rx="20"/><text class="sv-b" x="390" y="203" text-anchor="middle">STOPPING</text>
+      <line class="arrow" x1="470" y1="160" x2="440" y2="176"/><text class="sv-s" x="474" y="164">STOP from any running state:</text><text class="sv-s" x="474" y="178">both servos go back to OPEN</text>
+      <path class="arrow" d="M330 198 H54 V106"/><text class="sv-m" x="190" y="192" text-anchor="middle">EVENT STOPPED</text>
+      <rect class="st-e" x="640" y="200" width="100" height="40" rx="20"/><text class="sv-b" x="690" y="225" text-anchor="middle">ESTOP</text>
+      <line class="arrow" x1="840" y1="220" x2="744" y2="220"/><text class="sv-s" x="760" y="210">power lost</text><text class="sv-s" x="760" y="250">(any state)</text>
+      <path class="arrow" d="M640 232 H36 V106"/><text class="sv-m" x="330" y="250" text-anchor="middle">power back + START = re-arm (never automatic)</text>
+    </svg>
+    </div>
+    <figcaption><b>Figure 7. The state machine.</b> The program is always in exactly one state. Green states move the glove; the program only changes state when a clear condition is met.</figcaption>
+  </figure>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>1. No <code>delay()</code> anywhere</h4>
+      <p><code>loop()</code> runs thousands of times per second. Each time it reads the buttons, checks motor power, reads PC commands and moves the servos a tiny step, using <code>millis()</code> (time since power-up) to know how far along each movement is. Because it never waits, STOP and the E-stop are noticed within milliseconds, even in the middle of a movement.</p>
+    </div>
+    <div class="panel">
+      <h4>2. Calibration and the safety clamp</h4>
+      <p>Section 2 holds your OPEN and CLOSED angles. Every position the program sends goes through <code>writeAxis()</code>, which calls <code>clampToAxis()</code>: any value outside OPEN…CLOSED is cut to the nearest limit. A wrong PC command, a typing mistake or a bug cannot drive past your calibrated angles.</p>
+    </div>
+    <div class="panel">
+      <h4>3. Speed and smooth motion</h4>
+      <p>Speed is the average speed in degrees per second (10 to 90). A movement of Δ degrees takes Δ ÷ speed seconds. Inside that time the position follows an S-curve, <code>(1 − cos(π·u)) ÷ 2</code>: it starts slowly, speeds up, and slows down again before stopping. No jerks for the tendon, the finger or the gears. Positions are sent in microseconds, about 0.1° steps.</p>
+    </div>
+    <div class="panel">
+      <h4>4. Angle (range of motion)</h4>
+      <p>RANGE is a percentage of your calibrated range. The flex target is <code>OPEN + (CLOSED − OPEN) × RANGE ÷ 100</code>. RANGE 50 gives half the flexion; RANGE 100 gives exactly CLOSED, never more. Start every new setup at 50.</p>
+    </div>
+    <div class="panel">
+      <h4>5. Repetitions, hold and rest</h4>
+      <p>One repetition is FLEX → HOLD → EXTEND. The counter goes up when the extension finishes, and the program sends <code>EVENT REP n</code>. After the last one it sends <code>EVENT DONE n</code> and returns to IDLE. HOLD is the time held closed, REST the time open between repetitions.</p>
+    </div>
+    <div class="panel">
+      <h4>6. Modes and the thumb</h4>
+      <p>FULL moves both servos, FINGERS only Servo F, THUMB only Servo T. In FULL mode the thumb starts 0.3 s after the fingers when closing, and the fingers wait 0.3 s for the thumb when opening, so the thumb is never trapped under the fingers.</p>
+    </div>
+    <div class="panel">
+      <h4>7. Buttons</h4>
+      <p>Buttons connect a pin to GND. <code>INPUT_PULLUP</code> holds the pin HIGH until a press pulls it LOW. A press only counts after it has been stable for 30 ms (debouncing), because metal contacts bounce. STOP is checked before START in every loop.</p>
+    </div>
+    <div class="panel">
+      <h4>8. Emergency stop behaviour</h4>
+      <p>Every 5 ms the program reads A0. If the motor rail stays below 3.5 V for 50 ms, it enters ESTOP: movement plans are cancelled and the servos are detached (no more pulses). Re-arming needs the voltage above 4.2 V <i>and</i> a START press. The servos are re-attached at the OPEN angle.</p>
+    </div>
+  </div>
+
+  <h3>Settings you can change</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Setting</th><th>Default</th><th>Allowed</th><th>From the PC</th><th>In the code</th></tr></thead>
+    <tbody>
+      <tr><td>Mode</td><td>FULL</td><td>FULL, FINGERS, THUMB</td><td><code>MODE FINGERS</code></td><td>section 4, <code>mode</code></td></tr>
+      <tr><td>Speed</td><td>40 °/s</td><td>10–90</td><td><code>SPEED 30</code></td><td><code>speedDps</code>; limits in section 3</td></tr>
+      <tr><td>Range of motion</td><td>80 %</td><td>10–100</td><td><code>RANGE 60</code></td><td><code>rangePct</code></td></tr>
+      <tr><td>Repetitions</td><td>10</td><td>1–200</td><td><code>REPS 20</code></td><td><code>targetReps</code></td></tr>
+      <tr><td>Hold closed</td><td>1000 ms</td><td>0–10000</td><td><code>HOLD 1500</code></td><td><code>holdMs</code></td></tr>
+      <tr><td>Rest open</td><td>1000 ms</td><td>300–10000</td><td><code>REST 2000</code></td><td><code>restMs</code></td></tr>
+      <tr><td>Calibration</td><td>20° / 150° and 20° / 120°</td><td>your measured values</td><td>no (on purpose)</td><td>section 2</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Settings only change while the glove is stopped. Out-of-range values are cut to the nearest limit and the reply shows the value actually used. Calibration can only be changed in the code, so nobody can widen the safe range from the PC by accident.</p>
+
+  <h3>USB command reference (also usable in the Serial Monitor)</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>You send</th><th>Arduino replies</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>START</code></td><td><code>EVENT START md=FULL reps=10 …</code></td><td>Start a session (from IDLE), or re-arm (from ESTOP)</td></tr>
+      <tr><td><code>STOP</code></td><td><code>OK STOP</code>, later <code>EVENT STOPPED n</code></td><td>Smoothly return to OPEN and stop</td></tr>
+      <tr><td><code>RESET</code></td><td><code>EVENT REARMED 0</code></td><td>Re-arm after an emergency stop, same as START in ESTOP</td></tr>
+      <tr><td><code>MODE x</code>, <code>SPEED n</code>, <code>RANGE n</code>, <code>REPS n</code>, <code>HOLD n</code>, <code>REST n</code></td><td><code>OK SPEED 40</code> or <code>ERR BUSY …</code></td><td>Change a setting while stopped</td></tr>
+      <tr><td><code>STATUS</code></td><td><code>STATUS st=IDLE md=FULL rep=0 reps=10 f=20.0 t=20.0 v=5.02 …</code></td><td>Also sent automatically 4 times per second</td></tr>
+      <tr><td><code>PING</code> / <code>HELP</code></td><td><code>PONG</code> / command list</td><td>Connection test, help</td></tr>
+      <tr><td>(automatic)</td><td><code>EVENT REP n</code>, <code>EVENT DONE n</code>, <code>EVENT ESTOP n</code>, <code>EVENT MODE x</code></td><td>Things that happened</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>LED codes (built-in LED, pin 13)</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>LED</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Short blink once per second</td><td>Ready (IDLE)</td></tr>
+      <tr><td>Steady on</td><td>Running an exercise</td></tr>
+      <tr><td>Medium blink</td><td>Stopping, returning to OPEN</td></tr>
+      <tr><td>Fast blink (5 per second)</td><td>Emergency stop: motor power is off or was off</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Test the program before it touches a finger</h3>
+  <ol>
+    <li>Upload with the tendon unhooked from the drum (take off the snap clip).</li>
+    <li>Serial Monitor: <kbd>HELP</kbd>, <kbd>STATUS</kbd>. Check the calibration line printed at start-up.</li>
+    <li><kbd>SPEED 500</kbd> must answer <code>OK SPEED 90</code>; <kbd>RANGE 250</kbd> must answer <code>OK RANGE 100</code>.</li>
+    <li><kbd>START</kbd>, then <kbd>SPEED 20</kbd> while running: must answer <code>ERR BUSY</code>.</li>
+    <li>Press the STOP button mid-movement: the servo returns to OPEN.</li>
+    <li>Press the E-stop mid-movement: <code>EVENT ESTOP</code>, LED fast blink. Release it: nothing moves. Press START: <code>EVENT REARMED</code>. Press START again: it runs.</li>
+    <li>Only now hook the tendon back on.</li>
+  </ol>
+</section>
+
+<!-- ============================== D. PC APP ============================== -->
+<section class="chapter" id="pc-app">
+  <div class="sec-head"><span class="sec-tag">D</span><h2>PC software</h2></div>
+  <p class="kicker">A beginner-friendly Python app: connect, start and stop, watch the status, and save every test to a CSV file you can open in Excel.</p>
+
+  <figure class="fig">
+    <img class="screenshot" src="{{APP_SHOT}}" alt="Robotic Glove Control Panel window: connection bar, exercise settings with START and STOP buttons, live status showing Flexing and repetition 1 of 10, test record fields and a message log" width="940" height="680">
+    <figcaption><b>Figure 8. glove_control.py</b> connected to its built-in simulator, during a session. On Windows the window looks slightly different.</figcaption>
+  </figure>
+
+  <h3>Install and run</h3>
+  <ol class="steps">
+    <li><div><h4>Install Python 3.10 or newer</h4><p>From python.org. On Windows tick <b>Add python.exe to PATH</b> during installation. Tkinter, the window toolkit, is included.</p></div></li>
+    <li><div><h4>Install pyserial</h4><p>Open Command Prompt in the <code>pc_app</code> folder and type:</p><pre class="cmd">pip install pyserial</pre></div></li>
+    <li><div><h4>Run it</h4><pre class="cmd">python glove_control.py</pre></div></li>
+    <li><div><h4>Try the simulator first</h4><p>Choose <b>SIMULATOR (no hardware)</b> and press Connect. It behaves like the Arduino, including an E-stop switch button, so Student 2 can build and test everything before the hardware exists.</p></div></li>
+    <li><div><h4>Connect the real glove</h4><p>Close the Arduino Serial Monitor first: only one program can use a COM port. Choose the port that says CH340 or USB-SERIAL, press Connect and wait 2 seconds; the Arduino restarts when the port opens and says <code>READY</code>.</p></div></li>
+  </ol>
+
+  <h3>Using it</h3>
+  <ol>
+    <li>Fill in Test ID, tester and notes (for example "artificial hand, glove v1, MG996R").</li>
+    <li>Choose mode, speed, range, repetitions, hold and rest.</li>
+    <li>Press <b>START</b>. The app sends all settings and then START.</li>
+    <li>Watch the state, the repetition counter, both servo angles and the motor supply voltage.</li>
+    <li>When the session ends (completed, stopped, emergency stop or cable unplugged) the app saves one row to <code>glove_results.csv</code> and moves the Test ID on (T03 → T04).</li>
+    <li>After an emergency stop: release the switch, then press <b>Re-arm</b>.</li>
+  </ol>
+
+  <h3>What the CSV contains</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>test_id</code>, <code>tester</code>, <code>notes</code></td><td>What you typed</td></tr>
+      <tr><td><code>date</code>, <code>start_time</code>, <code>end_time</code>, <code>duration_s</code></td><td>When and how long</td></tr>
+      <tr><td><code>mode</code>, <code>speed_deg_s</code>, <code>range_pct</code>, <code>hold_ms</code>, <code>rest_ms</code></td><td>Settings the Arduino actually used (taken from its START message)</td></tr>
+      <tr><td><code>reps_target</code>, <code>reps_completed</code></td><td>Planned and completed repetitions</td></tr>
+      <tr><td><code>result</code></td><td>COMPLETED, STOPPED, E-STOP or DISCONNECTED</td></tr>
+      <tr><td><code>min_motor_v</code></td><td>Lowest motor supply voltage seen; below about 4.6 V means the adapter is too weak</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">If Excel has the CSV open, Windows locks it. The app then saves to a separate file with the time in its name and tells you in the message box.</p>
+
+  <h3>How the app works</h3>
+  <p>A background thread reads lines from the USB port and puts them in a queue. Every 50 ms the window takes the waiting lines from the queue and updates the labels. This split matters: Tkinter windows may only be changed from the main thread, and reading the port in the main thread would freeze the window. <code>STATUS</code> lines update the display; <code>EVENT</code> lines start and end the test record. Sessions are recorded from the Arduino's own events, so a session started with the physical START button is logged too.</p>
+
+  <div class="codebox">
+    <div class="codebar"><span class="fname">pc_app/glove_control.py</span><span class="meta">Python 3.8+ · pyserial · Tkinter</span><button class="btn small-btn" type="button" data-copy="code-py">Copy</button></div>
+    <pre><code class="language-python" id="code-py">{{PY_CODE}}</code></pre>
+  </div>
+
+  <h3>Good next steps for the app</h3>
+  <ul>
+    <li>A live plot of the servo angles with matplotlib.</li>
+    <li>A "Report" button that turns the CSV into summary charts for your presentation.</li>
+    <li>Saved exercise profiles (for example "gentle": speed 20, range 50).</li>
+    <li>A second CSV with one line per STATUS message for detailed analysis.</li>
+  </ul>
+</section>
+
+<!-- ============================== E. STAGES ============================== -->
+<section class="chapter" id="stages">
+  <div class="sec-head"><span class="sec-tag">E</span><h2>Construction stages</h2></div>
+  <p class="kicker">Ten stages from one wooden finger to the university demonstration. Each ends with a result you can test.</p>
+
+  {{STAGES}}
+</section>
+
+<!-- ============================== F. BUDGET ============================== -->
+<section class="chapter" id="budget">
+  <div class="sec-head"><span class="sec-tag">F</span><h2>Budget in Iraqi dinars</h2></div>
+  <p class="kicker">Estimated price ranges, not quotes. Type the prices you are actually offered and the totals update.</p>
+
+  <div class="note warn">
+    <span class="label">About these prices</span>
+    <p>I do not have live Iraqi market prices. Every number here is an estimated range for ordinary electronics, hardware, tailoring and fishing shops, and the default unit price is the middle of that range. Ask in at least two shops before buying, and check online sellers for servos and the Nano. Prices change.</p>
+  </div>
+
+  <div class="budget-summary" id="budget-summary">
+    <div class="budget-top">
+      <div><div class="small muted">Selected items</div><div class="budget-total" id="b-total">84,100 IQD</div></div>
+      <div class="preset-row">
+        <button class="btn small-btn" type="button" data-preset="full">Full prototype v1</button>
+        <button class="btn small-btn" type="button" data-preset="stage1">Stage 1 shopping list</button>
+        <button class="btn small-btn" type="button" data-preset="reset">Reset to estimates</button>
+      </div>
+    </div>
+    <div class="meter" aria-hidden="true"><div class="fill" id="b-fill"></div><div class="mark" style="left:60%"><span>60k target</span></div><div class="mark end" style="left:calc(100% - 2px)"><span>100k limit</span></div></div>
+    <div class="small" id="b-status">Within the 100,000 IQD limit.</div>
+  </div>
+
+  <div class="table-wrap"><table class="tbl budget-table" id="budget-table">
+    <thead><tr><th>Buy</th><th>Item</th><th class="r">Qty</th><th class="r">Unit price</th><th class="r">Estimated range</th><th class="r">Line total</th></tr></thead>
+    <tbody>{{BUDGET_ROWS}}</tbody>
+  </table></div>
+
+  <h3>Getting closer to 60,000 IQD</h3>
+  <p>With honest estimates, a complete v1 with an MG996R lands around 75,000 to 90,000 IQD: under your limit, above your preferred figure. These choices bring it down without hurting safety:</p>
+  <ul>
+    <li>Borrow the luggage scale and the multimeter (the lab usually has a multimeter).</li>
+    <li>Buy one glove instead of two (−2,500).</li>
+    <li>Use ballpoint refill tubes for guides and cheaper tubing for sheaths, if friction tests allow (−3,000 to −5,000).</li>
+    <li>Use a 5 A rocker switch instead of a mushroom E-stop (−2,000). Keep it latching.</li>
+    <li>Use fabric-tape hinges on the artificial hand fingers instead of metal hinges (−3,500).</li>
+    <li>Skip the MG996R only if your Stage 1 numbers prove an SG90 or MG90S is enough with margin (−12,500). Do not skip it to save money if the calculator says "too weak".</li>
+  </ul>
+
+  <h3>Future upgrades (not in this budget)</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Upgrade</th><th class="r">Estimated cost</th></tr></thead>
+    <tbody>
+      <tr><td>Three more servos for independent fingers (MG90S or MG996R)</td><td class="r">20,000–45,000</td></tr>
+      <tr><td>PCA9685 16-channel servo driver</td><td class="r">6,000–10,000</td></tr>
+      <tr><td>Load cell 5 kg + HX711 amplifier (tendon force)</td><td class="r">8,000–12,000</td></tr>
+      <tr><td>INA219 current sensor (stall detection)</td><td class="r">3,000–6,000</td></tr>
+      <tr><td>MPU6050 motion sensor, or 10 kΩ potentiometers as joint-angle sensors</td><td class="r">500–6,000</td></tr>
+      <tr><td>Flex sensors, 5 pieces</td><td class="r">40,000+</td></tr>
+      <tr><td>DS3218 20 kg servo</td><td class="r">20,000–35,000</td></tr>
+      <tr><td>2 × 18650 cells, protection board, 5 V 5 A converter</td><td class="r">15,000–30,000</td></tr>
+      <tr><td>HC-05 Bluetooth module</td><td class="r">6,000–10,000</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================== G. TESTING ============================== -->
+<section class="chapter" id="testing">
+  <div class="sec-head"><span class="sec-tag">G</span><h2>Testing and safety</h2></div>
+  <p class="kicker">What to measure, how to measure it, what counts as a pass, and the safety design behind it.</p>
+
+  <div class="note danger">
+    <span class="label">Test subject rule</span>
+    <p>All powered tests run on the artificial finger and the artificial hand. No patients, ever, at this stage. If your instructor later approves a short wearing demonstration, it is only on a healthy team member, only after every test below has passed, at SPEED ≤ 30 and RANGE ≤ 60 at first, with the wearer holding the E-stop in the free hand and the quick-release tab in reach.</p>
+  </div>
+
+  <h3>Test plan</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Test</th><th>How</th><th>Tools</th><th>Pass</th></tr></thead>
+    <tbody>
+      <tr><td><b>Movement range</b></td><td>Film from the side at RANGE 25, 50, 75, 100. Measure MCP, PIP and DIP angles from video frames.</td><td>Phone, protractor or Kinovea (free video-angle software)</td><td>Reaches the angles you set as targets in Stage 1, every mode</td></tr>
+      <tr><td><b>Consistency</b></td><td>20 cycles; measure the closed angle in the HOLD frame of each.</td><td>Video, spreadsheet</td><td>Spread ≤ ±5°, no drift over time</td></tr>
+      <tr><td><b>Repetitions</b></td><td>Sessions of 10, 50, 100, then 500 cycles.</td><td>PC app CSV</td><td>reps_completed = reps_target, result COMPLETED</td></tr>
+      <tr><td><b>Motor temperature</b></td><td>Measure the servo case before and after 100 and 500 cycles.</td><td>Multimeter thermocouple, IR thermometer in object mode, or the 5-second touch test</td><td>Case ≤ 50 °C; stop the test above 60 °C</td></tr>
+      <tr><td><b>Tendon durability</b></td><td>Ink marks at the guides; check after 100, 500, 1000 cycles.</td><td>Ruler, magnifier</td><td>Stretch ≤ 2 mm, no fraying, no knot slip</td></tr>
+      <tr><td><b>Mechanical reliability</b></td><td>Checklist every 100 cycles: screws, hinges, stitching, drum glue, adjusters, travel stops.</td><td>Eyes, screwdriver</td><td>Nothing loose or worn</td></tr>
+      <tr><td><b>Stop button</b></td><td>Press STOP in FLEX, HOLD and EXTEND.</td><td>Stopwatch or video</td><td>Back to OPEN within 3 s, EVENT STOPPED</td></tr>
+      <tr><td><b>Emergency stop</b></td><td>Press the E-stop mid-movement; film at 240 fps if your phone can.</td><td>Slow-motion video</td><td>Motion stops at once; no restart until START; LED fast blink</td></tr>
+      <tr><td><b>Quick release</b></td><td>Fingers held closed; pull the palm-plate tab or open the snap clip.</td><td>Stopwatch</td><td>Hand opens within 3 s</td></tr>
+      <tr><td><b>Supply under load</b></td><td>Read min_motor_v from the CSV after long sessions.</td><td>PC app</td><td>≥ 4.6 V</td></tr>
+      <tr><td><b>Software limits</b></td><td>Send out-of-range values and commands while running (chapter C test list).</td><td>Serial Monitor</td><td>Values clamped, ERR BUSY while running</td></tr>
+      <tr><td><b>Travel stop</b></td><td>On the artificial finger only, set CLOSED 10° too far for one short run.</td><td>Watch closely, hand on E-stop</td><td>Bead or bar hits its stop block; the finger is not pulled further</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Safety layers, from the design outwards</h3>
+  <ol class="layers">
+    <li><b>Limited force by design</b><span>The motor and drum you chose set the largest pull that can ever exist (stall torque ÷ drum radius). Do not use a motor much stronger than you need.</span></li>
+    <li><b>Mechanical travel stops</b><span>Bead and tendon bar hit stop blocks 3 mm beyond CLOSED. They work even if the code is wrong.</span></li>
+    <li><b>Software limits</b><span>Every position is clamped to the calibrated OPEN…CLOSED range; speed, range and timing are bounded.</span></li>
+    <li><b>Controlled stop</b><span>STOP button and STOP command return smoothly to OPEN.</span></li>
+    <li><b>Emergency power cut</b><span>Latching switch in the motor supply; the program needs a deliberate re-arm.</span></li>
+    <li><b>Quick release</b><span>Velcro palm plate and snap clips remove all tendon force in seconds, with or without power.</span></li>
+    <li><b>Procedure</b><span>Two-person rule, checklist before every session, no unattended running, artificial hand only.</span></li>
+  </ol>
+
+  <div class="note warn">
+    <span class="label">Important</span>
+    <p>Cutting power does <b>not</b> open the hand. A hobby servo has a high gear ratio, so the elastic usually cannot turn it backwards; without power, the fingers stay where they were. That is why the quick-release is a required part, not an extra.</p>
+  </div>
+
+  <h3>Protection against excessive force and finger entrapment</h3>
+  <ul>
+    <li>Fingers close before the thumb and open after it (firmware), so the thumb cannot be trapped.</li>
+    <li>Guides sit between the creases; nothing rigid crosses a joint, so no skin can be pinched in a closing joint.</li>
+    <li>Tube ends are sanded round; no sharp edges face the skin.</li>
+    <li>Drums are covered; the actuator pack is away from the hand.</li>
+    <li>Nothing is worn under the glove: no rings, watches or bracelets.</li>
+    <li>Low speed for new settings: SPEED 20 and RANGE 50 first, then step up.</li>
+  </ul>
+
+  <h3>SG90 limitations, and whether you need stronger motors</h3>
+  <div class="cols">
+    <div class="panel">
+      <h4>SG90 (and MG90S)</h4>
+      <ul>
+        <li>Stall torque about 1.8 kg·cm at 4.8 V. Continuously, use about 40 % of that.</li>
+        <li>Plastic gears strip under shock or stall (MG90S has metal gears, same torque).</li>
+        <li>No feedback to the Arduino: it never knows whether the position was reached.</li>
+        <li>Resolution about 1°, with a small dead band; cheap units vary a lot.</li>
+        <li>Draws current and heats while holding against a load (HOLD phase).</li>
+        <li>Only 180° travel. Continuous-rotation versions (FS90R) are not suitable.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Verdict</h4>
+      <p><b>Yes, the four-finger tendon needs a stronger motor.</b> One SG90 gives about 1.4 N per finger on a 13 mm drum, which is unlikely to be enough once a glove, guides, sheaths and elastics are added. An MG996R gives about 7 N per finger with the same drum.</p>
+      <p>MG996R notes: heavier (55 g), noisier, stall current up to about 2.5 A (hence the 5 A adapter), and clones vary, so test yours in Stage 2. The SG90 stays a good choice for the Stage 1 finger and the thumb of the artificial hand.</p>
+    </div>
+  </div>
+
+  <h3>Before every test session</h3>
+  <ul class="checklist">
+    <li><label><input type="checkbox" id="chk-pre1" data-k="pre1"><span>Two people present: one operates, one watches with a hand near the E-stop</span></label></li>
+    <li><label><input type="checkbox" id="chk-pre2" data-k="pre2"><span>E-stop pressed and released once: the LED reacts</span></label></li>
+    <li><label><input type="checkbox" id="chk-pre3" data-k="pre3"><span>Quick-release tab and snap clips work</span></label></li>
+    <li><label><input type="checkbox" id="chk-pre4" data-k="pre4"><span>Tendons, knots and stitching intact; adjusters tight; travel stops in place</span></label></li>
+    <li><label><input type="checkbox" id="chk-pre5" data-k="pre5"><span>Drum cover on; cables strain-relieved; no liquids on the bench</span></label></li>
+    <li><label><input type="checkbox" id="chk-pre6" data-k="pre6"><span>Start at SPEED 20, RANGE 50 after any change</span></label></li>
+  </ul>
+</section>
+
+<!-- ============================== H. FUTURE ============================== -->
+<section class="chapter" id="future">
+  <div class="sec-head"><span class="sec-tag">H</span><h2>Future development</h2></div>
+  <p class="kicker">What is realistic on a student budget, and what belongs to later years.</p>
+
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Upgrade</th><th>What it gives</th><th class="r">Est. cost (IQD)</th><th>Difficulty</th><th>Student budget?</th></tr></thead>
+    <tbody>
+      <tr><td>Adjustable movement patterns</td><td>New exercises in code: finger-by-finger, slow continuous motion, gradually increasing range, pinch</td><td class="r">0</td><td>Easy</td><td><span class="chip ok">Best value, do first</span></td></tr>
+      <tr><td>More advanced PC interface</td><td>Live angle plot, session charts, saved exercise profiles, one-click report</td><td class="r">0</td><td>Medium</td><td><span class="chip ok">Yes</span></td></tr>
+      <tr><td>Current sensing (INA219)</td><td>Detects a stalled or jammed servo and stops it: a real safety upgrade</td><td class="r">3,000–6,000</td><td>Easy</td><td><span class="chip ok">Yes, strongly recommended</span></td></tr>
+      <tr><td>Tendon force sensor (load cell + HX711)</td><td>Measures the actual pull; enables force limits and force-controlled exercise</td><td class="r">8,000–12,000</td><td>Medium</td><td><span class="chip ok">Yes</span></td></tr>
+      <tr><td>Finger angle sensors</td><td>Real angle feedback. Cheapest: a 10 kΩ potentiometer at the artificial finger's MCP. Wearable: IMU (MPU6050) or flex sensors</td><td class="r">500–40,000+</td><td>Medium</td><td><span class="chip ok">Pot / IMU yes</span> <span class="chip warn">flex sensors costly</span></td></tr>
+      <tr><td>Fingertip pressure (FSR 402)</td><td>Detects contact with an object, or pressure on the skin</td><td class="r">5,000–10,000 each</td><td>Easy</td><td><span class="chip ok">Yes, 1–2 pieces</span></td></tr>
+      <tr><td>Stronger servos (DS3218)</td><td>More force for stiffer hands</td><td class="r">20,000–35,000</td><td>Easy</td><td><span class="chip warn">Only if measurements need it</span></td></tr>
+      <tr><td>Independent control of each finger</td><td>Five servos, individual exercises, finger counting, piano-style patterns</td><td class="r">25,000–60,000</td><td>Medium</td><td><span class="chip warn">v2, next semester</span></td></tr>
+      <tr><td>Rechargeable battery</td><td>Portable use. 2 × 18650 + protection board + 5 V 5 A converter, or a USB-PD power bank</td><td class="r">15,000–30,000</td><td>Medium (Li-ion safety)</td><td><span class="chip warn">v2</span></td></tr>
+      <tr><td>Rehabilitation exercise modes</td><td>Mirror mode (a sensor glove on the healthy hand drives the robotic glove), EMG-triggered assistance</td><td class="r">varies</td><td>Hard</td><td><span class="chip bad">Year 3–4</span></td></tr>
+      <tr><td>Closed-loop control</td><td>PID control on measured angle or force instead of fixed positions</td><td class="r">with sensors</td><td>Hard</td><td><span class="chip bad">Year 3–4</span></td></tr>
+      <tr><td>Active extension tendons</td><td>A second tendon on the back replaces the elastic: faster, stronger opening</td><td class="r">low</td><td>Medium</td><td><span class="chip warn">v2</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="cols">
+    <div class="panel"><h4>v1 · this semester</h4><p>Two servos, elastic return, calibrated limits, E-stop, quick-release, PC app with CSV. Artificial hand.</p></div>
+    <div class="panel"><h4>v1.5 · small additions</h4><p>Exercise patterns, live plot, INA219 stall detection, load cell on the four-finger tendon.</p></div>
+    <div class="panel"><h4>v2 · next semester</h4><p>Five servos with a PCA9685, angle sensing, battery pack, active extension.</p></div>
+    <div class="panel"><h4>v3 · final-year project</h4><p>Closed-loop force control, mirror therapy mode, a risk-management file following ISO 14971.</p></div>
+  </div>
+</section>
+
+<!-- ============================== TEAM ============================== -->
+<section class="chapter" id="team">
+  <div class="sec-head"><span class="sec-tag">T</span><h2>Teamwork and schedule</h2></div>
+  <p class="kicker">Clear ownership, a written hand-over between the two of you, and a ten-week plan.</p>
+
+  <div class="cols">
+    <div class="panel">
+      <h4><span class="chip s1">Student 1</span> Mechanical design, glove, tendons, testing</h4>
+      <ul>
+        <li>Stage 1 finger and the artificial hand</li>
+        <li>Actuator pack: drums, tendon bar, travel stops, quick-release</li>
+        <li>Glove: anchors, guides, palm plate, elastics, sheaths</li>
+        <li>Force and travel measurements, angle measurements from video</li>
+        <li>Mechanical and durability tests; photos for the report</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4><span class="chip s2">Student 2</span> Arduino, electronics, Python, integration</h4>
+      <ul>
+        <li>Wiring, power, fuse, E-stop, A0 divider</li>
+        <li>Firmware: calibration, settings, tests of every limit</li>
+        <li>PC app: simulator first, then hardware; CSV analysis and charts</li>
+        <li>Integration lead: owns the "does it all work together" checklist</li>
+        <li>Electrical tests and supply measurements</li>
+      </ul>
+    </div>
+  </div>
+  <p><span class="chip both">Both</span> Calibration, every powered test (two-person rule), the logbook, the report and the presentation.</p>
+
+  <h3>The hand-over contract</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>From → to</th><th>What, in writing</th></tr></thead>
+    <tbody>
+      <tr><td>Student 1 → Student 2</td><td>Drum radius, measured force and travel, mounting dimensions of the pack, cable lengths needed, maximum safe flexion</td></tr>
+      <tr><td>Student 2 → Student 1</td><td>Wiring harness with labelled connectors, firmware with your calibration values, CSV logs of every test session</td></tr>
+      <tr><td>Together</td><td>OPEN and CLOSED angles for each servo, signed off in the logbook with date and both names</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>How to organise the work</h3>
+  <ul>
+    <li><b>Weekly 30-minute meeting:</b> what is done, what is blocked, what is next. Write three lines in the logbook.</li>
+    <li><b>One shared folder</b> (Google Drive or similar) for photos, CSV files and the report, and the GitHub repository for code.</li>
+    <li><b>Logbook:</b> date, who, what was done, measurements, photos. Examiners love a good logbook.</li>
+    <li><b>Decision log:</b> every important choice with its reason ("MG996R because 4-finger load was 160 % of SG90 stall"). It writes half of your report for you.</li>
+    <li><b>Names that sort:</b> <code>2026-12-01_S1_finger_closed.jpg</code>, test IDs T01, T02 …</li>
+    <li><b>Integration days</b> together, at least once a week from week 5.</li>
+  </ul>
+
+  <h3>Ten-week schedule</h3>
+  <div class="fig-scroll">
+    <div class="gantt" role="table" aria-label="Ten-week schedule">
+      <div class="gh" style="text-align:left">Stage</div><div class="gh">W1</div><div class="gh">W2</div><div class="gh">W3</div><div class="gh">W4</div><div class="gh">W5</div><div class="gh">W6</div><div class="gh">W7</div><div class="gh">W8</div><div class="gh">W9</div><div class="gh">W10</div>
+      {{GANTT}}
+    </div>
+  </div>
+  <div class="legend"><span style="--c:var(--tendon)">Student 1 leads</span><span style="--c:var(--accent)">Student 2 leads</span><span style="--c:var(--elastic)">Both</span></div>
+</section>
+
+<!-- ============================== TROUBLESHOOTING ============================== -->
+<section class="chapter" id="troubleshooting">
+  <div class="sec-head"><span class="sec-tag">?</span><h2>Troubleshooting</h2></div>
+  <p class="kicker">When something goes wrong, work through it systematically instead of changing things at random.</p>
+
+  <ol class="steps">
+    <li><div><h4>Make it happen again</h4><p>Write down exactly what you did and what happened. A problem you can repeat is half solved.</p></div></li>
+    <li><div><h4>Measure, do not guess</h4><p>Voltage on the servo rail, the Serial Monitor output, a slow-motion video of the mechanism.</p></div></li>
+    <li><div><h4>Split the system in two</h4><p>Unhook the tendon and run the servo alone: still wrong means electrical or code. Pull the tendon by hand: still stiff means mechanical. Run the PC app on the simulator: still wrong means the app.</p></div></li>
+    <li><div><h4>Change one thing at a time</h4><p>Then test again. Two changes at once hide which one helped.</p></div></li>
+    <li><div><h4>Write down the cause and the fix</h4><p>In the logbook. It goes into your report.</p></div></li>
+  </ol>
+
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Symptom</th><th>Likely causes</th><th>Check, then fix</th></tr></thead>
+    <tbody>
+      <tr><td>Servo jitters or twitches at rest</td><td>No common ground; weak supply; long signal wire; cheap servo dead band</td><td>Continuity Arduino GND ↔ GND rail; measure rail voltage; add 1000 µF near the servo; shorten wires</td></tr>
+      <tr><td>Arduino restarts when the servo moves (READY appears again)</td><td>Servo powered from the Arduino; adapter too weak</td><td>Separate adapter for the servos, capacitor, check min_motor_v</td></tr>
+      <tr><td>Servo buzzes at CLOSED and gets hot</td><td>CLOSED angle past what the finger can do; elastic too strong; tendon too short</td><td>Recalibrate CLOSED a few degrees lower; loosen the elastic; re-adjust at the tendon bar</td></tr>
+      <tr><td>Finger does not open fully</td><td>Tendon tight at OPEN; elastic weak; friction in a guide or sheath</td><td>Recalibrate OPEN; tighten the elastic; look for a kinked sheath or rough tube end</td></tr>
+      <tr><td>Servo turns but the finger hardly moves</td><td>Slack tendon; sheath end not anchored (the sheath moves instead); line slipping on the drum; knot slipping</td><td>Anchor both sheath ends against washers; tie the line through the drum hole; re-tie knots with glue</td></tr>
+      <tr><td>One finger closes before the others</td><td>Unequal tendon lengths</td><td>With all fingers straight and the servo at OPEN, re-clamp each tendon at the bar so all are just tight</td></tr>
+      <tr><td>Finger bends sideways or twists</td><td>Guides or eyes out of line; hinge not square</td><td>Re-align along the centre line; refit the hinge</td></tr>
+      <tr><td>Upload fails: <code>stk500_getsync(): not in sync</code></td><td>Wrong processor setting; wrong port; port busy; charge-only cable</td><td>Choose ATmega328P (Old Bootloader); close the Serial Monitor and the PC app; try another cable</td></tr>
+      <tr><td>No COM port appears</td><td>CH340 driver missing; charge-only cable</td><td>Install the CH340 driver; use a data cable</td></tr>
+      <tr><td>PC app: "Could not open the port"</td><td>Serial Monitor or another program holds it; wrong port</td><td>Close the other program; press Refresh; pick the CH340 port</td></tr>
+      <tr><td>PC app: "No data from Arduino"</td><td>Wrong sketch uploaded; baud rate mismatch</td><td>Upload robotic_glove.ino; both sides use 115200</td></tr>
+      <tr><td>EMERGENCY STOP right after start-up</td><td>A0 divider not built while USE_MOTOR_SENSE is true; adapter off; divider wired wrong</td><td>Build the divider or set USE_MOTOR_SENSE to false; switch the adapter on; measure ≈ 2.5 V at A0</td></tr>
+      <tr><td>Fuse blows</td><td>Short circuit; a servo stalled against a jam</td><td>Disconnect servos and test again; look for the jam</td></tr>
+      <tr><td>Tendon frays</td><td>Sharp tube end or eye edge</td><td>Sand and round the edge; use PTFE tube; replace the tendon</td></tr>
+      <tr><td>Closing gets weaker day by day</td><td>Tendon creep (mono line); elastic tiring; adjuster slipping</td><td>Braided line; replace elastic; tighten clamps; re-check calibration weekly</td></tr>
+      <tr><td>CSV result says STOPPED but nobody pressed STOP</td><td>Noisy STOP button wire picking up interference</td><td>Shorter button wires, twist them with their GND wire</td></tr>
+    </tbody>
+  </table></div>
+  <p>Stuck? Bring me (or your instructor) four things: what you expected, what happened, what you measured, and what you already tried.</p>
+</section>
+
+<!-- ============================== DEMO ============================== -->
+<section class="chapter" id="demo">
+  <div class="sec-head"><span class="sec-tag">10</span><h2>Demo day</h2></div>
+  <p class="kicker">A seven-minute demonstration that shows engineering, data and safety, and a backup for everything.</p>
+
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th class="r">Time</th><th>Part</th><th>Who</th><th>Show</th></tr></thead>
+    <tbody>
+      <tr><td class="r">0:00</td><td>Problem and goal</td><td>S1</td><td>Why assisted finger movement matters for rehabilitation research; the low-cost goal</td></tr>
+      <tr><td class="r">0:45</td><td>Design</td><td>S1</td><td>Figure 1 and Figure 4: tendons, sheaths, elastic return, actuator pack</td></tr>
+      <tr><td class="r">1:45</td><td>Live run</td><td>S2</td><td>Artificial hand, FULL mode, 5 repetitions at 40 °/s from the PC app</td></tr>
+      <tr><td class="r">3:15</td><td>Control</td><td>S2</td><td>Change mode and range, show live status and the CSV</td></tr>
+      <tr><td class="r">4:15</td><td>Safety</td><td>Both</td><td>STOP button, E-stop with re-arm, quick-release</td></tr>
+      <tr><td class="r">5:15</td><td>Results</td><td>S1</td><td>Charts from your CSV: repetitions, range, temperature, tendon stretch</td></tr>
+      <tr><td class="r">6:15</td><td>Limits and future</td><td>S2</td><td>What v1 cannot do yet, and the v2 plan</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>Backup kit</h4>
+      <ul>
+        <li>A video of a good run, on the laptop and a phone</li>
+        <li>Spare servo, spare tendon, spare fuse, screwdriver, scissors, superglue</li>
+        <li>The PC app's simulator, if the USB link fails</li>
+        <li>Printed calibration values and wiring diagram</li>
+        <li>Charged laptop and a power bank for the Arduino</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Words to use, and to avoid</h4>
+      <p><b>Say:</b> "assistive movement prototype for rehabilitation research", "tested on an artificial hand", "educational prototype".</p>
+      <p><b>Do not say:</b> "treats stroke or ALS", "clinically effective", "a medical device", "safe for patients".</p>
+    </div>
+  </div>
+
+  <h3>Questions examiners are likely to ask</h3>
+  <div class="table-wrap"><table class="tbl">
+    <thead><tr><th>Question</th><th>Short answer</th></tr></thead>
+    <tbody>
+      <tr><td>Why tendons instead of motors on each joint?</td><td>Light and soft on the hand; motors stay off the body; one motor can move several joints.</td></tr>
+      <tr><td>How do you limit the force on the finger?</td><td>Motor and drum choice bound the maximum pull; travel stops; clamped angles; and we measured the force needed.</td></tr>
+      <tr><td>What happens if power fails during flexion?</td><td>Motion stops; the servos hold, so the quick-release opens the hand; the program will not restart by itself.</td></tr>
+      <tr><td>Why not test on patients?</td><td>An unvalidated prototype; patient use needs risk analysis, ethics approval and clinical evaluation.</td></tr>
+      <tr><td>What would a real medical device need?</td><td>A quality system (ISO 13485), risk management (ISO 14971), electrical safety (IEC 60601-1), software lifecycle (IEC 62304), skin-contact biocompatibility (ISO 10993) and clinical evaluation.</td></tr>
+      <tr><td>How do you know it is repeatable?</td><td>CSV logs of N sessions, angle spread from video, endurance results.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================== GLOSSARY ============================== -->
+<section class="chapter" id="glossary">
+  <div class="sec-head"><span class="sec-tag">Gl</span><h2>Glossary</h2></div>
+  <p class="kicker">Technical words used in this guide, in plain language.</p>
+  <dl class="gloss">
+    <div><dt>Tendon</dt><dd>A thin cable that pulls. In the body it connects muscle to bone; here it connects the servo drum to the fingertip.</dd></div>
+    <div><dt>Flexion / extension</dt><dd>Bending the finger toward the palm / straightening it.</dd></div>
+    <div><dt>MCP, PIP, DIP</dt><dd>The three finger joints from base to tip. The thumb has MCP and IP.</dd></div>
+    <div><dt>Volar / dorsal</dt><dd>Palm side / back-of-hand side.</dd></div>
+    <div><dt>Moment arm (d)</dt><dd>The distance from a joint's axis to the line of the tendon. Torque at the joint = force × d.</dd></div>
+    <div><dt>Tendon travel (excursion)</dt><dd>How far the tendon must be pulled to bend the finger by a given amount.</dd></div>
+    <div><dt>Underactuated</dt><dd>Fewer motors than joints. One tendon moves three joints.</dd></div>
+    <div><dt>Bowden sheath</dt><dd>A tube the tendon slides inside, like a bicycle brake cable. It lets the cable bend around the wrist without changing its working length.</dd></div>
+    <div><dt>Drum</dt><dd>A round spool on the servo. The tendon winds on it, so travel = radius × angle.</dd></div>
+    <div><dt>Stall torque</dt><dd>The largest turning force a motor makes when it is blocked. Measured in kg·cm; 1 kg·cm ≈ 0.098 N·m.</dd></div>
+    <div><dt>Servo pulse (PWM)</dt><dd>The control signal: a pulse of about 0.5 to 2.4 ms, 50 times per second. Pulse width sets the angle.</dd></div>
+    <div><dt>Back-drivable</dt><dd>Whether pushing the output can turn the motor. Hobby servos mostly are not, so they hold position when unpowered.</dd></div>
+    <div><dt>Common ground</dt><dd>Joining the 0 V of separate supplies so signals between them have the same reference.</dd></div>
+    <div><dt>Pull-up resistor</dt><dd>Holds an input HIGH until a button pulls it LOW. The Arduino has them built in (INPUT_PULLUP).</dd></div>
+    <div><dt>Debounce</dt><dd>Ignoring the few milliseconds of rapid on-off flicker when a mechanical button closes.</dd></div>
+    <div><dt>Voltage divider</dt><dd>Two resistors in series that output a fixed fraction of a voltage. 10 kΩ + 10 kΩ halves it.</dd></div>
+    <div><dt>Decoupling capacitor</dt><dd>A capacitor across the supply that delivers short current spikes and keeps the voltage steady.</dd></div>
+    <div><dt>Slow-blow fuse (T)</dt><dd>A fuse that tolerates short start-up surges but blows on a lasting overload or short.</dd></div>
+    <div><dt>Latching switch</dt><dd>Stays in its new position after you let go. An E-stop must latch.</dd></div>
+    <div><dt>State machine</dt><dd>A program that is always in one named state and moves between states on clear conditions.</dd></div>
+    <div><dt>Brownout</dt><dd>A short drop in supply voltage that makes electronics misbehave or reset.</dd></div>
+    <div><dt>Baud rate</dt><dd>Serial communication speed. Both sides must match: 115200 here.</dd></div>
+    <div><dt>CSV</dt><dd>Comma-separated values: a plain text table that Excel opens directly.</dd></div>
+    <div><dt>Calibration</dt><dd>Measuring the real OPEN and CLOSED angles of your mechanism and writing them into the program.</dd></div>
+  </dl>
+</section>
+
+<footer class="end">
+  <p>Robotic Glove Build Guide, revision A. Prepared as a supervision guide for a second-year student project. Prices are estimates; datasheet values vary between manufacturers and clones; verify everything on your own parts. Education and research use only; not a medical device.</p>
+  <p><a href="#top">Back to top</a></p>
+</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var store = {
+    get: function(k, d){ try{ var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+    set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  };
+  var fmt = function(n){ return Math.round(n).toLocaleString("en-US"); };
+
+  /* code highlighting */
+  try{ if(window.hljs){ document.querySelectorAll("pre code[class*=language-]").forEach(function(el){ window.hljs.highlightElement(el); }); } }catch(e){}
+
+  /* mobile contents: copy the rail links, close on pick */
+  var rail = document.querySelector(".sidenav .toc");
+  var mob = document.querySelector("#mtoc .toc");
+  if(rail && mob){ mob.innerHTML = rail.innerHTML; }
+  document.querySelectorAll("#mtoc a").forEach(function(a){ a.addEventListener("click", function(){ document.getElementById("mtoc").open = false; }); });
+
+  /* active chapter in the rail */
+  var links = {};
+  document.querySelectorAll(".toc a").forEach(function(a){ var id = a.getAttribute("href").slice(1); (links[id] = links[id] || []).push(a); });
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          document.querySelectorAll(".toc a.active").forEach(function(a){ a.classList.remove("active"); });
+          (links[en.target.id] || []).forEach(function(a){ a.classList.add("active"); });
+        }
+      });
+    }, {rootMargin:"-20% 0px -70% 0px"});
+    document.querySelectorAll("section.chapter").forEach(function(s){ io.observe(s); });
+  }
+
+  /* copy buttons */
+  document.querySelectorAll("[data-copy]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = document.getElementById(btn.getAttribute("data-copy"));
+      var text = el.textContent;
+      var label = btn.textContent;
+      var reset = function(){ setTimeout(function(){ btn.textContent = label; }, 2200); };
+      var fallback = function(){
+        var r = document.createRange(); r.selectNodeContents(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = "Selected: press Ctrl+C"; reset();
+      };
+      try{
+        navigator.clipboard.writeText(text).then(function(){ btn.textContent = "Copied"; reset(); }, fallback);
+      }catch(e){ fallback(); }
+    });
+  });
+
+  /* checklists */
+  var checks = store.get("rg-checks", {});
+  var boxes = document.querySelectorAll(".checklist input[data-k]");
+  var updateProgress = function(){
+    var list = document.querySelectorAll("#checklist input");
+    var done = 0; list.forEach(function(b){ if(b.checked) done++; });
+    var p = document.getElementById("cl-progress");
+    if(p) p.textContent = done + " of " + list.length + " done";
+  };
+  boxes.forEach(function(b){
+    b.checked = !!checks[b.getAttribute("data-k")];
+    b.addEventListener("change", function(){ checks[b.getAttribute("data-k")] = b.checked; store.set("rg-checks", checks); updateProgress(); });
+  });
+  updateProgress();
+
+  /* sizing calculator */
+  var SERVOS = [
+    {name:"SG90", kgcm:1.8, note:"plastic gears"},
+    {name:"MG90S", kgcm:1.8, note:"metal gears, 4.8 V"},
+    {name:"MG996R", kgcm:9.4, note:"4.8 V"},
+    {name:"DS3218", kgcm:19, note:"5 V, future"}
+  ];
+  var num = function(id, d){ var v = parseFloat(document.getElementById(id).value); return isFinite(v) && v > 0 ? v : d; };
+  function calc(){
+    var F1 = num("c-force", 4), x = num("c-travel", 30), n = Math.round(num("c-n", 4)), k = num("c-factor", 1.5);
+    var ang = num("c-angle", 130), usable = num("c-usable", 40) / 100;
+    var theta = ang * Math.PI / 180;
+    var r = x / theta;                 /* mm */
+    var F = F1 * n * k;                /* N */
+    var T = F * r / 1000;              /* N·m */
+    document.getElementById("o-r").innerHTML = r.toFixed(1) + " mm<small>drum Ø " + (2*r).toFixed(0) + " mm</small>";
+    document.getElementById("o-f").innerHTML = F.toFixed(1) + " N<small>" + F1 + " N × " + n + " × " + k + "</small>";
+    document.getElementById("o-t").innerHTML = T.toFixed(3) + " N·m<small>" + (T / 0.0980665).toFixed(2) + " kg·cm</small>";
+    var tb = document.querySelector("#servo-table tbody");
+    tb.innerHTML = "";
+    SERVOS.forEach(function(s){
+      var stallNm = s.kgcm * 0.0980665;
+      var stallF = stallNm / (r / 1000);
+      var load = T / stallNm;
+      var verdict, cls;
+      if(load <= usable){ verdict = load < usable * 0.35 ? "OK, but oversized" : "OK"; cls = load < usable * 0.35 ? "warn" : "ok"; }
+      else if(load <= usable * 1.5){ verdict = "Marginal: will heat"; cls = "warn"; }
+      else { verdict = "Too weak"; cls = "bad"; }
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + s.name + " <span class='muted small'>(" + s.note + ")</span></td><td class='r'>" + s.kgcm + " kg·cm</td><td class='r'>" + stallF.toFixed(1) + " N<br><span class='muted small'>" + (stallF / n).toFixed(1) + " N per finger</span></td><td class='r'>" + Math.round(load * 100) + " %</td><td><span class='chip " + cls + "'>" + verdict + "</span></td>";
+      tb.appendChild(tr);
+    });
+  }
+  document.querySelectorAll("#calc input").forEach(function(i){ i.addEventListener("input", calc); });
+  calc();
+
+  /* budget */
+  var ITEMS = {{BUDGET_JSON}};
+  var saved = store.get("rg-budget", null);
+  var state = {};
+  function defaults(){ ITEMS.forEach(function(it){ state[it.id] = {on: it.cat === "ess", qty: it.qty, price: it.def}; }); }
+  defaults();
+  if(saved){ Object.keys(saved).forEach(function(id){ if(state[id]) state[id] = saved[id]; }); }
+  function paint(){
+    var total = 0;
+    ITEMS.forEach(function(it){
+      var s = state[it.id], row = document.querySelector("tr[data-id='" + it.id + "']");
+      if(!row) return;
+      row.querySelector("input[type=checkbox]").checked = s.on;
+      row.querySelector("input.qty").value = s.qty;
+      row.querySelector("input.price").value = s.price;
+      var line = (s.qty || 0) * (s.price || 0);
+      row.querySelector(".line").textContent = fmt(line);
+      row.classList.toggle("off", !s.on);
+      if(s.on) total += line;
+    });
+    document.getElementById("b-total").textContent = fmt(total) + " IQD";
+    var fill = document.getElementById("b-fill");
+    fill.style.width = Math.min(100, total / 1000) + "%";
+    fill.classList.toggle("over", total > 100000);
+    var st = document.getElementById("b-status");
+    st.textContent = total > 100000 ? "Over the 100,000 IQD limit by " + fmt(total - 100000) + " IQD. Untick optional items or use the savings below." :
+      (total > 60000 ? "Within the 100,000 IQD limit; " + fmt(total - 60000) + " IQD above the 60,000 target." : "Within the 60,000 IQD target.");
+    store.set("rg-budget", state);
+  }
+  document.querySelectorAll("#budget-table tr[data-id]").forEach(function(row){
+    var id = row.getAttribute("data-id");
+    row.querySelector("input[type=checkbox]").addEventListener("change", function(e){ state[id].on = e.target.checked; paint(); });
+    row.querySelector("input.qty").addEventListener("input", function(e){ state[id].qty = Math.max(0, parseInt(e.target.value, 10) || 0); paint(); });
+    row.querySelector("input.price").addEventListener("input", function(e){ state[id].price = Math.max(0, parseInt(e.target.value, 10) || 0); paint(); });
+  });
+  document.querySelectorAll("[data-preset]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var p = b.getAttribute("data-preset");
+      if(p === "reset"){ defaults(); }
+      ITEMS.forEach(function(it){
+        var s = state[it.id];
+        if(p === "full"){ s.on = it.cat === "ess"; s.qty = it.qty; }
+        if(p === "stage1"){ s.on = it.s1 > 0; s.qty = it.s1 > 0 ? it.s1 : it.qty; }
+      });
+      paint();
+    });
+  });
+  paint();
+
+  /* download of the code bundle */
+  var btn = document.getElementById("dl-zip"), link = document.getElementById("dl-link");
+  if(!(window.claude && window.claude.use)){ link.hidden = false; return; }
+  window.claude.use("downloads").then(function(dl){
+    if(!dl || !window.JSZip) return;
+    var z = new window.JSZip(), base = "robotic-glove/";
+    z.file(base + "firmware/servo_calibration/servo_calibration.ino", document.getElementById("code-cal").textContent);
+    z.file(base + "firmware/robotic_glove/robotic_glove.ino", document.getElementById("code-fw").textContent);
+    z.file(base + "pc_app/glove_control.py", document.getElementById("code-py").textContent);
+    z.file(base + "pc_app/requirements.txt", "pyserial>=3.5\n");
+    z.file(base + "README.txt", {{README_JSON}});
+    var blobPromise = z.generateAsync({type:"blob", compression:"DEFLATE"});
+    blobPromise.then(function(){ btn.hidden = false; }, function(){});
+    btn.addEventListener("click", function(){
+      var label = btn.textContent;
+      blobPromise.then(function(blob){ return dl.save({filename:"robotic-glove-project.zip", data:blob}); })
+        .then(function(){ btn.textContent = "Saved"; setTimeout(function(){ btn.textContent = label; }, 2500); })
+        .catch(function(err){
+          var code = err && err.code;
+          if(code === "declined") return;
+          if(code === "rate_limited"){ btn.textContent = "Try again in a moment"; }
+          else { btn.textContent = "Download not available here"; btn.disabled = true; }
+          setTimeout(function(){ btn.textContent = label; }, 3000);
+        });
+    });
+  }, function(){});
+})();
+</script>
