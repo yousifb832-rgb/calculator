@@ -4,9 +4,11 @@
 Reads template.html, injects the real source files (so the page always shows
 exactly the code in firmware/ and pc_app/), generates the stage cards, the
 schedule and the budget table, then writes:
-  ../index.html                 standalone page (open it in any browser)
+  ../index.html                 beginner guide, standalone (open it in any browser)
+  ../reference.html             technical reference, standalone
   ../robotic-glove-project.zip  firmware + PC app + README
-  <out_dir>/index.html          page fragment for the Claude artifact (optional arg)
+  <out_dir>/index.html          beginner guide fragment for the Claude artifact (optional arg)
+  <out_dir>/reference.html      technical reference page published beside it
 """
 import base64
 import html
@@ -226,25 +228,78 @@ Arduino: open each .ino in Arduino IDE 2, board "Arduino Nano", processor ATmega
 PC app:  pip install pyserial   then   python glove_control.py
 Choose "SIMULATOR (no hardware)" to try it without the Arduino.
 
-The full build guide (mechanics, wiring, stages, budget, testing) is index.html in this folder.
+The beginner guide is index.html and the technical reference is reference.html in this folder.
 """
 
 
-def main():
-    tpl = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
-    shot = base64.b64encode(open(os.path.join(HERE, "app_screenshot.png"), "rb").read()).decode()
-    full, s1 = totals()
-    page = (tpl
+SHOP = [
+    ("Arduino Nano + USB cable", "أردوينو نانو مع كيبل USB", 10000),
+    ("SG90 servo motor", "محرك سيرفو SG90", 3000),
+    ("5 V 3 A adapter + jack connector", "أدابتر 5 فولت 3 أمبير مع مأخذ", 7250),
+    ("Breadboard + jumper wires", "بريدبورد وأسلاك توصيل", 5000),
+    ("ON/OFF switch or red emergency button", "سويج أو زر طوارئ أحمر", 3000),
+    ("1000 µF capacitor + 330 Ω resistor", "متسعة 1000 مايكرو فاراد ومقاومة 330 أوم", 500),
+    ("Braided fishing line 0.25 mm", "خيط صيد مضفور 0.25 ملم", 5000),
+    ("Thin elastic cord 2 mm", "لاستيك رفيع 2 ملم", 1500),
+    ("Square wood stick 20 × 20 mm + small board", "عود خشب مربع 2×2 سم ولوح صغير", 3500),
+    ("3 small hinges", "3 مفصلات صغيرة", 1050),
+    ("Small screw eyes (one pack)", "براغي حلقية صغيرة", 1500),
+    ("Bottle cap + strong glue", "غطاء قنينة وغراء قوي", 2000),
+    ("Small screws and washers", "براغي صغيرة وحلقات معدنية", 1500),
+    ("Hot glue, tape, cable ties", "شمع حراري وشريط لاصق وأربطة", 2000),
+]
+
+
+def shop_rows():
+    rows = []
+    for i, (en, ar, price) in enumerate(SHOP, 1):
+        rows.append('<li><label><input type="checkbox" id="shop-{i}" data-k="shop{i}" data-price="{p}">'
+                    '<span class="it"><b>{en}</b><span class="ar" lang="ar">{ar}</span></span>'
+                    '<span class="pr">≈ {pf}</span></label></li>'.format(
+                        i=i, p=price, en=html.escape(en), ar=ar, pf="{:,}".format(price)))
+    return "\n    ".join(rows)
+
+
+def test_board_svg(tpl):
+    start = tpl.index('<svg viewBox="0 0 900 320"')
+    end = tpl.index("</svg>", start) + len("</svg>")
+    return tpl[start:end]
+
+
+def standalone(page):
+    head, body = page.split("<!--BODY-->", 1)
+    return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+            + head + "\n</head>\n<body>\n" + body + "\n</body>\n</html>\n")
+
+
+def fill_common(text, shot):
+    readme = json.dumps(README).replace("<", "\\u003c")
+    return (text
             .replace("{{CAL_CODE}}", html.escape(read("firmware/servo_calibration/servo_calibration.ino"), quote=False))
             .replace("{{FW_CODE}}", html.escape(read("firmware/robotic_glove/robotic_glove.ino"), quote=False))
             .replace("{{PY_CODE}}", html.escape(read("pc_app/glove_control.py"), quote=False))
             .replace("{{APP_SHOT}}", "data:image/png;base64," + shot)
-            .replace("{{STAGES}}", stages_html())
-            .replace("{{GANTT}}", gantt_html())
-            .replace("{{BUDGET_ROWS}}", budget_rows())
-            .replace("{{BUDGET_JSON}}", budget_json())
-            .replace("{{README_JSON}}", json.dumps(README).replace("<", "\\u003c")))
-    assert "{{" not in page, "unfilled placeholder"
+            .replace("{{README_JSON}}", readme))
+
+
+def main():
+    tpl = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
+    beg = open(os.path.join(HERE, "beginner.html"), encoding="utf-8").read()
+    shot = base64.b64encode(open(os.path.join(HERE, "app_screenshot.png"), "rb").read()).decode()
+    full, s1 = totals()
+    assert s1 == sum(p for (_e, _a, p) in SHOP), "shopping list and budget disagree"
+
+    reference = (fill_common(tpl, shot)
+                 .replace("{{STAGES}}", stages_html())
+                 .replace("{{GANTT}}", gantt_html())
+                 .replace("{{BUDGET_ROWS}}", budget_rows())
+                 .replace("{{BUDGET_JSON}}", budget_json()))
+    beginner = (fill_common(beg, shot)
+                .replace("{{TEST_BOARD_SVG}}", test_board_svg(tpl))
+                .replace("{{SHOP_ROWS}}", shop_rows()))
+    for name, page in (("reference", reference), ("beginner", beginner)):
+        assert "{{" not in page, "unfilled placeholder in " + name
     print("budget: full v1 = {:,} IQD, stage 1 = {:,} IQD".format(full, s1))
 
     # zip with the code
@@ -256,20 +311,19 @@ def main():
             z.write(os.path.join(ROOT, rel), "robotic-glove/" + rel)
         z.writestr("robotic-glove/README.txt", README)
 
-    # standalone page for the repository
-    head, body = page.split("<!--BODY-->", 1)
-    standalone = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
-                  '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
-                  + head + "\n</head>\n<body>\n" + body + "\n</body>\n</html>\n")
-    with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8") as f:
-        f.write(standalone)
+    # standalone pages for the repository / GitHub Pages
+    for fname, page in (("index.html", beginner), ("reference.html", reference)):
+        with open(os.path.join(ROOT, fname), "w", encoding="utf-8") as f:
+            f.write(standalone(page))
 
     if len(sys.argv) > 1:
         out = sys.argv[1]
         os.makedirs(out, exist_ok=True)
         with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
-            f.write(page.replace("<!--BODY-->", ""))
-    print("page size: {:,} bytes".format(len(page.encode())))
+            f.write(beginner.replace("<!--BODY-->", ""))
+        with open(os.path.join(out, "reference.html"), "w", encoding="utf-8") as f:
+            f.write(standalone(reference))
+    print("beginner page {:,} bytes, reference page {:,} bytes".format(len(beginner.encode()), len(reference.encode())))
 
 
 if __name__ == "__main__":

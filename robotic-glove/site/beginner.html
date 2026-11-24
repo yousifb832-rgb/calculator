@@ -1,0 +1,1004 @@
+<title>Robot Glove Beginner Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A friendly, step-by-step guide for first-time builders: make a low-cost robot glove that bends and straightens fingers with a servo, a string and an elastic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Cairo:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one friendly reading column with a sticky chapter bar. The project's own colour code
+   drives the identity: motor blue, string (tendon) orange, elastic green, emergency red, "you are here" yellow. */
+:root{
+  --bg:#f5f7fc; --surface:#ffffff; --surface-2:#edf1f9; --ink:#1a1f3b; --muted:#5a6183; --line:#dce2ef;
+  --blue:#2f5bff; --blue-soft:#e5ebff; --on-blue:#ffffff;
+  --orange:#f2631f; --orange-soft:#ffe8db;
+  --green:#14a06d; --green-soft:#daf4e8;
+  --yellow:#ffc53a; --yellow-soft:#fff3cf;
+  --red:#e0383b; --red-soft:#fde2e2;
+  --wood:#f0d8a6; --wood-line:#a8834c;
+  --code-bg:#f7f8fc; --code-ink:#1c2340;
+  --hl-kw:#7c3aed; --hl-str:#137a4a; --hl-com:#6b7290; --hl-num:#b45309; --hl-fn:#2f5bff; --hl-type:#0e7490;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-head:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --font-ar:"Cairo","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --shadow:0 1px 2px rgba(26,31,59,.06),0 8px 24px rgba(26,31,59,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1222; --surface:#171b31; --surface-2:#1f2442; --ink:#eef0ff; --muted:#a3a9c9; --line:#2c3256;
+  --blue:#7d9bff; --blue-soft:#1f2a58; --on-blue:#0d1230;
+  --orange:#ff8a52; --orange-soft:#4a2618;
+  --green:#41d39b; --green-soft:#12392b;
+  --yellow:#ffd25c; --yellow-soft:#3d3216;
+  --red:#ff6b6d; --red-soft:#3f1b1d;
+  --wood:#6b5737; --wood-line:#c9a46a;
+  --code-bg:#121629; --code-ink:#dfe3ff;
+  --hl-kw:#c4a1ff; --hl-str:#7fe0a8; --hl-com:#8a91b4; --hl-num:#ffb86b; --hl-fn:#9db3ff; --hl-type:#6fd3e0;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1222; --surface:#171b31; --surface-2:#1f2442; --ink:#eef0ff; --muted:#a3a9c9; --line:#2c3256;
+  --blue:#7d9bff; --blue-soft:#1f2a58; --on-blue:#0d1230;
+  --orange:#ff8a52; --orange-soft:#4a2618;
+  --green:#41d39b; --green-soft:#12392b;
+  --yellow:#ffd25c; --yellow-soft:#3d3216;
+  --red:#ff6b6d; --red-soft:#3f1b1d;
+  --wood:#6b5737; --wood-line:#c9a46a;
+  --code-bg:#121629; --code-ink:#dfe3ff;
+  --hl-kw:#c4a1ff; --hl-str:#7fe0a8; --hl-com:#8a91b4; --hl-num:#ffb86b; --hl-fn:#9db3ff; --hl-type:#6fd3e0;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 76px)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17.5px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--blue);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+.wrap{max-width:960px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--font-head);line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.5rem,7vw,4.4rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.9rem,4.4vw,2.7rem);font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.4rem;font-weight:700;margin-top:2.4rem}
+h4{font-size:1.12rem;font-weight:700}
+p{margin:.7rem 0;max-width:68ch}
+li{max-width:68ch}
+code,kbd{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);border-radius:5px;padding:.08em .35em}
+kbd{border:1px solid var(--line);border-bottom-width:2px;white-space:nowrap}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+.ar{font-family:var(--font-ar);font-weight:500;direction:rtl;unicode-bidi:isolate}
+.c-blue{color:var(--blue)}.c-orange{color:var(--orange)}.c-green{color:var(--green)}.c-red{color:var(--red)}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:14px}
+.brand{font-family:var(--font-head);font-weight:800;font-size:1.05rem;white-space:nowrap;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.brand i{width:12px;height:12px;border-radius:50%;background:var(--orange);display:inline-block;box-shadow:16px 0 0 var(--green),32px 0 0 var(--blue);margin-right:34px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:none;text-decoration:none;color:var(--ink);font-weight:700;font-size:.88rem;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.chips a:hover{border-color:var(--blue)}
+.chips a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media (max-width:620px){.brand span{display:none}.brand i{margin-right:30px}}
+
+/* sections */
+section{padding-block:64px 8px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:14px}
+.eb-blue{background:var(--blue-soft);color:var(--blue)}.eb-orange{background:var(--orange-soft);color:var(--orange)}.eb-green{background:var(--green-soft);color:var(--green)}.eb-red{background:var(--red-soft);color:var(--red)}.eb-yellow{background:var(--yellow-soft);color:var(--ink)}
+.lead{font-size:1.18rem;color:var(--muted);max-width:60ch}
+
+/* hero */
+.hero{padding-top:44px}
+.hero h1 .w1{color:var(--blue)}.hero h1 .w2{color:var(--orange)}
+.hero .lead{margin-top:16px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 6px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 1rem/1 var(--font-body);padding:13px 20px;border-radius:999px;border:2px solid var(--ink);background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer}
+.btn:hover{transform:translateY(-1px)}
+.btn.go{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.btn.sm{padding:8px 14px;font-size:.88rem;border-width:1.5px}
+.btn[disabled]{opacity:.6;cursor:default;transform:none}
+@media (prefers-reduced-motion:reduce){.btn:hover{transform:none}}
+.promise{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;padding:0;list-style:none;font-weight:700;font-size:.95rem}
+.promise li::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:1px}
+
+/* play box */
+.play{margin-top:30px;background:var(--surface);border:2px solid var(--ink);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.play-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px}
+.play-head h3{margin:0;font-size:1.3rem}
+.play svg{display:block;width:100%;height:auto;max-height:360px}
+.ctrl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:6px}
+.ctrl label{font-weight:700}
+input[type=range]{width:100%;accent-color:var(--orange);height:28px}
+.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.readouts div{background:var(--surface-2);border-radius:12px;padding:10px 12px}
+.readouts b{display:block;font:700 1.4rem var(--font-head);font-variant-numeric:tabular-nums}
+.readouts span{font-size:.85rem;color:var(--muted)}
+@media (max-width:560px){.ctrl{grid-template-columns:minmax(0,1fr)}.readouts b{font-size:1.15rem}}
+
+/* idea strip */
+.idea{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+@media (max-width:760px){.idea{grid-template-columns:minmax(0,1fr)}}
+.idea div{border-radius:18px;padding:18px}
+.idea .n{font:800 2.2rem var(--font-head);line-height:1}
+.idea h4{margin:6px 0 4px}
+.idea p{margin:0}
+.i1{background:var(--blue-soft)}.i1 .n{color:var(--blue)}
+.i2{background:var(--orange-soft)}.i2 .n{color:var(--orange)}
+.i3{background:var(--green-soft)}.i3 .n{color:var(--green)}
+
+/* note boxes */
+.box{border-radius:16px;padding:16px 18px;margin:18px 0;max-width:72ch}
+.box > :first-child{margin-top:0}.box > :last-child{margin-bottom:0}
+.box .t{display:block;font-weight:700;margin-bottom:4px}
+.b-tip{background:var(--green-soft)}.b-tip .t{color:var(--green)}
+.b-warn{background:var(--yellow-soft)}
+.b-stop{background:var(--red-soft)}.b-stop .t{color:var(--red)}
+.b-info{background:var(--blue-soft)}.b-info .t{color:var(--blue)}
+
+/* parts */
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:22px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-rows:auto auto 1fr auto;gap:6px}
+.pcard .top{display:flex;align-items:center;gap:12px}
+.pcard svg.ic{width:46px;height:46px;flex:none;border-radius:12px;padding:6px;background:var(--surface-2);color:var(--ink)}
+.pcard .role{font:800 1.05rem var(--font-head)}
+.pcard .name{font-size:.88rem;color:var(--muted)}
+.pcard p{margin:2px 0 0;font-size:.98rem}
+.pcard .foot{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px dashed var(--line);padding-top:8px;margin-top:6px;font-size:.9rem}
+.pcard .foot b{font-variant-numeric:tabular-nums}
+
+/* roadmap */
+.road{list-style:none;padding:0;margin:24px 0 0;position:relative}
+.road::before{content:"";position:absolute;left:21px;top:12px;bottom:12px;width:4px;border-radius:2px;background:var(--line)}
+.road li{position:relative;display:grid;grid-template-columns:46px minmax(0,1fr);gap:12px;align-items:start;max-width:none;margin:0 0 10px}
+.road .dot{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:800 1.05rem var(--font-head);background:var(--surface);border:3px solid var(--line);position:relative;z-index:1}
+.road .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 16px}
+.road .card h4{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.road .card p{margin:4px 0 0;font-size:.97rem}
+.road li.here .dot{background:var(--yellow);border-color:var(--ink)}
+.road li.here .card{border:2px solid var(--ink);background:var(--yellow-soft)}
+.tag{display:inline-block;font:700 .74rem var(--font-body);letter-spacing:.03em;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.t-b{background:var(--orange-soft);color:var(--orange)}
+.t-c{background:var(--blue-soft);color:var(--blue)}
+.t-both{background:var(--green-soft);color:var(--green)}
+.t-wk{background:var(--surface-2);color:var(--muted)}
+.t-here{background:var(--ink);color:var(--bg)}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+@media (max-width:700px){.team{grid-template-columns:minmax(0,1fr)}}
+.who{border-radius:18px;padding:18px;border:2px solid}
+.who h4{font-size:1.25rem}
+.who ul{margin:8px 0 0;padding-left:1.2rem}
+.who.b{border-color:var(--orange);background:var(--orange-soft)}
+.who.c{border-color:var(--blue);background:var(--blue-soft)}
+
+/* stage 1 */
+.progress{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:4;background:var(--bg);padding:10px 0;margin-top:10px}
+.pbar{height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--yellow),var(--green));transition:width .35s}
+.ptext{display:flex;justify-content:space-between;font-weight:700;font-size:.9rem;margin-top:6px}
+.part-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:2.8rem}
+.part-h h3{margin:0}
+.steps{list-style:none;padding:0;margin:16px 0;display:grid;gap:12px;counter-reset:s}
+.step{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 14px;max-width:none}
+.step > *{grid-column:2}
+.step::before{content:counter(s);grid-column:1;grid-row:1;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font:800 1.3rem var(--font-head);background:var(--surface-2)}
+.step.done{border-color:var(--green)}
+.step.done::before{content:"✓";background:var(--green);color:var(--surface)}
+.step h4{margin-top:8px}
+.step p{margin:.35rem 0}
+.step .why{font-size:.95rem;color:var(--muted)}
+.step .watch{font-size:.95rem;background:var(--yellow-soft);border-radius:10px;padding:6px 10px;margin-top:6px}
+.step .fig-mini{margin:8px 0 4px;max-width:440px}
+.step .fig-mini svg{width:100%;height:auto;display:block}
+.donebox{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.92rem;margin-top:8px;cursor:pointer;user-select:none}
+.donebox input{width:20px;height:20px;accent-color:var(--green)}
+
+/* figures */
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;margin:18px 0}
+.fig-scroll{overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto;min-width:640px}
+.fig figcaption,.figcap{font-size:.92rem;color:var(--muted);margin-top:8px}
+figure{margin:0}
+
+/* shopping */
+.shop{list-style:none;padding:0;margin:14px 0;display:grid;gap:6px}
+.shop li{max-width:none}
+.shop label{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.shop input{width:20px;height:20px;accent-color:var(--green)}
+.shop .it b{display:block}
+.shop .it .ar{font-size:.92rem;color:var(--muted)}
+.shop .pr{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.shop input:checked ~ .it b{text-decoration:line-through;color:var(--muted)}
+.shop-total{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-weight:700;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px}
+
+/* wiring list */
+.wires{list-style:none;padding:0;margin:14px 0;display:grid;gap:8px;counter-reset:w}
+.wires li{max-width:none}
+.wires label{display:grid;grid-template-columns:30px minmax(0,1fr) 22px;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.wires .num{width:28px;height:28px;border-radius:50%;background:var(--yellow);color:#1a1f3b;border:1.5px solid var(--ink);display:grid;place-items:center;font:800 .9rem var(--font-head)}
+.wires input{width:20px;height:20px;accent-color:var(--green)}
+.wire{display:inline-block;width:22px;height:6px;border-radius:3px;vertical-align:middle;margin:0 4px}
+.wr{background:var(--red)}.wk{background:#2a2f45;box-shadow:0 0 0 1px var(--muted)}.wo{background:var(--orange)}.wb{background:#9a6b3f}
+
+/* tool */
+.tool{background:var(--surface);border:2px solid var(--ink);border-radius:22px;padding:20px;margin:22px 0;box-shadow:var(--shadow)}
+.tool h3{margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0}
+.fields label{display:block;font-weight:700;margin-bottom:6px}
+.fields input{width:100%;font:700 1.3rem var(--font-mono);padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.fields input:focus{border-color:var(--blue)}
+.fields .hint{display:block;font-size:.85rem;color:var(--muted);margin-top:4px}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ans{border-radius:16px;padding:14px 16px;background:var(--surface-2)}
+.ans .k{font-size:.85rem;color:var(--muted);font-weight:700}
+.ans .v{font:800 1.5rem var(--font-head);margin-top:2px}
+.ans .s{font-size:.92rem;margin-top:4px}
+.ans.good{background:var(--green-soft)}.ans.good .v{color:var(--green)}
+.ans.warnb{background:var(--yellow-soft)}
+.ans.bad{background:var(--red-soft)}.ans.bad .v{color:var(--red)}
+details.how{margin-top:12px}
+details.how summary{cursor:pointer;font-weight:700;color:var(--blue)}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:20px;list-style:none;padding:0;counter-reset:r}
+.rules li{counter-increment:r;max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.rules li::before{content:counter(r);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--red);color:var(--surface);font:800 1.1rem var(--font-head);margin-bottom:8px}
+.rules b{display:block;font:800 1.1rem var(--font-head);margin-bottom:4px}
+
+/* recipe */
+.recipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0;list-style:none;padding:0;counter-reset:rc}
+.recipe li{counter-increment:rc;max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.recipe li::before{content:counter(rc);font:800 1.6rem var(--font-head);color:var(--blue);display:block;line-height:1}
+.recipe li b{display:block;margin-top:4px}
+
+/* code */
+.codebox{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:12px 0;background:var(--surface)}
+.codebox summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:12px 16px;font-weight:700}
+.codebox summary::-webkit-details-marker{display:none}
+.codebox summary .fn{font-family:var(--font-mono);font-size:.85rem;font-weight:600;overflow-wrap:anywhere;min-width:0}
+.codebox summary .open{color:var(--blue);font-size:.9rem;white-space:nowrap}
+.codebox[open] summary .open::after{content:" (hide)"}
+.codebox .bar{display:flex;justify-content:flex-end;padding:0 12px 8px}
+.codebox pre{margin:0;padding:14px 16px;max-height:560px;overflow:auto;background:var(--code-bg);color:var(--code-ink);font:12.8px/1.55 var(--font-mono);border-top:1px solid var(--line)}
+.codebox pre code{background:none;padding:0;font-size:inherit}
+pre.cmd{background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:14px/1.5 var(--font-mono);overflow:auto;margin:8px 0}
+.hljs-keyword{color:var(--hl-kw)}.hljs-string{color:var(--hl-str)}.hljs-comment{color:var(--hl-com);font-style:italic}.hljs-number,.hljs-literal{color:var(--hl-num)}.hljs-title{color:var(--hl-fn)}.hljs-type,.hljs-built_in{color:var(--hl-type)}.hljs-meta{color:var(--hl-com)}
+table.cmds{width:100%;border-collapse:collapse;font-size:.95rem}
+.cmds td,.cmds th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmds th{font-size:.85rem;color:var(--muted)}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+.shot{display:block;max-width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}
+
+/* help + words */
+.help{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
+.help div{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.help b{display:block;font-family:var(--font-head);font-size:1.05rem}
+.help p{margin:4px 0 0;font-size:.97rem}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:18px}
+.words div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.words dt{font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.words dd{margin:4px 0 0;font-size:.95rem;color:var(--muted)}
+.later{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:18px}
+.later article{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.later .sn{font:800 .85rem var(--font-head);color:var(--muted)}
+.later h4{margin:2px 0 6px}
+.later p{margin:4px 0;font-size:.96rem}
+.later .dw{font-size:.93rem;background:var(--green-soft);border-radius:10px;padding:6px 10px;margin-top:8px}
+footer{margin:72px 0 40px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem}
+
+/* shared SVG vocabulary */
+.sv-t{fill:var(--ink);font-family:var(--font-body);font-size:13px}
+.sv-b{fill:var(--ink);font-family:var(--font-head);font-weight:700;font-size:15px}
+.sv-s{fill:var(--muted);font-family:var(--font-body);font-size:12px}
+.sv-m{fill:var(--muted);font-family:var(--font-mono);font-size:11px}
+.sv-w{fill:var(--on-blue);font-family:var(--font-head);font-weight:700;font-size:14px}
+.sv-ws{fill:var(--on-blue);font-family:var(--font-mono);font-size:10.5px}
+.sv-o{fill:var(--orange);font-family:var(--font-head);font-weight:700;font-size:14px}
+.sv-g{fill:var(--green);font-family:var(--font-head);font-weight:700;font-size:14px}
+.sv-bl{fill:var(--blue);font-family:var(--font-head);font-weight:700;font-size:14px}
+.sv-r{fill:var(--red);font-family:var(--font-head);font-weight:700;font-size:13px}
+.blk{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.blk2{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2}
+.part-f{fill:var(--surface-2);stroke:var(--ink);stroke-width:1.3}
+.wood{fill:var(--wood);stroke:var(--wood-line);stroke-width:1.4}
+.servo,.board{fill:var(--blue);stroke:none}
+.tendon{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.tendon-dot{fill:var(--orange)}
+.elastic{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ldr{fill:none;stroke:var(--muted);stroke-width:1}
+.dim{fill:none;stroke:var(--muted);stroke-width:1;marker-start:url(#dimA);marker-end:url(#dimA)}
+.ext{fill:none;stroke:var(--muted);stroke-width:.8;stroke-dasharray:2 3}
+.protr{fill:none;stroke:var(--muted);stroke-width:.9;stroke-dasharray:4 4;opacity:.8}
+.hinge{fill:var(--muted)}
+.bead{fill:var(--orange-soft);stroke:var(--orange);stroke-width:1.8}
+.eye{fill:none;stroke:var(--ink);stroke-width:1.6}
+.screwhead{fill:var(--surface);stroke:var(--ink);stroke-width:1.2}
+.part{fill:var(--surface-2);stroke:var(--ink);stroke-width:1.3}
+.mk-dim{fill:none;stroke:var(--muted);stroke-width:1.3}
+.joint{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.guide{fill:var(--surface);stroke:var(--ink);stroke-width:1.3}
+.w-red{fill:none;stroke:var(--red);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.w-gnd{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.w-sig{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.w-brn{fill:none;stroke:#9a6b3f;stroke-width:3;stroke-linecap:round}
+.w-usb{fill:none;stroke:var(--muted);stroke-width:3;stroke-dasharray:6 4;stroke-linecap:round}
+.rail-r{stroke:var(--red);stroke-width:7;stroke-linecap:round}
+.rail-k{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.holes{stroke:var(--surface);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:0 14}
+.res{fill:var(--wood);stroke:var(--ink);stroke-width:1.3}
+.badge circle{fill:var(--yellow);stroke:#1a1f3b;stroke-width:1.5}
+.badge text{fill:#1a1f3b;font-family:var(--font-head);font-weight:800;font-size:13px;text-anchor:middle}
+.dotr{fill:var(--red)}.dotk{fill:var(--ink)}
+.estop{fill:var(--red)}
+</style>
+<!--BODY-->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="dimA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path class="mk-dim" d="M1,1.5 L9,5 L1,8.5"/></marker>
+  </defs>
+</svg>
+
+<nav class="topbar" aria-label="Chapters">
+  <div class="wrap">
+    <a class="brand" href="#top"><i></i><span>Robot Glove</span></a>
+    <div class="chips" id="chips">
+      <a href="#idea">The idea</a>
+      <a href="#parts">Parts</a>
+      <a href="#plan">The plan</a>
+      <a href="#stage1">Stage 1</a>
+      <a href="#safety">Safety</a>
+      <a href="#code">Code</a>
+      <a href="#later">Stages 2–10</a>
+      <a href="#help">Help</a>
+      <a href="#words">Words</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <span class="eyebrow eb-yellow">First project? You're in the right place</span>
+  <h1>Let's build a <span class="w1">robot</span> <span class="w2">glove</span>.</h1>
+  <p class="lead">A small motor pulls a string, the string bends the fingers, and an elastic band straightens them again. That's the whole idea. This guide takes you from <b>zero experience</b> to a working prototype, one small step at a time.</p>
+  <div class="btns">
+    <a class="btn go" href="#stage1">Start with Stage 1 →</a>
+    <a class="btn" href="#idea">How does it work?</a>
+  </div>
+  <ul class="promise">
+    <li>No experience needed</li>
+    <li>Every step explained</li>
+    <li>Code is ready, you just upload it</li>
+    <li>About 47,000 IQD to start</li>
+  </ul>
+
+  <div class="play" id="playbox">
+    <div class="play-head">
+      <h3>Try it: drag the slider to pull the string</h3>
+      <span class="muted small">This is exactly what your motor will do.</span>
+    </div>
+    <svg viewBox="0 64 560 286" role="img" aria-labelledby="fing-t" id="finger-svg">
+      <title id="fing-t">A wooden finger with three joints. A motor winds a string on the palm side to bend it; an elastic on the back straightens it.</title>
+      <rect class="servo" x="26" y="196" width="88" height="88" rx="12"/>
+      <text class="sv-ws" x="70" y="276" text-anchor="middle">MOTOR</text>
+      <circle cx="70" cy="200" r="36" class="part-f"/>
+      <circle cx="70" cy="200" r="29" class="blk"/>
+      <g id="drum-mark"><line x1="70" y1="200" x2="70" y2="174" stroke="var(--orange)" stroke-width="4" stroke-linecap="round"/></g>
+      <circle cx="70" cy="200" r="5" class="part-f"/>
+      <rect class="wood" x="150" y="120" width="108" height="40" rx="8"/>
+      <circle class="screwhead" cx="165" cy="110" r="5"/>
+      <g id="seg1" transform="translate(260 140)"><rect class="wood" x="3" y="-20" width="89" height="40" rx="14"/></g>
+      <g id="seg2" transform="translate(355 140)"><rect class="wood" x="3" y="-20" width="56" height="40" rx="14"/></g>
+      <g id="seg3" transform="translate(417 140)"><rect class="wood" x="3" y="-20" width="47" height="40" rx="18"/></g>
+      <circle class="joint" id="j1" cx="260" cy="140" r="6"/>
+      <circle class="joint" id="j2" cx="355" cy="140" r="6"/>
+      <circle class="joint" id="j3" cx="417" cy="140" r="6"/>
+      <polyline class="elastic" id="elastic" points="165,110 245,110 307.5,110 386,110 455,110"/>
+      <polyline class="tendon" id="tendon" points="70,171 190,170 245,170 307.5,170 386,170 455,170"/>
+      <circle class="tendon-dot" id="anchor" cx="455" cy="170" r="5"/>
+      <text class="sv-o" x="128" y="194" text-anchor="middle">string</text>
+      <text class="sv-g" x="200" y="100" text-anchor="middle">elastic</text>
+      <text class="sv-s" x="548" y="84" text-anchor="end" id="fing-hint">pull the string → the finger closes</text>
+    </svg>
+    <div class="ctrl">
+      <label for="pull">Pull</label>
+      <input type="range" id="pull" min="0" max="100" value="0" aria-describedby="fing-hint">
+      <button class="btn sm" type="button" id="playbtn">Pause</button>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div><b id="ro-motor">0°</b><span>motor turned</span></div>
+      <div><b id="ro-string">0 mm</b><span>string pulled in</span></div>
+      <div><b id="ro-bend">0 %</b><span>finger closed</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="box b-stop" style="margin-top:26px">
+  <span class="t">This is a school project, not a medical device</span>
+  <p>We test only on a wooden finger and a wooden hand. Never on a patient. Never say it treats stroke or ALS.</p>
+</div>
+
+<!-- ============ IDEA ============ -->
+<section id="idea">
+  <span class="eyebrow eb-blue">The idea in 30 seconds</span>
+  <h2>Your hand already works this way</h2>
+  <p class="lead">Inside your arm, muscles pull long cords called <b>tendons</b>, and the tendons bend your fingers. Our glove copies that.</p>
+  <div class="idea">
+    <div class="i1"><span class="n">1</span><h4>The motor winds the string</h4><p>Like a fishing reel. A small motor (a <b>servo</b>) turns a round wheel and winds up a strong fishing line.</p></div>
+    <div class="i2"><span class="n">2</span><h4>The string bends the finger</h4><p>The line runs along the <b>palm side</b> of the finger to the fingertip. Shorter string = bent finger.</p></div>
+    <div class="i3"><span class="n">3</span><h4>The elastic opens it again</h4><p>An elastic band on the <b>back</b> of the finger pulls it straight when the motor lets the string out.</p></div>
+  </div>
+  <p>A tiny computer called an <b>Arduino</b> tells the motor what to do: close slowly, hold, open slowly, rest, and repeat, as many times as you choose. Your laptop can start it, stop it and save the results.</p>
+  <div class="box b-info">
+    <span class="t">Why one finger first?</span>
+    <p>A wooden finger is cheap, safe and easy to fix. If something is wrong you see it immediately. And the numbers you measure on it tell you which motor to buy for the full glove, so you don't waste money.</p>
+  </div>
+</section>
+
+<!-- ============ PARTS ============ -->
+<section id="parts">
+  <span class="eyebrow eb-orange">Meet the parts</span>
+  <h2>Nine things, nine jobs</h2>
+  <p class="lead">Think of the glove as a small body. Each part has one job. Arabic names are there to help you ask in shops. Prices are my estimates; check two shops.</p>
+  <div class="parts">
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="12" width="36" height="24" rx="3" fill="var(--blue)"/><rect x="20" y="18" width="10" height="12" rx="1" fill="var(--on-blue)"/><path d="M10 12v-4M15 12v-4M20 12v-4M25 12v-4M30 12v-4M35 12v-4M10 36v4M15 36v4M20 36v4M25 36v4M30 36v4M35 36v4" stroke="currentColor" stroke-width="2"/><rect x="2" y="20" width="6" height="8" rx="1" fill="currentColor"/></svg><div><div class="role">The brain</div><div class="name">Arduino Nano</div></div></div><p>A tiny computer. It runs our program and tells the motors exactly what to do.</p><div class="foot"><span class="ar" lang="ar">أردوينو نانو</span><b>≈ 10,000</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="16" width="30" height="24" rx="3" fill="var(--blue)"/><circle cx="18" cy="16" r="6" fill="var(--surface)" stroke="currentColor" stroke-width="2"/><path d="M18 16 L34 9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M5 24h4M5 28h4M5 32h4" stroke="var(--orange)" stroke-width="2"/></svg><div><div class="role">The muscle</div><div class="name">Servo motor (SG90, later MG996R)</div></div></div><p>A small motor that turns to the exact angle you ask for, then holds it.</p><div class="foot"><span class="ar" lang="ar">محرك سيرفو</span><b>≈ 3,000</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="24" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="20" cy="24" r="8" fill="none" stroke="var(--orange)" stroke-width="5"/><path d="M28 31 C36 36 40 30 44 38" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/></svg><div><div class="role">The tendon</div><div class="name">Braided fishing line 0.25 mm</div></div></div><p>A thin, very strong string. The motor winds it in and it pulls the finger closed.</p><div class="foot"><span class="ar" lang="ar">خيط صيد مضفور</span><b>≈ 5,000</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M4 24 L10 16 L16 32 L22 16 L28 32 L34 16 L40 32 L44 24" fill="none" stroke="var(--green)" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="role">The spring</div><div class="name">Elastic cord or sewing elastic</div></div></div><p>Sits on the back of the finger. It pulls the finger straight again.</p><div class="foot"><span class="ar" lang="ar">لاستيك خياطة</span><b>≈ 1,500</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="13" y="22" width="22" height="20" rx="7" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><rect x="13" y="7" width="5" height="18" rx="2.5" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><rect x="19" y="4" width="5" height="21" rx="2.5" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><rect x="25" y="5" width="5" height="20" rx="2.5" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><rect x="31" y="10" width="4.5" height="15" rx="2.2" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><path d="M13 32 L5 22" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg><div><div class="role">The skin</div><div class="name">Snug cotton work glove</div></div></div><p>Everything else is sewn onto it. Needed from Stage 3, not now.</p><div class="foot"><span class="ar" lang="ar">جفوف قطن</span><b>≈ 2,500</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="10" width="22" height="22" rx="4" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><path d="M14 10V3M24 10V3" stroke="currentColor" stroke-width="2.5"/><path d="M19 32 C19 42 30 42 42 40" fill="none" stroke="currentColor" stroke-width="2.5"/><text x="19" y="25" text-anchor="middle" font-size="10" font-weight="700" fill="var(--blue)">5V</text></svg><div><div class="role">The food</div><div class="name">5 V adapter, 3 A or more</div></div></div><p>Gives the motor its power. Must say <b>5 V</b>. Never use a 9 V or 12 V one.</p><div class="foot"><span class="ar" lang="ar">أدابتر 5 فولت 3 أمبير</span><b>≈ 7,000</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="30" width="32" height="12" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><path d="M12 30 A12 12 0 0 1 36 30 Z" fill="var(--red)"/><rect x="21" y="26" width="6" height="5" fill="currentColor"/></svg><div><div class="role">The emergency brake</div><div class="name">Red switch (E-stop)</div></div></div><p>One press cuts all motor power at once. Always within reach.</p><div class="foot"><span class="ar" lang="ar">زر طوارئ</span><b>≈ 3,000</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="9" width="30" height="20" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="2.2"/><path d="M4 35 H44 L41 40 H7 Z" fill="currentColor"/><path d="M14 23 L20 17 L25 21 L33 13" fill="none" stroke="var(--green)" stroke-width="2.4"/></svg><div><div class="role">The control panel</div><div class="name">Your laptop + our app</div></div></div><p>Start, stop, choose the speed, and save every test to Excel.</p><div class="foot"><span>you already have it</span><b>0</b></div></article>
+    <article class="pcard"><div class="top"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="18" width="16" height="12" rx="2" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/><rect x="20" y="18" width="11" height="12" rx="2" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/><rect x="32" y="18" width="8" height="12" rx="2" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/><rect x="41" y="18" width="5" height="12" rx="2.5" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/><path d="M6 34 H44" stroke="var(--orange)" stroke-width="2.5"/></svg><div><div class="role">The practice patient</div><div class="name">Wooden test finger</div></div></div><p>We test on it instead of a real hand. You build it in Stage 1.</p><div class="foot"><span class="ar" lang="ar">خشب ومفصلات صغيرة</span><b>≈ 6,000</b></div></article>
+  </div>
+</section>
+
+<!-- ============ PLAN ============ -->
+<section id="plan">
+  <span class="eyebrow eb-green">The plan</span>
+  <h2>10 stages, about 10 weeks</h2>
+  <p class="lead">Each stage ends with something you can test. Don't jump ahead: every stage uses what you learned in the one before.</p>
+  <ol class="road">
+    <li class="here"><span class="dot">1</span><div class="card"><h4>Build one robot finger <span class="tag t-here">You are here</span><span class="tag t-both">Both</span><span class="tag t-wk">Weeks 1–2</span></h4><p>A wooden finger, one motor, a string. Learn everything on something small. <a href="#stage1">Go to Stage 1 →</a></p></div></li>
+    <li><span class="dot">2</span><div class="card"><h4>Build the motor box <span class="tag t-b">Builder</span><span class="tag t-wk">Week 3</span></h4><p>Motors, drums and string clamps in one small box.</p></div></li>
+    <li><span class="dot">3</span><div class="card"><h4>Make the glove and a wooden hand <span class="tag t-b">Builder</span><span class="tag t-wk">Weeks 3–5</span></h4><p>Sew string guides and elastics on the glove; the wooden hand wears it.</p></div></li>
+    <li><span class="dot">4</span><div class="card"><h4>Put the motors in <span class="tag t-b">Builder</span><span class="tag t-wk">Week 5</span></h4><p>Connect the glove's strings to the motor box.</p></div></li>
+    <li><span class="dot">5</span><div class="card"><h4>Do the full wiring <span class="tag t-c">Coder</span><span class="tag t-wk">Weeks 3–4</span></h4><p>Buttons, fuse, red switch, both motors.</p></div></li>
+    <li><span class="dot">6</span><div class="card"><h4>Program everything <span class="tag t-c">Coder</span><span class="tag t-wk">Weeks 4–6</span></h4><p>Set the safe angles for both motors and test every mode.</p></div></li>
+    <li><span class="dot">7</span><div class="card"><h4>Run it from the laptop <span class="tag t-c">Coder</span><span class="tag t-wk">Weeks 2–6</span></h4><p>The PC app: start, stop, watch, save results.</p></div></li>
+    <li><span class="dot">8</span><div class="card"><h4>Put it all together <span class="tag t-both">Both</span><span class="tag t-wk">Week 7</span></h4><p>Glove, hand, motor box, electronics and laptop as one system.</p></div></li>
+    <li><span class="dot">9</span><div class="card"><h4>Test, test, test <span class="tag t-both">Both</span><span class="tag t-wk">Weeks 8–9</span></h4><p>Hundreds of cycles, temperatures, angles, safety checks.</p></div></li>
+    <li><span class="dot">10</span><div class="card"><h4>Show time <span class="tag t-both">Both</span><span class="tag t-wk">Weeks 9–10</span></h4><p>A 7-minute demo for your university, with a backup video.</p></div></li>
+  </ol>
+
+  <h3>Who does what</h3>
+  <div class="team">
+    <div class="who b"><h4>Student 1 · The Builder</h4><p>Likes working with hands and tools.</p><ul><li>Builds the wooden finger and wooden hand</li><li>Makes the motor box and the glove</li><li>Measures forces and angles</li><li>Takes the photos</li></ul></div>
+    <div class="who c"><h4>Student 2 · The Wirer &amp; Coder</h4><p>Likes computers and electronics.</p><ul><li>Connects the wires and the power</li><li>Uploads and tests the Arduino program</li><li>Runs the PC app and the Excel results</li><li>Makes sure everything works together</li></ul></div>
+  </div>
+  <div class="box b-tip"><span class="t">Together, always</span><p>Every powered test needs both of you: one runs it, the other keeps a hand on the red switch. Write everything in one shared notebook: date, what you did, what you measured, a photo.</p></div>
+</section>
+
+<!-- ============ STAGE 1 ============ -->
+<section id="stage1">
+  <span class="eyebrow eb-yellow">Stage 1 · Weeks 1–2</span>
+  <h2>Build one robot finger</h2>
+  <p class="lead">By the end of Stage 1 a motor will bend a wooden finger and an elastic will straighten it, 100 times in a row. Tick each step as you finish it; your progress is saved in this browser.</p>
+
+  <div class="progress" aria-live="polite">
+    <div class="pbar"><i id="pfill"></i></div>
+    <div class="ptext"><span id="ptext">0 of 29 steps done</span><span id="pnext" class="muted">Next: go shopping</span></div>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-scroll">{{TEST_BOARD_SVG}}</div>
+    <figcaption><b>What you're building.</b> Seen from above. The finger lies on its side on a wooden board and bends across it. Numbers are lengths in millimetres.</figcaption>
+  </figure>
+
+  <h3>What to buy for Stage 1</h3>
+  <p>Only these. Don't buy the bigger motor, the glove or anything else yet; Stage 1 tells you what you need.</p>
+  <ul class="shop" id="shop">
+    {{SHOP_ROWS}}
+  </ul>
+  <div class="shop-total"><span>Total, estimated</span><span id="shop-left">46,800 IQD left to buy</span></div>
+  <p class="small muted">Borrow if you can: a <b>digital luggage scale</b> (<span class="ar" lang="ar">ميزان حقائب رقمي</span>, ≈ 6,500) and a <b>multimeter</b> (<span class="ar" lang="ar">أفوميتر</span>, ≈ 6,000; your university lab has one). Tools: a small saw, a hand drill with 1.5 / 2 / 3 mm bits, small screwdrivers, sandpaper, a ruler, a pencil and a phone camera.</p>
+
+  <!-- Part A -->
+  <div class="part-h"><h3>Part A · Build the wooden finger</h3><span class="tag t-b">Builder</span></div>
+  <ol class="steps" data-group="a">
+    <li class="step"><h4>Cut four blocks</h4>
+      <div class="fig-mini"><svg viewBox="0 0 440 90" role="img" aria-label="Four wooden blocks: 80, 45, 28 and 22 millimetres long"><rect class="wood" x="10" y="30" width="176" height="36" rx="3"/><rect class="wood" x="196" y="30" width="99" height="36" rx="3"/><rect class="wood" x="305" y="30" width="62" height="36" rx="3"/><path class="wood" d="M377 30 H405 A24 18 0 0 1 405 66 H377 Z"/><text class="sv-b" x="98" y="22" text-anchor="middle">80 mm</text><text class="sv-b" x="245" y="22" text-anchor="middle">45</text><text class="sv-b" x="336" y="22" text-anchor="middle">28</text><text class="sv-b" x="404" y="22" text-anchor="middle">22</text><text class="sv-s" x="98" y="84" text-anchor="middle">base (the "palm")</text><text class="sv-s" x="300" y="84" text-anchor="middle">the three finger bones</text></svg></div>
+      <p>From the 20 × 20 mm wooden stick, cut 80, 45, 28 and 22 mm. Sand the ends flat and round the tip of the smallest one.</p>
+      <p class="why">Why: these are the palm and the three bones of a finger, a little bigger than real ones.</p>
+      <p class="watch">Watch out: cut straight. A crooked cut makes the finger bend sideways.</p>
+      <label class="donebox"><input type="checkbox" id="st-a1" data-k="a1"> Done</label></li>
+    <li class="step"><h4>Mark the palm side</h4>
+      <p>Draw a straight pencil line along one face of every block and write <b>V</b> on it. V is the palm side.</p>
+      <p class="why">Why: the hinges and the string go on the V side, the elastic on the other side. Marking now avoids mistakes later.</p>
+      <label class="donebox"><input type="checkbox" id="st-a2" data-k="a2"> Done</label></li>
+    <li class="step"><h4>Join the blocks with three small hinges</h4>
+      <div class="fig-mini"><svg viewBox="0 0 440 110" role="img" aria-label="Two blocks end to end with a small hinge on the V face, its pin exactly over the gap"><rect class="wood" x="40" y="40" width="170" height="40" rx="3"/><rect class="wood" x="214" y="40" width="170" height="40" rx="3"/><rect x="180" y="80" width="64" height="7" rx="2" class="hinge"/><circle class="screwhead" cx="212" cy="86" r="5"/><circle class="screwhead" cx="190" cy="84" r="2.5"/><circle class="screwhead" cx="234" cy="84" r="2.5"/><path class="ldr" d="M214 90 L226 101"/><text class="sv-t" x="230" y="106">pin exactly over the gap</text><text class="sv-s" x="125" y="32" text-anchor="middle">back</text><text class="sv-s" x="90" y="104" text-anchor="middle">V side (palm)</text></svg></div>
+      <p>Lay two blocks end to end, V side up, touching. Put a hinge across the joint so its round pin sits exactly over the gap. Drill small 1.5 mm holes first, then screw. Do this three times.</p>
+      <p class="why">Why: these are your knuckles. When the finger is straight, the blocks touch on the back, so it can't bend the wrong way, just like a real finger.</p>
+      <p class="watch">Watch out: no pre-drilled holes = split wood. Check that each joint bends easily and doesn't wobble sideways.</p>
+      <label class="donebox"><input type="checkbox" id="st-a3" data-k="a3"> Done</label></li>
+    <li class="step"><h4>Screw in the little string rings</h4>
+      <p>On the V line, screw in small screw eyes: two on the base, one in the middle of each of the next two blocks, and one near the fingertip. Turn them so all the holes line up in a straight row.</p>
+      <p class="why">Why: the string slides through these rings. They keep it close to the finger, like the bands that hold your real tendons.</p>
+      <p class="watch">Watch out: if the rings aren't in a straight line, the string rubs and the finger twists.</p>
+      <label class="donebox"><input type="checkbox" id="st-a4" data-k="a4"> Done</label></li>
+    <li class="step"><h4>Add the elastic on the back</h4>
+      <p>Put three more screw eyes on the back side and one screw on the base. Tie the elastic cord at the fingertip, run it through the eyes and wrap it twice around the screw.</p>
+      <p class="why">Test: bend the finger with one fingertip and let go. It should spring back straight in under a second, but still be easy to bend.</p>
+      <p class="watch">Watch out: too tight and the motor will struggle; too loose and the finger won't open.</p>
+      <label class="donebox"><input type="checkbox" id="st-a5" data-k="a5"> Done</label></li>
+    <li class="step"><h4>Fix the finger to the board</h4>
+      <p>Lay the finger on its side on a wooden board and screw the base block down from below. Tape a paper protractor (angle printout) under the first joint.</p>
+      <p class="why">Why on its side? It bends across the board, so you can film it from above and read the angles.</p>
+      <label class="donebox"><input type="checkbox" id="st-a6" data-k="a6"> Done</label></li>
+    <li class="step"><h4>Make the drum (the reel)</h4>
+      <div class="fig-mini"><svg viewBox="0 0 440 120" role="img" aria-label="A bottle cap glued on the servo horn, with a flat disc on each side so the string can't slip off"><rect class="servo" x="20" y="60" width="150" height="50" rx="6"/><text class="sv-ws" x="95" y="92" text-anchor="middle">SERVO</text><rect class="part-f" x="80" y="50" width="30" height="10"/><rect class="blk" x="62" y="18" width="66" height="6" rx="2"/><rect class="part-f" x="70" y="24" width="50" height="22" rx="3"/><rect class="blk" x="62" y="46" width="66" height="6" rx="2"/><path class="tendon" d="M120 32 H260"/><text class="sv-t" x="190" y="24">string winds here</text><path class="ldr" d="M128 21 L270 70"/><text class="sv-t" x="276" y="74">flat disc each side</text><path class="ldr" d="M110 40 L270 98"/><text class="sv-t" x="276" y="102">bottle cap Ø 25–30 mm</text></svg></div>
+      <p>Glue a bottle cap (25 to 30 mm across) onto the round plastic arm that comes with the servo. Add a flat disc on each side so the string can't fall off. Drill a tiny hole near the edge to tie the string.</p>
+      <p class="why">Why a drum and not the arm? A round drum pulls evenly the whole way; an arm doesn't.</p>
+      <p class="watch">Measure the cap's width and write it down. You need it later.</p>
+      <label class="donebox"><input type="checkbox" id="st-a7" data-k="a7"> Done</label></li>
+    <li class="step"><h4>Fix the servo to the board</h4>
+      <p>Screw the servo onto a small block of wood, 10 to 15 cm behind the finger, so the drum lines up with the string. Don't push the drum on yet; that happens in Part D.</p>
+      <label class="donebox"><input type="checkbox" id="st-a8" data-k="a8"> Done</label></li>
+    <li class="step"><h4>Tie the string</h4>
+      <p>Cut 60 cm of fishing line. Tie it to the fingertip ring with a strong knot plus a drop of superglue. Thread it back through every ring on the V side. Slide one bead onto the string between the two base rings; don't fix it yet.</p>
+      <p class="why">Pull the free end gently with your hand: the finger should curl. Let go: it should straighten. If yes, the mechanics work.</p>
+      <label class="donebox"><input type="checkbox" id="st-a9" data-k="a9"> Done</label></li>
+  </ol>
+
+  <!-- Part B -->
+  <div class="part-h"><h3>Part B · Connect the wires</h3><span class="tag t-c">Coder</span></div>
+  <p>Only 8 connections. Do them with <b>everything unplugged</b>. The yellow numbers in the picture match the list.</p>
+  <figure class="fig">
+    <div class="fig-scroll">
+    <svg viewBox="0 0 820 400" role="img" aria-labelledby="wire-t">
+      <title id="wire-t">Stage 1 wiring: adapter to switch to breadboard plus rail, adapter minus to minus rail, capacitor across the rails, servo red and brown to the rails, servo orange through a 330 ohm resistor to Arduino D9, Arduino GND to the minus rail, Arduino USB to the laptop</title>
+      <rect class="blk" x="20" y="96" width="130" height="96" rx="12"/>
+      <text class="sv-b" x="85" y="130" text-anchor="middle">5 V adapter</text>
+      <text class="sv-s" x="85" y="149" text-anchor="middle">3 A</text>
+      <text class="sv-s" x="85" y="164" text-anchor="middle">(wall plug)</text>
+      <text class="sv-m" x="140" y="120" text-anchor="end">+</text><text class="sv-m" x="140" y="183" text-anchor="end">−</text>
+      <path class="w-red" d="M150 125 H200"/>
+      <circle class="blk" cx="205" cy="125" r="5"/><circle class="blk" cx="255" cy="125" r="5"/>
+      <path d="M209 121 L250 104" stroke="var(--red)" stroke-width="3" stroke-linecap="round"/>
+      <path class="estop" d="M216 92 A16 11 0 0 1 248 92 Z"/>
+      <text class="sv-r" x="232" y="76" text-anchor="middle">switch = emergency stop</text>
+      <path class="w-red" d="M260 125 H290 V145 H322"/>
+      <path class="w-gnd" d="M150 178 H300 V175 H322"/>
+      <rect class="blk2" x="300" y="118" width="500" height="112" rx="12"/>
+      <line class="rail-r" x1="326" y1="145" x2="782" y2="145"/><line class="holes" x1="336" y1="145" x2="782" y2="145"/>
+      <line class="rail-k" x1="326" y1="175" x2="782" y2="175"/><line class="holes" x1="336" y1="175" x2="782" y2="175"/>
+      <text class="sv-b" x="312" y="150" text-anchor="middle" style="fill:var(--red)">+</text>
+      <text class="sv-b" x="312" y="180" text-anchor="middle">−</text>
+      <text class="sv-s" x="555" y="214" text-anchor="middle">breadboard power rails</text>
+      <path d="M400 145 V151 M400 169 V175" stroke="var(--ink)" stroke-width="2"/>
+      <rect x="391" y="151" width="18" height="18" rx="4" fill="var(--blue-soft)" stroke="var(--ink)" stroke-width="1.3"/>
+      <rect x="403" y="151" width="6" height="18" fill="var(--muted)"/>
+      <text class="sv-s" x="440" y="207" text-anchor="end">capacitor (stripe → −)</text>
+      <rect class="board" x="330" y="290" width="220" height="80" rx="10"/>
+      <text class="sv-w" x="440" y="336" text-anchor="middle">ARDUINO NANO</text>
+      <rect x="444" y="286" width="12" height="8" fill="var(--on-blue)"/><text class="sv-ws" x="450" y="308" text-anchor="middle">GND</text>
+      <rect x="546" y="324" width="8" height="12" fill="var(--on-blue)"/><text class="sv-ws" x="532" y="356" text-anchor="middle">D9</text>
+      <rect x="318" y="318" width="14" height="24" rx="2" fill="var(--muted)"/>
+      <path class="w-gnd" d="M450 286 V175"/><circle class="dotk" cx="450" cy="175" r="5"/>
+      <rect class="blk" x="175" y="290" width="90" height="58" rx="5"/><path d="M160 352 H280 L272 362 H168 Z" fill="var(--ink)"/>
+      <text class="sv-s" x="220" y="323" text-anchor="middle">laptop</text>
+      <path class="w-usb" d="M318 330 H268"/>
+      <text class="sv-s" x="220" y="384" text-anchor="middle">USB cable: power + program</text>
+      <rect class="servo" x="640" y="290" width="150" height="70" rx="10"/>
+      <circle cx="768" cy="306" r="9" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+      <text class="sv-w" x="710" y="332" text-anchor="middle">SERVO SG90</text>
+      <path class="w-red" d="M660 290 V186 A10 10 0 0 1 660 164 V145"/><circle class="dotr" cx="660" cy="145" r="5"/>
+      <path class="w-brn" d="M690 290 V175"/><circle class="dotk" cx="690" cy="175" r="5"/>
+      <path class="w-sig" d="M640 330 H600 M562 330 H550"/>
+      <rect class="res" x="562" y="323" width="38" height="14" rx="3"/>
+      <text class="sv-s" x="581" y="316" text-anchor="middle">330 Ω</text>
+      <text class="sv-s" x="715" y="384" text-anchor="middle">brown −  ·  red +  ·  orange = signal</text>
+      <g class="badge"><circle cx="176" cy="125" r="12"/><text x="176" y="130">1</text></g>
+      <g class="badge"><circle cx="290" cy="135" r="12"/><text x="290" y="140">2</text></g>
+      <g class="badge"><circle cx="225" cy="178" r="12"/><text x="225" y="183">3</text></g>
+      <g class="badge"><circle cx="430" cy="160" r="12"/><text x="430" y="165">4</text></g>
+      <g class="badge"><circle cx="675" cy="240" r="12"/><text x="675" y="245">5</text></g>
+      <g class="badge"><circle cx="620" cy="330" r="12"/><text x="620" y="335">6</text></g>
+      <g class="badge"><circle cx="450" cy="245" r="12"/><text x="450" y="250">7</text></g>
+      <g class="badge"><circle cx="294" cy="330" r="12"/><text x="294" y="335">8</text></g>
+    </svg>
+    </div>
+    <figcaption>A breadboard lets you connect wires by pushing them into holes, no soldering. The long red line is "+", the long dark line is "−".</figcaption>
+  </figure>
+  <ol class="wires" data-group="b">
+    <li><label><span class="num">1</span><span>Adapter <b>+</b> <i class="wire wr"></i> to one side of the switch.</span><input type="checkbox" id="st-b1" data-k="b1"></label></li>
+    <li><label><span class="num">2</span><span>Other side of the switch <i class="wire wr"></i> to the breadboard <b>+</b> rail.</span><input type="checkbox" id="st-b2" data-k="b2"></label></li>
+    <li><label><span class="num">3</span><span>Adapter <b>−</b> <i class="wire wk"></i> to the breadboard <b>−</b> rail.</span><input type="checkbox" id="st-b3" data-k="b3"></label></li>
+    <li><label><span class="num">4</span><span>Capacitor across the rails: long leg to <b>+</b>, the leg on the striped side to <b>−</b>.</span><input type="checkbox" id="st-b4" data-k="b4"></label></li>
+    <li><label><span class="num">5</span><span>Servo red <i class="wire wr"></i> to <b>+</b> rail. Servo brown <i class="wire wb"></i> to <b>−</b> rail.</span><input type="checkbox" id="st-b5" data-k="b5"></label></li>
+    <li><label><span class="num">6</span><span>Servo orange <i class="wire wo"></i> through the 330 Ω resistor to Arduino pin <b>D9</b>.</span><input type="checkbox" id="st-b6" data-k="b6"></label></li>
+    <li><label><span class="num">7</span><span>Arduino <b>GND</b> <i class="wire wk"></i> to the <b>−</b> rail. The most forgotten wire! Without it the motor just shakes.</span><input type="checkbox" id="st-b7" data-k="b7"></label></li>
+    <li><label><span class="num">8</span><span>Arduino USB to the laptop.</span><input type="checkbox" id="st-b8" data-k="b8"></label></li>
+  </ol>
+  <div class="box b-stop"><span class="t">Never power the motor from the Arduino</span><p>The Arduino has a pin called 5V. Don't connect the servo to it. The motor's current would make the Arduino restart and could damage your laptop's USB port. The motor always gets its power from the adapter.</p></div>
+  <div class="box b-warn"><span class="t">Before you switch on: 3 quick checks with the multimeter</span>
+    <ol><li>Beep test between <b>+</b> and <b>−</b> rails: it must <b>not</b> beep (no short circuit).</li><li>Beep test between Arduino GND and the <b>−</b> rail: it <b>must</b> beep.</li><li>Plug in the adapter only (servo unplugged), switch on: the rails should read about 5 V. Switch off: 0 V.</li></ol></div>
+
+  <!-- Part C -->
+  <div class="part-h"><h3>Part C · Put the program on the Arduino</h3><span class="tag t-c">Coder</span></div>
+  <p>You don't need to write any code. It's ready. You only copy it to the Arduino, which is called <b>uploading</b>.</p>
+  <ol class="steps" data-group="c">
+    <li class="step"><h4>Install the Arduino IDE</h4><p>Free from <b>arduino.cc → Software</b>. "IDE" just means the program where you open and upload Arduino code.</p><label class="donebox"><input type="checkbox" id="st-c1" data-k="c1"> Done</label></li>
+    <li class="step"><h4>Get the code</h4><p>Download the code files from the <a href="#code">Code section</a> below and unzip them. Keep each <code>.ino</code> file inside its own folder with the same name.</p><label class="donebox"><input type="checkbox" id="st-c2" data-k="c2"> Done</label></li>
+    <li class="step"><h4>Plug in the Arduino</h4><p>Use a USB cable that carries data (some cables only charge). If Windows doesn't find it, search for and install the <b>CH340 driver</b>; most cheap Nano boards need it.</p><label class="donebox"><input type="checkbox" id="st-c3" data-k="c3"> Done</label></li>
+    <li class="step"><h4>Tell the IDE which board you have</h4><p><b>Tools → Board →</b> Arduino Nano.<br><b>Tools → Processor →</b> ATmega328P (Old Bootloader).<br><b>Tools → Port →</b> the COM port that appeared when you plugged in.</p><label class="donebox"><input type="checkbox" id="st-c4" data-k="c4"> Done</label></li>
+    <li class="step"><h4>Open and upload the test program</h4><p>Open <code>servo_calibration.ino</code>. Click the round <b>→ Upload</b> button. Wait for "Done uploading".</p><p class="watch">Error "not in sync"? Change Processor to the other ATmega328P choice and try again.</p><label class="donebox"><input type="checkbox" id="st-c5" data-k="c5"> Done</label></li>
+    <li class="step"><h4>Open the Serial Monitor</h4><p><b>Tools → Serial Monitor.</b> At the bottom, choose <b>115200 baud</b> and <b>New Line</b>. You should see <code>Servo calibration ready</code>. This window is how you type commands to the Arduino.</p><label class="donebox"><input type="checkbox" id="st-c6" data-k="c6"> Done</label></li>
+  </ol>
+
+  <!-- Part D -->
+  <div class="part-h"><h3>Part D · Test it together</h3><span class="tag t-both">Both</span></div>
+  <ol class="steps" data-group="d">
+    <li class="step"><h4>Measure the pull with a luggage scale</h4>
+      <p>Motor off. Hook the luggage scale to the free end of the string. First make an ink dot on the string right where it leaves the last ring. Now pull slowly until the finger is fully bent. Read the scale (in kg) and measure how far the ink dot moved (in mm).</p>
+      <p class="why">Do it 3 times and use the average. Type your numbers into the <a href="#finder">motor finder</a> just below this list.</p>
+      <label class="donebox"><input type="checkbox" id="st-d1" data-k="d1"> Done</label></li>
+    <li class="step"><h4>Find the two safe angles: OPEN and CLOSED</h4>
+      <p>Switch motor power on: the servo turns to 90°. Now push the drum onto the servo and tie the string to it, slightly loose. In the Serial Monitor type <kbd>+</kbd> or <kbd>-</kbd> (then Enter) to turn 2° at a time.</p>
+      <p><b>OPEN</b> = the angle where the string just becomes tight and the finger is still straight.<br><b>CLOSED</b> = keep going 5° at a time until the finger is bent enough, or until the motor starts to hum. Stop there.</p>
+      <p class="watch">Write both numbers in your notebook. They are the most important numbers of the project.</p>
+      <label class="donebox"><input type="checkbox" id="st-d2" data-k="d2"> Done</label></li>
+    <li class="step"><h4>Fix the safety bead</h4>
+      <p>With the motor at CLOSED, slide the bead to 3 mm in front of the back ring and glue it there. Now the string can never be pulled much further than CLOSED, even if the program made a mistake.</p>
+      <label class="donebox"><input type="checkbox" id="st-d3" data-k="d3"> Done</label></li>
+    <li class="step"><h4>Upload the real program with your numbers</h4>
+      <p>Open <code>robotic_glove.ino</code>. Near the top, change these lines to your two angles, and switch off the power sensor you haven't built yet:</p>
+      <pre class="cmd">const float FINGERS_OPEN_DEG   = 20;   // ← your OPEN
+const float FINGERS_CLOSED_DEG = 150;  // ← your CLOSED
+const bool  USE_MOTOR_SENSE  = false;  // ← false for Stage 1</pre>
+      <p>Upload it, like before.</p>
+      <label class="donebox"><input type="checkbox" id="st-d4" data-k="d4"> Done</label></li>
+    <li class="step"><h4>First real run</h4>
+      <p>Open the Serial Monitor. One person keeps a hand on the switch. Type each line and press Enter:</p>
+      <pre class="cmd">MODE FINGERS
+SPEED 20
+RANGE 50
+REPS 3
+START</pre>
+      <p class="why">The finger closes halfway, slowly, three times. It works? Try <kbd>RANGE 100</kbd> and then <kbd>SPEED 40</kbd>. Type <kbd>STOP</kbd> anytime.</p>
+      <label class="donebox"><input type="checkbox" id="st-d5" data-k="d5"> Done</label></li>
+    <li class="step"><h4>The 100-times test</h4>
+      <p>Type <kbd>REPS 100</kbd>, <kbd>SPEED 40</kbd>, <kbd>RANGE 100</kbd>, <kbd>START</kbd>. It takes about 14 minutes. Every 25 times, stop and check: is the motor only warm (not hot)? Are the knots holding? Has the ink dot moved?</p>
+      <p class="why">If it does 100 out of 100, Stage 1 is a success.</p>
+      <label class="donebox"><input type="checkbox" id="st-d6" data-k="d6"> Done</label></li>
+  </ol>
+
+  <div class="tool" id="finder">
+    <span class="eyebrow eb-blue">Motor finder</span>
+    <h3>Type what you measured. It tells you which motor to buy.</h3>
+    <p class="small muted">The numbers inside are only examples. Replace them with yours from the luggage-scale test.</p>
+    <div class="fields">
+      <div><label for="f-kg">Scale reading at full bend (kg)</label><input type="number" id="f-kg" value="0.4" min="0.01" step="0.05" inputmode="decimal"><span class="hint">for one wooden finger</span></div>
+      <div><label for="f-mm">How far the ink dot moved (mm)</label><input type="number" id="f-mm" value="30" min="5" step="1" inputmode="numeric"><span class="hint">the string travel</span></div>
+    </div>
+    <div class="answer">
+      <div class="ans" id="a-drum"><div class="k">Drum size</div><div class="v">–</div><div class="s"></div></div>
+      <div class="ans" id="a-four"><div class="k">Motor for the 4 fingers</div><div class="v">–</div><div class="s"></div></div>
+      <div class="ans" id="a-thumb"><div class="k">Motor for the thumb</div><div class="v">–</div><div class="s"></div></div>
+    </div>
+    <details class="how"><summary>How it works it out</summary>
+      <p>Force for one finger = kg × 9.81. For four fingers it multiplies by 4, then adds 50 % for the glove fabric and friction in the tubes. The drum is sized so the motor turns 130° to pull your string distance. A motor should work at no more than 40 % of its maximum strength, so it stays cool and lasts. The finder picks the smallest motor that stays under 40 %. The thumb moves less, so a small metal-gear servo is accepted up to 60 %.</p>
+      <p id="a-detail" class="small muted"></p>
+    </details>
+  </div>
+
+  <div class="box b-tip"><span class="t">Stage 1 is finished when…</span>
+    <ul><li>The finger bends clearly at all three joints.</li><li>It goes back straight after every bend.</li><li>It did 100 bends in a row without a problem.</li><li>The motor was only warm, never too hot to touch.</li><li>STOP and the switch both stop it straight away.</li><li>You wrote your OPEN, CLOSED and motor-finder answer in the notebook.</li></ul>
+    <p>Then come back and tell me your numbers. We'll start Stage 2 together.</p></div>
+</section>
+
+<!-- ============ SAFETY ============ -->
+<section id="safety">
+  <span class="eyebrow eb-red">Safety</span>
+  <h2>Six golden rules</h2>
+  <p class="lead">Read these before you switch anything on. Say them out loud once. They're short so you remember them.</p>
+  <ol class="rules">
+    <li><b>Wood only, never patients</b>Test on the wooden finger and the wooden hand. Not on a patient, not on a friend's hand.</li>
+    <li><b>Two people, one red switch</b>One person runs the test. The other keeps a hand near the switch the whole time.</li>
+    <li><b>Motor power comes from the adapter</b>Never from the Arduino's 5V pin, and only from a 5 V adapter.</li>
+    <li><b>Start slow and small</b>After any change, start with <kbd>SPEED 20</kbd> and <kbd>RANGE 50</kbd>. Go faster only when that works.</li>
+    <li><b>The switch stops it, it doesn't open it</b>When power is cut the motor freezes where it is. To free a finger, unclip or untie the string.</li>
+    <li><b>Hot, smelly or buzzing? Switch off first</b>Press the switch first, think second. Then find the cause before you try again.</li>
+  </ol>
+</section>
+
+<!-- ============ CODE ============ -->
+<section id="code">
+  <span class="eyebrow eb-blue">The code</span>
+  <h2>You don't write it. You upload it.</h2>
+  <p class="lead">There are two Arduino programs and one laptop app. All three are finished and tested in a simulator.</p>
+  <div class="btns">
+    <button class="btn go" type="button" id="dl-zip" hidden>Download all the code (.zip)</button>
+    <a class="btn go" id="dl-link" href="robotic-glove-project.zip" hidden>Download all the code (.zip)</a>
+  </div>
+  <p class="small muted" id="dl-note">The same files are in your GitHub repository, folder <code>robotic-glove/</code>.</p>
+
+  <h3>What the program does, like a recipe</h3>
+  <ol class="recipe">
+    <li><b>Wait</b>for someone to press START</li>
+    <li><b>Close</b>the finger slowly</li>
+    <li><b>Hold</b>it closed for a second</li>
+    <li><b>Open</b>the finger slowly</li>
+    <li><b>Rest</b>count one, and repeat until done</li>
+  </ol>
+  <div class="box b-info"><span class="t">And all the time, hundreds of times per second, it checks:</span>
+    <ul><li>Was STOP pressed? Then open gently and stop.</li><li>Did the red switch cut the power? Then freeze and wait. Only START wakes it again.</li><li>Never go past your OPEN and CLOSED angles, whatever anyone types.</li></ul></div>
+
+  <h3>Commands you can type</h3>
+  <div class="tablewrap"><table class="cmds">
+    <thead><tr><th>Type this</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>START</kbd></td><td>Begin the exercise</td></tr>
+      <tr><td><kbd>STOP</kbd></td><td>Open the finger gently and stop</td></tr>
+      <tr><td><kbd>SPEED 30</kbd></td><td>Speed from 10 (slow) to 90 (fast)</td></tr>
+      <tr><td><kbd>RANGE 60</kbd></td><td>How far to close, 10 to 100 %</td></tr>
+      <tr><td><kbd>REPS 10</kbd></td><td>How many times to repeat</td></tr>
+      <tr><td><kbd>MODE FINGERS</kbd></td><td>Which motor moves: FULL, FINGERS or THUMB</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The three files</h3>
+  <details class="codebox"><summary><span class="fn">servo_calibration.ino</span><span class="open">Show the code</span></summary>
+    <div class="bar"><button class="btn sm" type="button" data-copy="code-cal">Copy</button></div>
+    <pre><code class="language-cpp" id="code-cal">{{CAL_CODE}}</code></pre></details>
+  <p class="small muted" style="margin-top:-4px">Stage 1 helper: turns one motor to the angle you type, so you can find OPEN and CLOSED.</p>
+  <details class="codebox"><summary><span class="fn">robotic_glove.ino</span><span class="open">Show the code</span></summary>
+    <div class="bar"><button class="btn sm" type="button" data-copy="code-fw">Copy</button></div>
+    <pre><code class="language-cpp" id="code-fw">{{FW_CODE}}</code></pre></details>
+  <p class="small muted" style="margin-top:-4px">The real program: both motors, buttons, safety checks, talking to the laptop.</p>
+  <details class="codebox"><summary><span class="fn">glove_control.py</span><span class="open">Show the code</span></summary>
+    <div class="bar"><button class="btn sm" type="button" data-copy="code-py">Copy</button></div>
+    <pre><code class="language-python" id="code-py">{{PY_CODE}}</code></pre></details>
+  <p class="small muted" style="margin-top:-4px">The laptop app (Python). Used from Stage 7, but you can try it today.</p>
+
+  <h3>Try the laptop app today, without any hardware</h3>
+  <ol>
+    <li>Install <b>Python</b> from python.org. During install, tick <b>"Add python.exe to PATH"</b>.</li>
+    <li>Open Command Prompt in the folder with <code>glove_control.py</code> and type:<pre class="cmd">pip install pyserial
+python glove_control.py</pre></li>
+    <li>In the app choose <b>SIMULATOR (no hardware)</b> and press <b>Connect</b>, then <b>START</b>. It pretends to be the Arduino.</li>
+  </ol>
+  <figure class="fig"><img class="shot" src="{{APP_SHOT}}" alt="The glove control app: connection bar, settings with green START and red STOP buttons, live status showing Flexing, repetition 1 of 10, and a message log" width="940" height="680" loading="lazy"><figcaption>The app running on its simulator. Each finished test becomes one row in an Excel file.</figcaption></figure>
+</section>
+
+<!-- ============ LATER ============ -->
+<section id="later">
+  <span class="eyebrow eb-green">After Stage 1</span>
+  <h2>Stages 2 to 10, simply</h2>
+  <p class="lead">You don't need these yet. Read them so you know where you're going. Each card links to the full details in the technical reference.</p>
+  <div class="later">
+    <article><span class="sn">STAGE 2 · Builder</span><h4>Build the motor box</h4><p>The motor, drum, a quick-release clip and four string clamps in a small box. The strings leave it through thin plastic tubes, like bicycle brake cables.</p><p class="dw">Done when the wooden finger still bends through a 40 cm tube.</p><p class="small"><a href="reference.html#stage-2">Details →</a></p></article>
+    <article><span class="sn">STAGE 3 · Builder</span><h4>Make the glove and a wooden hand</h4><p>Build four more wooden fingers and a thumb on a palm board. Sew string guides, fingertip caps and elastics on the glove, then put the glove on the wooden hand.</p><p class="dw">Done when pulling each string by hand curls its finger.</p><p class="small"><a href="reference.html#stage-3">Details →</a></p></article>
+    <article><span class="sn">STAGE 4 · Builder</span><h4>Put the motors in</h4><p>Connect the glove's tubes and strings to the motor box. Fix the box to the table.</p><p class="dw">Done when nothing rubs and every string is just tight.</p><p class="small"><a href="reference.html#stage-4">Details →</a></p></article>
+    <article><span class="sn">STAGE 5 · Coder</span><h4>Do the full wiring</h4><p>Add the second motor, START/STOP/MODE buttons, a fuse and a small power sensor. Move the buttons into a little control box.</p><p class="dw">Done when the multimeter checks pass and each button works.</p><p class="small"><a href="reference.html#stage-5">Details →</a></p></article>
+    <article><span class="sn">STAGE 6 · Coder</span><h4>Program everything</h4><p>Find OPEN and CLOSED for both motors with the glove on, then test every mode slowly.</p><p class="dw">Done when STOP and the red switch work every single time.</p><p class="small"><a href="reference.html#stage-6">Details →</a></p></article>
+    <article><span class="sn">STAGE 7 · Coder</span><h4>Run it from the laptop</h4><p>Use the app with the real glove. Open the results in Excel and make one chart.</p><p class="dw">Done when every test adds one correct row to the file.</p><p class="small"><a href="reference.html#stage-7">Details →</a></p></article>
+    <article><span class="sn">STAGE 8 · Both</span><h4>Put it all together</h4><p>Hand on a stand, motor box, control box and laptop on one table, cables tidy.</p><p class="dw">Done when it runs from the buttons alone and from the laptop.</p><p class="small"><a href="reference.html#stage-8">Details →</a></p></article>
+    <article><span class="sn">STAGE 9 · Both</span><h4>Test, test, test</h4><p>Hundreds of cycles, angles from video, motor temperature, string wear, every safety feature.</p><p class="dw">Done when every test passes and you have charts.</p><p class="small"><a href="reference.html#stage-9">Details →</a></p></article>
+    <article><span class="sn">STAGE 10 · Both</span><h4>Show time</h4><p>A 7-minute demo: the idea, a live run, the safety features, your results. Rehearse three times; record a backup video.</p><p class="dw">Done when the demo works first time.</p><p class="small"><a href="reference.html#demo">Details →</a></p></article>
+  </div>
+  <div class="box b-info"><span class="t">Money for the whole project</span><p>Stage 1 ≈ 47,000 IQD. The full glove ≈ 84,000 IQD by my estimates, under your 100,000 limit. The <a href="reference.html#budget">budget tool</a> in the technical reference lets you type real shop prices.</p></div>
+</section>
+
+<!-- ============ HELP ============ -->
+<section id="help">
+  <span class="eyebrow eb-yellow">Stuck?</span>
+  <h2>Quick fixes for the usual problems</h2>
+  <p class="lead">Everyone hits these the first time. Find your problem, try the fix, and change only one thing at a time.</p>
+  <div class="help">
+    <div><b>The motor shakes or twitches</b><p>Wire 7 (Arduino GND to the − rail) is missing or loose. Check it with the beep test.</p></div>
+    <div><b>The Arduino keeps restarting</b><p>The motor is getting power from the Arduino. Move it to the adapter's rails.</p></div>
+    <div><b>Upload fails: "not in sync"</b><p>Change Tools → Processor to the other ATmega328P choice. Close the Serial Monitor. Try another cable.</p></div>
+    <div><b>No COM port appears</b><p>Install the CH340 driver. Your cable may be charge-only; try another.</p></div>
+    <div><b>The motor hums and gets hot when closed</b><p>CLOSED is too far. Make it 5 to 10° smaller. Or the elastic is too tight.</p></div>
+    <div><b>The finger doesn't open fully</b><p>The string is too tight at OPEN, or the elastic is too weak.</p></div>
+    <div><b>The motor turns but the finger hardly moves</b><p>The string is slipping on the drum or a knot is loose. Tie it through the drum hole and glue the knots.</p></div>
+    <div><b>The finger bends sideways</b><p>The string rings aren't in a straight line. Turn them back in line.</p></div>
+  </div>
+  <div class="box b-tip"><span class="t">Still stuck?</span><p>Write down three things: what you expected, what actually happened, and what you already tried. Bring that to your instructor, or paste it to me. With those three, almost any problem can be solved.</p></div>
+</section>
+
+<!-- ============ WORDS ============ -->
+<section id="words">
+  <span class="eyebrow eb-orange">Words you'll hear</span>
+  <h2>Mini dictionary</h2>
+  <dl class="words">
+    <div><dt>Arduino <span class="ar" lang="ar">أردوينو</span></dt><dd>A tiny computer you program from your laptop.</dd></div>
+    <div><dt>Servo <span class="ar" lang="ar">سيرفو</span></dt><dd>A motor that turns to the exact angle you ask for.</dd></div>
+    <div><dt>Tendon <span class="ar" lang="ar">وتر</span></dt><dd>The cord that pulls a finger. Ours is fishing line.</dd></div>
+    <div><dt>Flexion / extension <span class="ar" lang="ar">ثني / بسط</span></dt><dd>Closing the finger / opening it.</dd></div>
+    <div><dt>Drum <span class="ar" lang="ar">بكرة</span></dt><dd>The round wheel on the motor that winds up the string.</dd></div>
+    <div><dt>Breadboard <span class="ar" lang="ar">لوحة تجارب</span></dt><dd>A board with holes that connects wires without soldering.</dd></div>
+    <div><dt>GND, ground <span class="ar" lang="ar">أرضي</span></dt><dd>The "minus" wire. Every part must share it.</dd></div>
+    <div><dt>Upload <span class="ar" lang="ar">رفع البرنامج</span></dt><dd>Copying the program from the laptop into the Arduino.</dd></div>
+    <div><dt>Serial Monitor <span class="ar" lang="ar">شاشة المنفذ التسلسلي</span></dt><dd>The window where you type commands to the Arduino.</dd></div>
+    <div><dt>Calibration <span class="ar" lang="ar">معايرة</span></dt><dd>Finding your safe OPEN and CLOSED angles.</dd></div>
+    <div><dt>Capacitor <span class="ar" lang="ar">متسعة</span></dt><dd>A small part that keeps the power steady when the motor starts.</dd></div>
+    <div><dt>Resistor <span class="ar" lang="ar">مقاومة</span></dt><dd>A small part that limits current. Ours protects the Arduino pin.</dd></div>
+    <div><dt>Multimeter <span class="ar" lang="ar">أفوميتر</span></dt><dd>A meter for volts, and a "beep test" for connections.</dd></div>
+    <div><dt>E-stop <span class="ar" lang="ar">زر الطوارئ</span></dt><dd>The red switch that cuts motor power.</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <p><b>Want every detail?</b> The <a href="reference.html">technical reference</a> has the full design review, all diagrams, the complete wiring, how every part of the code works, the budget tool, the test plan, and the demo-day script.</p>
+  <p>School project for rehabilitation research, not a medical device. Prices are estimates; check in shops. Made to be used one stage at a time.</p>
+  <p><a href="#top">Back to top ↑</a></p>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var store = {
+    get: function(k, d){ try{ var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+    set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  };
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Math.round(n).toLocaleString("en-US"); };
+
+  /* ---------- interactive finger ---------- */
+  var L = [95, 62, 50], A = [70, 85, 55], J1 = {x:260, y:140}, R = Math.PI / 180;
+  function pt(o, th, u, v){ var c = Math.cos(th), s = Math.sin(th); return {x:o.x + u*c - v*s, y:o.y + u*s + v*c}; }
+  function xy(p){ return p.x.toFixed(1) + "," + p.y.toFixed(1); }
+  function draw(p){
+    var t1 = A[0]*p*R, t2 = t1 + A[1]*p*R, t3 = t2 + A[2]*p*R;
+    var J2 = pt(J1, t1, L[0], 0), J3 = pt(J2, t2, L[1], 0);
+    $("seg1").setAttribute("transform", "translate(" + J1.x + " " + J1.y + ") rotate(" + (t1/R).toFixed(2) + ")");
+    $("seg2").setAttribute("transform", "translate(" + J2.x.toFixed(1) + " " + J2.y.toFixed(1) + ") rotate(" + (t2/R).toFixed(2) + ")");
+    $("seg3").setAttribute("transform", "translate(" + J3.x.toFixed(1) + " " + J3.y.toFixed(1) + ") rotate(" + (t3/R).toFixed(2) + ")");
+    $("j2").setAttribute("cx", J2.x.toFixed(1)); $("j2").setAttribute("cy", J2.y.toFixed(1));
+    $("j3").setAttribute("cx", J3.x.toFixed(1)); $("j3").setAttribute("cy", J3.y.toFixed(1));
+    var g1 = pt(J1, t1, L[0]/2, 30), g2 = pt(J2, t2, L[1]/2, 30), an = pt(J3, t3, L[2] - 12, 30);
+    $("tendon").setAttribute("points", ["70,171", "190,170", "245,170", xy(g1), xy(g2), xy(an)].join(" "));
+    $("anchor").setAttribute("cx", an.x.toFixed(1)); $("anchor").setAttribute("cy", an.y.toFixed(1));
+    var e1 = pt(J1, t1, L[0]/2, -30), e2 = pt(J2, t2, L[1]/2, -30), e3 = pt(J3, t3, L[2] - 12, -30);
+    var el = $("elastic");
+    el.setAttribute("points", ["165,110", "245,110", xy(e1), xy(e2), xy(e3)].join(" "));
+    el.style.strokeWidth = (3.4 - 1.4 * p).toFixed(2);
+    $("drum-mark").setAttribute("transform", "rotate(" + (-130 * p).toFixed(1) + " 70 200)");
+    $("ro-motor").textContent = Math.round(130 * p) + "°";
+    $("ro-string").textContent = Math.round(30 * p) + " mm";
+    $("ro-bend").textContent = Math.round(100 * p) + " %";
+  }
+  var slider = $("pull"), btn = $("playbtn");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var playing = !reduce, start = null;
+  function loop(ts){
+    if(!playing) return;
+    if(start === null) start = ts;
+    var p = (1 - Math.cos((ts - start) / 1000 * Math.PI / 2.2)) / 2;
+    slider.value = Math.round(p * 100);
+    draw(p);
+    requestAnimationFrame(loop);
+  }
+  function setPlaying(on){ playing = on; btn.textContent = on ? "Pause" : "Play"; if(on){ start = null; requestAnimationFrame(loop); } }
+  slider.addEventListener("input", function(){ if(playing) setPlaying(false); draw(slider.value / 100); });
+  btn.addEventListener("click", function(){ setPlaying(!playing); });
+  if(reduce){ slider.value = 60; draw(0.6); btn.textContent = "Play"; } else { draw(0); requestAnimationFrame(loop); }
+
+  /* ---------- chapter chips ---------- */
+  var chips = {};
+  document.querySelectorAll("#chips a").forEach(function(a){ chips[a.getAttribute("href").slice(1)] = a; });
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting && chips[e.target.id]){
+          document.querySelectorAll("#chips a.on").forEach(function(a){ a.classList.remove("on"); });
+          var c = chips[e.target.id]; c.classList.add("on");
+          var bar = $("chips"); var l = c.offsetLeft - bar.offsetLeft - 20; if(bar.scrollTo) bar.scrollTo({left:l, behavior:"smooth"});
+        }
+      });
+    }, {rootMargin:"-30% 0px -60% 0px"});
+    document.querySelectorAll("section[id]").forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- progress + shopping ---------- */
+  var ticks = store.get("rgb-progress", {});
+  var NEXT = {a1:"Part A: cut the blocks", b1:"Part B: wire 1", c1:"Part C: install the Arduino IDE", d1:"Part D: measure the pull"};
+  function updateProgress(){
+    var boxes = document.querySelectorAll("#stage1 [data-group] input[data-k]");
+    var done = 0, next = null;
+    boxes.forEach(function(b){
+      var li = b.closest(".step"); if(li) li.classList.toggle("done", b.checked);
+      if(b.checked) done++; else if(!next){ var h = b.closest("li").querySelector("h4"); next = h ? h.textContent : "wire " + b.getAttribute("data-k").slice(1); }
+    });
+    $("pfill").style.width = (done / boxes.length * 100) + "%";
+    $("ptext").textContent = done + " of " + boxes.length + " steps done";
+    var shopDone = document.querySelectorAll("#shop input:checked").length, shopAll = document.querySelectorAll("#shop input").length;
+    $("pnext").textContent = done === boxes.length ? "Stage 1 complete!" : (shopDone < shopAll && done === 0 ? "Next: go shopping" : "Next: " + next);
+  }
+  document.querySelectorAll("#stage1 input[data-k]").forEach(function(b){
+    b.checked = !!ticks[b.getAttribute("data-k")];
+    b.addEventListener("change", function(){ ticks[b.getAttribute("data-k")] = b.checked; store.set("rgb-progress", ticks); updateProgress(); updateShop(); });
+  });
+  function updateShop(){
+    var left = 0;
+    document.querySelectorAll("#shop input").forEach(function(b){ if(!b.checked) left += +b.getAttribute("data-price"); });
+    $("shop-left").textContent = left > 0 ? fmt(left) + " IQD left to buy" : "Everything bought!";
+  }
+  updateProgress(); updateShop();
+
+  /* ---------- motor finder ---------- */
+  var SERVOS = [{n:"SG90", k:1.8, note:"cheap, plastic gears"}, {n:"MG90S", k:1.8, note:"same size, metal gears"}, {n:"MG996R", k:9.4, note:"bigger, metal gears"}, {n:"DS3218", k:19, note:"strongest, most expensive"}];
+  var NM = 0.0980665, LIMIT = 0.4, ANGLE = 130;
+  function pick(torque){
+    for(var i = 0; i < SERVOS.length; i++){ var load = torque / (SERVOS[i].k * NM); if(load <= LIMIT) return {s:SERVOS[i], load:load, i:i}; }
+    return null;
+  }
+  function setAns(id, cls, v, s){ var el = $(id); el.className = "ans " + cls; el.querySelector(".v").textContent = v; el.querySelector(".s").textContent = s; }
+  function finder(){
+    var kg = parseFloat($("f-kg").value), mm = parseFloat($("f-mm").value);
+    if(!(kg > 0) || !(mm > 0)){ setAns("a-drum", "", "–", "Type both numbers."); setAns("a-four", "", "–", ""); setAns("a-thumb", "", "–", ""); return; }
+    var r = mm / (ANGLE * Math.PI / 180);            /* mm */
+    var f1 = kg * 9.81;
+    var T4 = f1 * 4 * 1.5 * r / 1000, T1 = f1 * 1.5 * r / 1000;
+    setAns("a-drum", "", "Ø " + Math.round(2 * r) + " mm", "A cap or spool about this wide across.");
+    var p4 = pick(T4), p1 = pick(T1);
+    if(p4){ setAns("a-four", "good", p4.s.n, "Works at " + Math.round(p4.load * 100) + " % of its strength (" + p4.s.note + ")." + (p4.i >= 2 ? " An SG90 would need " + Math.round(T4 / (1.8 * NM) * 100) + " %: too weak." : "")); }
+    else { setAns("a-four", "bad", "Too heavy", "Even a DS3218 is over 40 %. The elastic may be too tight or there is friction; check and measure again."); }
+    var small1 = T1 / (1.8 * NM);
+    if(small1 <= LIMIT){ setAns("a-thumb", "good", "SG90 or MG90S", "Works at " + Math.round(small1 * 100) + " % of its strength. MG90S lasts longer (metal gears)."); }
+    else if(small1 <= 0.6){ setAns("a-thumb", "warnb", "MG90S", "Works at " + Math.round(small1 * 100) + " %: it will get warm, fine for the wooden hand. Metal gears matter here."); }
+    else if(p1){ setAns("a-thumb", "good", p1.s.n, "Works at " + Math.round(p1.load * 100) + " % of its strength. A small servo would need " + Math.round(small1 * 100) + " %."); }
+    else { setAns("a-thumb", "bad", "Too heavy", "Check the elastic and friction, then measure again."); }
+    $("a-detail").textContent = "Your numbers: one finger " + f1.toFixed(1) + " N; four fingers with +50 % = " + (f1 * 6).toFixed(1) + " N; drum radius " + r.toFixed(1) + " mm; torque needed " + (T4 / NM).toFixed(2) + " kg·cm (4 fingers), " + (T1 / NM).toFixed(2) + " kg·cm (thumb).";
+  }
+  ["f-kg", "f-mm"].forEach(function(id){ $(id).addEventListener("input", finder); });
+  finder();
+
+  /* ---------- code: highlight, copy ---------- */
+  try{ if(window.hljs) document.querySelectorAll("pre code[class*=language-]").forEach(function(el){ window.hljs.highlightElement(el); }); }catch(e){}
+  document.querySelectorAll("[data-copy]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var el = $(b.getAttribute("data-copy")), label = b.textContent;
+      var reset = function(){ setTimeout(function(){ b.textContent = label; }, 2200); };
+      var fallback = function(){ var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected: press Ctrl+C"; reset(); };
+      try{ navigator.clipboard.writeText(el.textContent).then(function(){ b.textContent = "Copied!"; reset(); }, fallback); }catch(e){ fallback(); }
+    });
+  });
+
+  /* ---------- download all code ---------- */
+  var dbtn = $("dl-zip"), dlink = $("dl-link");
+  if(!(window.claude && window.claude.use)){ dlink.hidden = false; return; }
+  window.claude.use("downloads").then(function(dl){
+    if(!dl || !window.JSZip) return;
+    var z = new window.JSZip(), base = "robotic-glove/";
+    z.file(base + "firmware/servo_calibration/servo_calibration.ino", $("code-cal").textContent);
+    z.file(base + "firmware/robotic_glove/robotic_glove.ino", $("code-fw").textContent);
+    z.file(base + "pc_app/glove_control.py", $("code-py").textContent);
+    z.file(base + "pc_app/requirements.txt", "pyserial>=3.5\n");
+    z.file(base + "README.txt", {{README_JSON}});
+    var blob = z.generateAsync({type:"blob", compression:"DEFLATE"});
+    blob.then(function(){ dbtn.hidden = false; }, function(){});
+    dbtn.addEventListener("click", function(){
+      var label = dbtn.textContent;
+      blob.then(function(b){ return dl.save({filename:"robotic-glove-project.zip", data:b}); })
+        .then(function(){ dbtn.textContent = "Saved!"; setTimeout(function(){ dbtn.textContent = label; }, 2500); })
+        .catch(function(err){
+          var code = err && err.code; if(code === "declined") return;
+          dbtn.textContent = code === "rate_limited" ? "Try again in a moment" : "Download not available here";
+          setTimeout(function(){ dbtn.textContent = label; }, 3000);
+        });
+    });
+  }, function(){});
+})();
+</script>

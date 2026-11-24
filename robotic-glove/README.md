@@ -10,12 +10,13 @@ artificial finger and the artificial hand. No patients.
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The full build guide: design review, mechanics, wiring, code walkthrough, ten stages, IQD budget tool, testing and safety, schedule. Open it in any browser. |
+| `index.html` | Beginner guide: the idea, the parts, the plan, Stage 1 step by step, safety rules, code, quick fixes. Start here. |
+| `reference.html` | Technical reference: design review, all diagrams, full wiring, code walkthrough, ten stages, IQD budget tool, test plan, demo day. |
 | `firmware/servo_calibration/servo_calibration.ino` | Stage 1 tool: moves one servo slowly to the angle you type, to find OPEN and CLOSED. |
 | `firmware/robotic_glove/robotic_glove.ino` | Full Arduino Nano program: two servos, START/STOP/MODE buttons, E-stop sensing on A0, USB command protocol. |
 | `pc_app/glove_control.py` | PC control panel (Python 3.8+, Tkinter, pyserial) with a built-in simulator and CSV logging. |
 | `robotic-glove-project.zip` | The two sketches and the PC app in one download. |
-| `site/` | `template.html` and `build.py` that generate `index.html` (run `python3 site/build.py`). |
+| `site/` | `beginner.html`, `template.html` and `build.py` that generate both pages (run `python3 site/build.py`). |
 
 ## Quick start
 

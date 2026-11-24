@@ -1,4 +1,4 @@
-<title>Robotic Glove Build Guide</title>
+<title>Robot Glove Technical Reference</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Supervisor's build guide for a low-cost tendon-driven robotic glove: design review, mechanics, electronics, Arduino and Python code, stages, budget, testing and safety.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -335,8 +335,8 @@ footer.end{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);col
 
 <div class="shell">
 <nav class="sidenav" aria-label="Chapters">
-  <p class="brand">Robotic Glove</p>
-  <p class="brand-sub">Build guide · prototype v1</p>
+  <p class="brand">Robot Glove</p>
+  <p class="brand-sub">Technical reference · <a href="./">beginner guide</a></p>
   <ul class="toc" data-toc>
     <li><a href="#start"><span class="k">00</span><span>Start here</span></a></li>
     <li><a href="#review"><span class="k">R</span><span>Design review</span></a></li>
@@ -358,17 +358,18 @@ footer.end{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);col
 
 <main>
 <!-- ============================== HERO ============================== -->
+<div class="note call" style="margin-top:0"><span class="label">New to this?</span><p>This page is the full technical reference. If this is your first project, start with the <a href="./">beginner guide</a>: same project, simpler words, one step at a time.</p></div>
 <header class="hero" id="top">
   <div>
-    <p class="eyebrow">Medical Devices Technology Engineering · Year 2 practical project</p>
-    <h1>Robotic Glove Build Guide</h1>
+    <p class="eyebrow">Technical reference · every detail in one place</p>
+    <h1>Robot Glove Technical Reference</h1>
     <p class="hero-sub">Design and Development of a Low-Cost Automatic Robotic Glove for Finger Movement Assistance and Rehabilitation</p>
     <p class="intro">Two small servos pull thin tendons along the palm side of the fingers to bend them. Elastic bands on the back of the hand straighten them again. An Arduino repeats the movement inside safe limits, and a Python app on your PC starts it, shows what it is doing and records every test in a CSV file. This page is written as your engineering supervisor: it reviews your concept, fixes the weak points, and takes you from zero to a working prototype, one stage at a time.</p>
     <div class="actions">
       <a class="btn primary" href="#stage1">Start Stage 1: the artificial finger</a>
       <a class="btn" href="#review">Read the design review</a>
       <button class="btn" id="dl-zip" type="button" hidden>Download all code (.zip)</button>
-      <a class="btn" id="dl-link" href="robotic-glove-project.zip" hidden>Download all code (.zip)</a>
+      <a class="btn" id="dl-link" href="./#code" hidden>Get the code</a>
     </div>
     <p class="small muted" id="dl-note">All code on this page is also in your GitHub repository, in the <code>robotic-glove/</code> folder: two Arduino sketches and the Python app.</p>
   </div>
