@@ -1,0 +1,1703 @@
+<!doctype html><html><head><meta charset="utf-8"><title>The Human Heart Seminar</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="description" content="Practical anatomy seminar: the human heart — structure, blood flow and cardiac cycle. Prepared by Yousif Basil and Arwan Samir.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Caslon+Display&display=swap">
+<style>
+:root {
+  /* Layout: a scrolling anatomy atlas. A dark cardiac-monitor hero, then numbered "plates" (one per talk section) in a single column with a side progress rail. Present mode snaps one plate per screen. */
+  --bg: #f1f2f5;
+  --surface: #ffffff;
+  --surface-2: #e7e9f0;
+  --ink: #121a2d;
+  --muted: #566079;
+  --line: #d4d8e2;
+  --arterial: #b0142f;
+  --arterial-soft: #f7e1e5;
+  --venous: #2b4fae;
+  --venous-soft: #e0e7f9;
+  --gold: #9a5f0c;
+  --gold-soft: #f5ead6;
+  --ok: #1d7448;
+  --ok-soft: #dcf1e5;
+  --stage: #e9ecf3;
+  --stage-ink: #26304a;
+  --plate: #ffffff;
+  --peri: rgba(214, 186, 120, .22);
+  --peri-line: #b48a2e;
+  --c-lv: #2b4fae;
+  --c-la: #9a5f0c;
+  --c-vol: #6a3fb5;
+  --c-ecg: #1d7448;
+  --shadow: 0 1px 2px rgba(18, 26, 45, .06), 0 10px 28px rgba(18, 26, 45, .08);
+  --hero-bg: #080b16;
+  --hero-ink: #f2f3f8;
+  --hero-muted: #9ea6c0;
+  --hero-line: #1b2340;
+  --hero-grid: #141b33;
+  --trace: #ff4f68;
+  --hero-glow: rgba(176, 20, 47, .38);
+
+  --font-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-xs: .78rem;
+  --fs-sm: .9rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.6rem;
+  --fs-2xl: clamp(2.1rem, 4vw, 3.1rem);
+  --fs-hero: clamp(3rem, 8.5vw, 6.4rem);
+  --radius: 12px;
+  --maxw: 1180px;
+  --bar-h: 56px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0f1c; --surface: #131a2b; --surface-2: #1b2338; --ink: #e8ebf3; --muted: #9ca4bb; --line: #263049;
+    --arterial: #ff5a6e; --arterial-soft: #3b1621; --venous: #84a0ff; --venous-soft: #19234a;
+    --gold: #e9b25a; --gold-soft: #3a2c12; --ok: #4fd08f; --ok-soft: #123224;
+    --stage: #0f1526; --stage-ink: #d8ddeb; --plate: #e6e6ea;
+    --peri: rgba(233, 178, 90, .16); --peri-line: #e9b25a;
+    --c-lv: #84a0ff; --c-la: #e9b25a; --c-vol: #c4a2ff; --c-ecg: #4fd08f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0f1c; --surface: #131a2b; --surface-2: #1b2338; --ink: #e8ebf3; --muted: #9ca4bb; --line: #263049;
+  --arterial: #ff5a6e; --arterial-soft: #3b1621; --venous: #84a0ff; --venous-soft: #19234a;
+  --gold: #e9b25a; --gold-soft: #3a2c12; --ok: #4fd08f; --ok-soft: #123224;
+  --stage: #0f1526; --stage-ink: #d8ddeb; --plate: #e6e6ea;
+  --peri: rgba(233, 178, 90, .16); --peri-line: #e9b25a;
+  --c-lv: #84a0ff; --c-la: #e9b25a; --c-vol: #c4a2ff; --c-ecg: #4fd08f;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 60; background: var(--surface);
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--venous); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--venous); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--font-mono); }
+.tnum { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: var(--maxw); margin: 0 auto; height: var(--bar-h);
+  display: flex; align-items: center; gap: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); min-width: 0; }
+.brand svg { flex: none; }
+.brand b { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; letter-spacing: .01em; white-space: nowrap; }
+.now { flex: 1; min-width: 0; text-align: center; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-actions { display: flex; gap: 8px; margin-left: auto; }
+.progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--arterial); transition: width .1s linear; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  font-size: var(--fs-sm); font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: background .2s, border-color .2s, transform .15s;
+}
+.btn:hover { border-color: var(--muted); }
+.btn:active { transform: translateY(1px); }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn-primary { background: var(--arterial); color: #fff; border-color: var(--arterial); }
+.btn-primary:hover { border-color: var(--arterial); filter: brightness(1.08); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn .lbl-long { display: inline; }
+@media (max-width: 640px) {
+  .now { display: none; }
+  .btn .lbl-long { display: none; }
+  .brand b { font-size: 1.05rem; }
+}
+
+/* ---------- side rail ---------- */
+.rail {
+  position: fixed; right: max(14px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%);
+  z-index: 40; display: none; flex-direction: column; gap: 6px;
+}
+.rail a { position: relative; display: block; width: 26px; height: 18px; }
+.rail a::before {
+  content: ""; position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
+  border-radius: 50%; background: var(--line); transition: transform .2s, background .2s;
+}
+.rail a.active::before { background: var(--arterial); transform: scale(1.5); }
+.rail a span {
+  position: absolute; right: 26px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  font-family: var(--font-mono); font-size: var(--fs-xs); background: var(--ink); color: var(--surface);
+  padding: 2px 8px; border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity .15s;
+}
+.rail a:hover span, .rail a:focus-visible span { opacity: 1; }
+@media (min-width: 1280px) { .rail { display: flex; } }
+
+/* ---------- hero ---------- */
+.hero {
+  background: radial-gradient(ellipse 60% 70% at 72% 38%, var(--hero-glow), transparent 70%), var(--hero-bg);
+  color: var(--hero-ink);
+  overflow: hidden;
+  position: relative;
+}
+.hero-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 28px;
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: center;
+}
+.hero-text { min-width: 0; display: grid; gap: 18px; }
+.eyebrow { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.hero .eyebrow { color: var(--hero-muted); }
+.hero h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-hero); line-height: .95; letter-spacing: -.01em; }
+.hero h1 em { font-style: italic; color: var(--trace); }
+.hero-sub { font-size: clamp(1.1rem, 2.2vw, 1.45rem); color: var(--hero-ink); max-width: 30ch; line-height: 1.35; }
+.byline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding-top: 6px; border-top: 1px solid var(--hero-line); }
+.byline .eyebrow { color: var(--hero-muted); }
+.byline .names { font-family: var(--font-display); font-size: 1.35rem; }
+.byline .names i { font-style: normal; color: var(--trace); padding: 0 .2em; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero .btn { background: transparent; color: var(--hero-ink); border-color: #2b3557; }
+.hero .btn:hover { border-color: var(--hero-muted); }
+.hero .btn-primary { background: var(--trace); border-color: var(--trace); color: #170309; font-weight: 600; }
+.hero-figure { position: relative; min-width: 0; display: grid; place-items: center; }
+.hero-heart {
+  width: min(100%, 420px); height: auto;
+  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
+  transform-origin: 52% 58%;
+  will-change: transform;
+}
+.hero-figure figcaption { position: absolute; bottom: 2px; right: 0; font-family: var(--font-mono); font-size: .68rem; color: var(--hero-muted); }
+.monitor {
+  max-width: var(--maxw); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 36px;
+}
+.monitor-box {
+  display: grid; grid-template-columns: 1fr auto; gap: 0;
+  border: 1px solid var(--hero-line); border-radius: var(--radius); overflow: hidden; background: #060912;
+}
+.monitor canvas { width: 100%; height: 132px; display: block; min-width: 0; }
+.readouts { display: grid; grid-template-columns: repeat(3, auto); gap: 4px 22px; padding: 14px 18px; border-left: 1px solid var(--hero-line); align-content: center; }
+.readout { display: grid; }
+.readout small { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .12em; color: var(--hero-muted); text-transform: uppercase; }
+.readout b { font-family: var(--font-mono); font-weight: 500; font-size: 1.7rem; color: var(--trace); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.readout b.alt { color: var(--hero-ink); font-size: 1.15rem; }
+.hr-control { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding-top: 8px; }
+.hr-control label { font-family: var(--font-mono); font-size: .7rem; color: var(--hero-muted); letter-spacing: .1em; text-transform: uppercase; }
+.hr-control input { flex: 1; accent-color: var(--trace); min-width: 90px; }
+@media (max-width: 880px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-figure { order: -1; }
+  .hero-heart { width: min(70%, 300px); }
+  .monitor-box { grid-template-columns: 1fr; }
+  .readouts { border-left: 0; border-top: 1px solid var(--hero-line); grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- sections ---------- */
+main { display: block; }
+.sec { scroll-margin-top: calc(var(--bar-h) + 8px); border-bottom: 1px solid var(--line); }
+.sec-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: clamp(48px, 7vw, 88px);
+  display: grid; gap: 32px;
+}
+.sec-head { display: grid; grid-template-columns: auto 1fr; gap: 6px 22px; align-items: start; }
+.sec-no {
+  font-family: var(--font-display); font-size: clamp(3rem, 6vw, 4.6rem); line-height: .85; color: var(--arterial);
+  font-variant-numeric: lining-nums;
+}
+.sec-head h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-2xl); line-height: 1.05; margin-top: 4px; }
+.lede { color: var(--muted); font-size: var(--fs-md); max-width: 68ch; margin-top: 10px; }
+.sec-head > div { min-width: 0; }
+
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.grid-2.flip { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 900px) {
+  .grid-2, .grid-2.flip { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+}
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; min-width: 0; }
+.card h3 { font-size: var(--fs-lg); font-weight: 600; margin-bottom: 8px; }
+.card h3 small { display: block; font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: 400; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+.prose { display: grid; gap: 12px; max-width: 68ch; }
+.prose p { color: var(--ink); }
+ul.points { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+ul.points li { position: relative; padding-left: 22px; }
+ul.points li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--arterial); }
+ul.points.blue li::before { background: var(--venous); }
+ul.points.gold li::before { background: var(--gold); }
+.term { font-weight: 600; }
+.key { background: var(--arterial-soft); color: var(--ink); padding: 0 .3em; border-radius: 4px; }
+.note {
+  border-left: 3px solid var(--gold); background: var(--gold-soft); padding: 12px 16px; border-radius: 0 10px 10px 0;
+  font-size: var(--fs-sm);
+}
+.note .nb { font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; display: block; color: var(--gold); margin-bottom: 2px; }
+.cap { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); line-height: 1.45; }
+
+/* plates */
+.plate { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.plate .frame { background: var(--plate); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; position: relative; }
+.plate .frame img { width: 100%; height: auto; }
+:root[data-theme="dark"] .plate .frame img { filter: brightness(.94); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .plate .frame img { filter: brightness(.94); } }
+.plate figcaption { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); line-height: 1.45; }
+.plate figcaption b { color: var(--ink); font-family: var(--font-body); font-size: var(--fs-sm); font-weight: 600; display: block; letter-spacing: 0; }
+.zoom { all: unset; display: block; cursor: zoom-in; width: 100%; }
+.zoom:focus-visible { outline: 3px solid var(--venous); outline-offset: -3px; }
+.atlas-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 760px) { .atlas-strip { grid-template-columns: 1fr; } }
+
+/* chips & segmented controls */
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: var(--fs-sm);
+}
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--surface-2); font-weight: 600; }
+.chip[aria-pressed="false"] { color: var(--muted); }
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: var(--fs-sm); color: var(--muted); font-weight: 500; }
+.seg button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.label-tag { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- facts ---------- */
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: grid; gap: 2px; }
+.fact b { font-family: var(--font-display); font-weight: 400; font-size: 2.1rem; line-height: 1.05; color: var(--arterial); font-variant-numeric: lining-nums tabular-nums; }
+.fact span { font-size: var(--fs-sm); color: var(--muted); }
+@media (max-width: 900px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+ol.objectives { margin: 0; padding: 0; list-style: none; counter-reset: obj; display: grid; gap: 14px; }
+ol.objectives li { counter-increment: obj; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: baseline; }
+ol.objectives li::before { content: counter(obj); font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--arterial); border: 1px solid var(--arterial); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; }
+
+/* ---------- thorax explorer ---------- */
+.explorer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.stage { background: var(--stage); position: relative; display: grid; align-content: start; gap: 10px; padding: 14px; min-width: 0; }
+.stage svg { width: 100%; height: auto; display: block; }
+.stage .controls { justify-content: center; }
+.explorer-panel { padding: 22px; display: grid; gap: 16px; align-content: start; min-width: 0; border-left: 1px solid var(--line); }
+@media (max-width: 900px) { .explorer { grid-template-columns: 1fr; } .explorer-panel { border-left: 0; border-top: 1px solid var(--line); } }
+.tabpanel[hidden] { display: none; }
+.tabpanel { display: grid; gap: 14px; }
+
+#thx .bone-o { stroke: #a2895f; fill: none; stroke-linecap: round; }
+#thx .bone-f { stroke: #f1e5c9; fill: none; stroke-linecap: round; }
+#thx .post .bone-o { stroke: #a2895f; opacity: .35; }
+#thx .post .bone-f { stroke: #e9dcbc; opacity: .4; }
+#thx .cart-o { stroke: #8fa9b3; fill: none; stroke-linecap: round; }
+#thx .cart-f { stroke: #d6e7ec; fill: none; stroke-linecap: round; }
+#thx .rib { transition: opacity .3s; }
+#thx .rib.hl .bone-f, #thx .rib.hl .cart-f { stroke: var(--hl, #f2b04a); }
+#thx .rib.hl .bone-o, #thx .rib.hl .cart-o { stroke: var(--hl-o, #a8650b); opacity: 1; }
+#thx .rib.dim { opacity: .28; }
+#thx .post.hl:not(.float) .bone-o, #thx .post.hl:not(.float) .bone-f { opacity: .5; }
+#thx .post.float .bone-o { opacity: .75; }
+#thx .post.float .bone-f { opacity: .9; }
+#thx .ausc:focus { outline: none; }
+#thx .layer { transition: opacity .45s ease; }
+#thx .layer.off { opacity: 0; pointer-events: none; }
+#thx .lbl line { stroke: var(--stage-ink); stroke-width: .7; opacity: .7; }
+#thx .lbl circle { fill: var(--stage-ink); }
+#thx .lbl text { fill: var(--stage-ink); font-family: var(--font-body); font-size: 9.5px; font-weight: 500; paint-order: stroke; stroke: var(--stage); stroke-width: 3px; stroke-linejoin: round; }
+#thx .peri-shape { fill: var(--peri); stroke: var(--peri-line); stroke-width: 1.4; stroke-dasharray: 4 3; }
+#thx .med-zone { fill: var(--gold); opacity: .14; }
+#thx .med-line { stroke: var(--gold); stroke-width: 1.4; stroke-dasharray: 5 4; }
+#thx .surf-line { fill: none; stroke: var(--arterial); stroke-width: 1.6; stroke-dasharray: 5 4; }
+#thx .surf-pt { fill: var(--arterial); }
+#thx .surf-txt { fill: var(--arterial); font: 600 9px var(--font-mono); paint-order: stroke; stroke: var(--stage); stroke-width: 3px; }
+#thx .ausc { cursor: pointer; }
+#thx .ausc circle { fill: var(--surface); stroke: var(--venous); stroke-width: 2; transition: r .2s; }
+#thx .ausc text { fill: var(--venous); font: 600 10px var(--font-mono); text-anchor: middle; pointer-events: none; }
+#thx .ausc.on circle { fill: var(--venous); }
+#thx .ausc.on text { fill: var(--surface); }
+#thx .ausc:focus-visible { outline: none; }
+#thx .ausc:focus-visible circle { stroke-width: 3.5; }
+.thx-heart { transform-box: view-box; transform-origin: 232px 184px; animation: thxbeat .86s ease-in-out infinite; }
+@keyframes thxbeat { 0%, 100% { transform: scale(1); } 14% { transform: scale(.962); } 32% { transform: scale(.955); } 52% { transform: scale(1); } }
+.breathing .thx-lungs { transform-box: view-box; transform-origin: 200px 60px; animation: inhale 4.6s ease-in-out infinite; }
+.breathing .thx-dia { transform-box: view-box; animation: dia 4.6s ease-in-out infinite; }
+.breathing .thx-cage { transform-box: view-box; transform-origin: 200px 70px; animation: cage 4.6s ease-in-out infinite; }
+@keyframes inhale { 0%, 100% { transform: scale(1, 1); } 38% { transform: scale(1.025, 1.06); } }
+@keyframes dia { 0%, 100% { transform: translateY(0); } 38% { transform: translateY(13px); } }
+@keyframes cage { 0%, 100% { transform: scale(1, 1) translateY(0); } 38% { transform: scale(1.022, 1) translateY(-3px); } }
+
+.info-pop { background: var(--venous-soft); border-radius: 10px; padding: 12px 14px; font-size: var(--fs-sm); }
+.info-pop b { display: block; font-size: var(--fs-md); }
+
+/* ---------- hotspots ---------- */
+.hs-wrap { position: relative; border-radius: var(--radius); overflow: hidden; background: #2a0508; user-select: none; -webkit-user-select: none; }
+.hs-wrap img { width: 100%; height: auto; }
+.hs {
+  position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%;
+  border: 2px solid #fff; background: rgba(176, 20, 47, .85); cursor: pointer; padding: 0;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, .7); animation: ping 2.4s ease-out infinite;
+  display: grid; place-items: center; color: #fff; font: 600 11px var(--font-mono);
+}
+.hs.on { background: #fff; color: #8d0f24; animation: none; transform: scale(1.15); }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); } 70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+.spot-mode .hs { display: none; }
+.spot-mode .hs.reveal { display: grid; animation: none; background: #1d7448; }
+.spot-click { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 3px solid #fff; pointer-events: none; }
+.spot-click.good { background: #1d7448; }
+.spot-click.bad { background: #b0142f; }
+.spot-mode .hs-wrap { cursor: crosshair; }
+.structure-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.structure-list button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 5px 10px; font-size: var(--fs-sm); cursor: pointer; }
+.structure-list button.on { border-color: var(--arterial); background: var(--arterial-soft); }
+.spotter-q { font-size: var(--fs-lg); }
+.spotter-q b { color: var(--arterial); }
+.feedback { font-size: var(--fs-sm); min-height: 1.6em; }
+.feedback.good { color: var(--ok); }
+.feedback.bad { color: var(--arterial); }
+
+/* ---------- valves ---------- */
+.valve-svg { width: 100%; height: auto; display: block; }
+.leaflet { transform-box: view-box; transition: transform .45s cubic-bezier(.5, 0, .2, 1); fill: #f4e7dc; stroke: #a7776c; stroke-width: 1.3; }
+.valve-ring { fill: #4a0d18; stroke: #d9c6ae; stroke-width: 7; }
+.valve-skel { fill: #efe5d4; stroke: #c9b79a; stroke-width: 1.5; }
+.valve-name { font: 600 11px var(--font-body); fill: var(--stage-ink); text-anchor: middle; }
+.valve-state { font: 500 9.5px var(--font-mono); text-anchor: middle; letter-spacing: .08em; }
+.valve-state.open { fill: var(--ok); }
+.valve-state.closed { fill: var(--arterial); }
+.orient { font: 500 9px var(--font-mono); fill: var(--muted); letter-spacing: .1em; }
+
+/* ---------- blood flow ---------- */
+.flow-wrap { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.flow-wrap img { width: 100%; height: auto; }
+.flow-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flow-ring { fill: none; transform-box: fill-box; transform-origin: center; animation: ring 1.6s ease-in-out infinite; }
+@keyframes ring { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(1.12); } }
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: st; }
+ol.steps li button {
+  width: 100%; text-align: left; border: 0; background: transparent; cursor: pointer; border-radius: 8px;
+  display: grid; grid-template-columns: 30px 1fr; gap: 8px; align-items: center; padding: 6px 8px; font-size: var(--fs-sm);
+}
+ol.steps li { counter-increment: st; }
+ol.steps li button::before { content: counter(st); font-family: var(--font-mono); font-size: var(--fs-xs); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); }
+ol.steps li.deoxy button::before { border-color: var(--venous); color: var(--venous); }
+ol.steps li.oxy button::before { border-color: var(--arterial); color: var(--arterial); }
+ol.steps li button[aria-current="step"] { background: var(--surface-2); font-weight: 600; }
+ol.steps li.deoxy button[aria-current="step"]::before { background: var(--venous); color: var(--surface); }
+ol.steps li.oxy button[aria-current="step"]::before { background: var(--arterial); color: var(--surface); }
+.step-detail { border-radius: 10px; padding: 14px 16px; background: var(--surface-2); min-height: 92px; }
+.step-detail b { display: block; font-size: var(--fs-lg); }
+.circuits { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.circuit { border-radius: var(--radius); padding: 16px 18px; border: 1px solid var(--line); background: var(--surface); }
+.circuit h3 { font-size: var(--fs-md); margin-bottom: 6px; }
+.circuit.pul { border-top: 4px solid var(--venous); }
+.circuit.sys { border-top: 4px solid var(--arterial); }
+.circuit .route { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); line-height: 1.7; }
+@media (max-width: 640px) { .circuits { grid-template-columns: 1fr; } }
+
+/* ---------- conduction ---------- */
+.cond-svg { width: 100%; height: auto; display: block; }
+.cond-path { fill: none; stroke: #f2c14e; stroke-width: 3.2; stroke-linecap: round; }
+.cond-base { fill: none; stroke: #8a7342; stroke-width: 3.2; stroke-linecap: round; opacity: .35; }
+.cond-node { fill: #8a7342; }
+.cond-node.on { fill: #ffd34d; filter: drop-shadow(0 0 6px #ffd34d); }
+.ecg-mini { width: 100%; height: auto; display: block; }
+.ecg-line { fill: none; stroke: var(--c-ecg); stroke-width: 2.2; stroke-linejoin: round; }
+.ecg-grid line { stroke: var(--line); stroke-width: .6; }
+.cond-caption { font-size: var(--fs-md); min-height: 3.2em; }
+.cond-caption b { color: var(--arterial); font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: .06em; margin-right: 6px; }
+.rates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rate { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.rate b { font-family: var(--font-mono); font-weight: 500; font-size: var(--fs-lg); display: block; }
+.rate span { font-size: var(--fs-xs); color: var(--muted); }
+@media (max-width: 520px) { .rates { grid-template-columns: 1fr; } }
+
+/* ---------- summary ---------- */
+.takeaways { counter-reset: tk; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.takeaways li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.takeaways li b { display: block; font-weight: 600; margin-bottom: 2px; }
+@media (max-width: 760px) { .takeaways { grid-template-columns: 1fr; } }
+.refs { font-size: var(--fs-sm); color: var(--muted); display: grid; gap: 6px; padding-left: 1.2em; margin: 0; }
+.credits { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); line-height: 1.7; }
+.thanks {
+  background: var(--hero-bg); color: var(--hero-ink); border-radius: 18px; padding: clamp(28px, 5vw, 56px);
+  display: grid; gap: 10px; text-align: center; justify-items: center;
+}
+.thanks h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1; }
+.thanks p { color: var(--hero-muted); }
+.thanks .names { font-family: var(--font-display); font-size: 1.5rem; color: var(--hero-ink); }
+.thanks .names i { font-style: normal; color: var(--trace); padding: 0 .25em; }
+footer.foot { padding-block: 26px 40px; text-align: center; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* ---------- lightbox ---------- */
+dialog.lightbox { border: 0; padding: 0; background: transparent; max-width: min(96vw, 1200px); max-height: 94vh; width: 100%; }
+dialog.lightbox::backdrop { background: rgba(5, 8, 16, .86); }
+.lb-inner { display: grid; gap: 10px; justify-items: center; }
+.lb-inner img { max-height: 82vh; width: auto; max-width: 100%; border-radius: 10px; background: #fff; }
+.lb-inner p { color: #e8ebf3; font-size: var(--fs-sm); text-align: center; max-width: 80ch; }
+.lb-close { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); background: #fff; color: #121a2d; border: 0; }
+
+/* ---------- reveal (content is visible at rest; this only adds a settle-in) ---------- */
+.settle { animation: settle .7s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes settle { from { opacity: .25; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* ---------- present mode ---------- */
+.present { font-size: 17px; }
+html:has(body.present) { scroll-snap-type: y mandatory; }
+.present .sec, .present .hero { min-height: calc(100dvh - var(--bar-h)); scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; }
+.present .hero { min-height: calc(100dvh - var(--bar-h)); }
+.present .sec-inner { width: 100%; }
+.slide-nav {
+  position: fixed; z-index: 55; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
+  display: none; align-items: center; gap: 6px; padding: 5px; border-radius: 999px;
+  background: var(--ink); color: var(--surface); box-shadow: var(--shadow);
+}
+.present .slide-nav { display: flex; }
+.slide-nav button { border: 0; background: transparent; color: var(--surface); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+.slide-nav button:hover { background: color-mix(in srgb, var(--surface) 18%, transparent); }
+.slide-nav span { font-family: var(--font-mono); font-size: var(--fs-sm); min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; }
+.hero .kbd { border-color: #2b3557; }
+.kbd { font-family: var(--font-mono); font-size: .75em; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .settle, .hs, .flow-ring { animation: none !important; }
+  .thx-heart { animation: none; }
+}
+/* ---------- v2: simpler seminar ---------- */
+.atlas-strip.two { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
+@media (max-width: 560px) { .atlas-strip.two { grid-template-columns: 1fr; } }
+.sec-head.plain { grid-template-columns: 1fr; }
+.grid-2 .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-2 .fact b { font-size: 1.7rem; }
+.ch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ch-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.ch-card.r { border-top: 4px solid var(--venous); }
+.ch-card.l { border-top: 4px solid var(--arterial); }
+.ch-card small { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); letter-spacing: .1em; }
+.ch-card b { font-size: var(--fs-md); }
+.ch-card span { font-size: var(--fs-sm); color: var(--muted); }
+@media (max-width: 420px) { .ch-grid { grid-template-columns: 1fr; } }
+.vtable { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.vtable th { text-align: left; font: 500 var(--fs-xs) var(--font-mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px 6px 0; border-bottom: 1px solid var(--line); }
+.vtable td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.vtable tr:last-child td { border-bottom: 0; }
+.vtable td:last-child, .vtable th:last-child { text-align: right; font-family: var(--font-mono); padding-right: 0; }
+.path-steps { list-style: none; margin: 0; padding: 0; counter-reset: ps; display: grid; gap: 6px; }
+.path-steps li { counter-increment: ps; display: grid; grid-template-columns: 28px 1fr; column-gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); transition: background .2s, border-color .2s; }
+.path-steps li::before { content: counter(ps); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 500 var(--fs-xs) var(--font-mono); border: 1px solid var(--line); transition: background .2s; }
+.path-steps li b { font-size: var(--fs-sm); }
+.path-steps li span { font-size: var(--fs-sm); color: var(--muted); line-height: 1.4; }
+.path-steps li.on { border-color: var(--gold); background: var(--gold-soft); }
+.path-steps li.on::before { background: var(--gold); color: var(--surface); border-color: var(--gold); }
+.cond-caption { min-height: 2.8em; font-size: var(--fs-sm); margin-top: 6px; }
+.tl { display: grid; gap: 4px; padding: 0 6px; }
+.tl-bar { position: relative; display: flex; height: 38px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.tl-seg { display: flex; align-items: center; padding-left: 10px; font: 500 var(--fs-xs) var(--font-mono); letter-spacing: .04em; min-width: 0; white-space: nowrap; overflow: hidden; }
+.tl-seg.sys { background: var(--arterial-soft); color: var(--arterial); }
+.tl-seg.dia { background: var(--venous-soft); color: var(--venous); }
+.tl-cur { position: absolute; top: 0; bottom: 0; left: 0; width: 3px; border-radius: 2px; background: var(--ink); }
+.tl-marks { position: relative; height: 18px; font: 500 .72rem var(--font-mono); color: var(--gold); }
+.tl-marks span { position: absolute; top: 0; white-space: nowrap; }
+.pc { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 5px; padding: 16px 18px; border-radius: var(--radius); background: var(--surface); border: 1.5px solid var(--line); transition: border-color .25s, box-shadow .25s; }
+.pc small { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.pc > b { font-size: var(--fs-lg); line-height: 1.25; }
+.pc span { font-size: var(--fs-sm); }
+.pc.sys > b { color: var(--arterial); }
+.pc.dia > b { color: var(--venous); }
+.pc.sys.active { border-color: var(--arterial); box-shadow: 0 0 0 4px var(--arterial-soft); }
+.pc.dia.active { border-color: var(--venous); box-shadow: 0 0 0 4px var(--venous-soft); }
+.pc:focus-visible { outline: 3px solid var(--venous); outline-offset: 2px; }
+.credits i { font-style: italic; }
+</style>
+
+
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#title" aria-label="Back to the title">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28s-11-6.6-11-15A6 6 0 0 1 16 9.4 6 6 0 0 1 27 13c0 8.4-11 15-11 15z" fill="var(--arterial)"/><path d="M4 16h6l2-4 3 8 2.5-6 1.5 2H28" fill="none" stroke="var(--surface)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <b>The Human Heart</b>
+    </a>
+    <div class="now" id="nowTitle" aria-live="polite">Practical Anatomy Seminar</div>
+    <div class="bar-actions">
+      <button class="btn" id="soundBtn" type="button" aria-pressed="false" title="Turn heart sounds on or off">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path id="soundWaves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" opacity=".35"/></svg>
+        <span class="lbl-long">Heart sounds</span>
+      </button>
+      <button class="btn" id="presentBtn" type="button" aria-pressed="false" title="Present mode (P)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg>
+        <span class="lbl-long">Present</span>
+      </button>
+    </div>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<nav class="rail" id="rail" aria-label="Sections"></nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="title" data-title="Title">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="eyebrow">Practical Anatomy · Seminar</p>
+      <h1>The Human <em>Heart</em></h1>
+      <p class="hero-sub">Structure, Blood Flow and Cardiac Cycle</p>
+      <div class="byline">
+        <span class="eyebrow">Prepared by</span>
+        <span class="names">Yousif Basil<i>&amp;</i>Arwan Samir</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#thorax">Start the seminar</a>
+        <button class="btn" type="button" id="heroPresent">Present mode <span class="kbd">P</span></button>
+      </div>
+    </div>
+    <figure class="hero-figure" style="margin:0">
+      <img class="hero-heart" id="heroHeart" src="images/heart-exterior.jpg" width="1100" height="1006" alt="Realistic illustration of the human heart, anterior view, showing the great vessels, right atrium and both ventricles.">
+      <figcaption>Anterior view · P. J. Lynch, CC BY 2.5</figcaption>
+    </figure>
+  </div>
+  <div class="monitor">
+    <div class="monitor-box">
+      <canvas id="ecg" aria-label="Live ECG trace synchronised with the beating heart" role="img"></canvas>
+      <div class="readouts">
+        <div class="readout"><small>HR · bpm</small><b id="hrOut">75</b></div>
+        <div class="readout"><small>Cycle</small><b class="alt" id="cycleOut">0.80 s</b></div>
+        <div class="readout"><small>Beats / day</small><b class="alt" id="dayOut">108,000</b></div>
+        <div class="hr-control">
+          <label for="hr">Heart rate</label>
+          <input type="range" id="hr" min="40" max="180" value="75" step="1">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<main>
+
+<!-- ================= 01 THE CHEST ================= -->
+<section class="sec" id="thorax" data-title="Where Is the Heart?">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">01</span>
+      <div>
+        <p class="eyebrow">Rib cage · Lungs · Heart</p>
+        <h2>Where is the heart?</h2>
+        <p class="lede">The heart sits in the middle of the chest, between the two lungs. The rib cage protects them all.</p>
+      </div>
+    </header>
+
+    <div class="explorer" data-reveal>
+      <div class="stage" id="thxStage">
+        <svg id="thx" viewBox="0 0 400 400" role="img" aria-label="Layered anterior view of the thorax showing the rib cage, lungs, heart and pericardium">
+          <defs>
+            <radialGradient id="gLungR" cx="45%" cy="40%" r="70%">
+              <stop offset="0" stop-color="#f6c9c4"/><stop offset=".65" stop-color="#e59a9b"/><stop offset="1" stop-color="#c26b74"/>
+            </radialGradient>
+            <radialGradient id="gLungL" cx="55%" cy="40%" r="70%">
+              <stop offset="0" stop-color="#f6c9c4"/><stop offset=".65" stop-color="#e59a9b"/><stop offset="1" stop-color="#c26b74"/>
+            </radialGradient>
+            <radialGradient id="gHeart" cx="40%" cy="35%" r="75%">
+              <stop offset="0" stop-color="#e36a62"/><stop offset=".55" stop-color="#b9363c"/><stop offset="1" stop-color="#7c1726"/>
+            </radialGradient>
+            <radialGradient id="gRA" cx="40%" cy="40%" r="80%">
+              <stop offset="0" stop-color="#cf6a74"/><stop offset="1" stop-color="#8a2a3c"/>
+            </radialGradient>
+            <linearGradient id="gBone" x1="0" x2="1">
+              <stop offset="0" stop-color="#e6d6b4"/><stop offset=".5" stop-color="#f6ecd6"/><stop offset="1" stop-color="#e2d0aa"/>
+            </linearGradient>
+            <linearGradient id="gDia" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#c9605a"/><stop offset="1" stop-color="#8f3a3a"/>
+            </linearGradient>
+          </defs>
+
+          <!-- vertebrae + posterior ribs (part of cage layer) -->
+          <g class="layer thx-cage" data-layer="cage" id="thxPosterior"></g>
+
+          <!-- diaphragm -->
+          <g class="thx-dia">
+            <path d="M52 352 C70 312 112 286 148 287 C172 288 190 300 200 306 C212 300 232 293 258 294 C294 296 326 316 348 356 L348 374 C326 336 294 314 258 312 C232 311 212 318 200 324 C190 318 172 306 148 305 C112 304 72 330 52 372 Z" fill="url(#gDia)" opacity=".85"/>
+            <path d="M160 300 C180 296 194 304 200 307 C210 302 226 297 244 298 C228 312 214 318 200 318 C186 318 172 312 160 300 Z" fill="#e9c8b4" opacity=".7"/>
+          </g>
+
+          <!-- lungs -->
+          <g class="layer thx-lungs" data-layer="lungs">
+            <!-- trachea & bronchi -->
+            <path d="M193 20 L207 20 L207 112 L230 146 L224 152 L203 122 L197 122 L176 154 L170 148 L193 112 Z" fill="#e9dccb" stroke="#b9a58a" stroke-width="1"/>
+            <g stroke="#c8b79c" stroke-width="1.2">
+              <line x1="193" y1="30" x2="207" y2="30"/><line x1="193" y1="40" x2="207" y2="40"/><line x1="193" y1="50" x2="207" y2="50"/><line x1="193" y1="60" x2="207" y2="60"/><line x1="193" y1="70" x2="207" y2="70"/><line x1="193" y1="80" x2="207" y2="80"/><line x1="193" y1="90" x2="207" y2="90"/><line x1="193" y1="100" x2="207" y2="100"/>
+            </g>
+            <!-- right lung (viewer's left) -->
+            <path id="lungR" d="M168 58 C150 40 120 52 104 90 C86 132 76 192 74 250 C72 288 76 308 82 320 C110 302 150 288 186 292 C190 252 189 204 187 162 C185 122 183 92 168 58 Z" fill="url(#gLungR)" stroke="#a9505c" stroke-width="1.2"/>
+            <!-- left lung (viewer's right) with cardiac notch -->
+            <path id="lungL" d="M232 58 C250 40 282 52 298 92 C316 135 326 195 326 252 C327 290 325 312 320 328 C300 312 270 304 240 306 C236 290 246 262 258 250 C268 236 266 205 248 188 C232 175 220 165 216 148 C213 118 216 86 232 58 Z" fill="url(#gLungL)" stroke="#a9505c" stroke-width="1.2"/>
+            <!-- bronchial tree hints -->
+            <g fill="none" stroke="#c97f86" stroke-width="1.1" opacity=".55" stroke-linecap="round">
+              <path d="M172 152 C160 170 150 190 140 214 M160 174 C140 176 118 184 104 196 M150 196 C146 230 136 260 124 284 M140 214 C120 236 100 250 90 270"/>
+              <path d="M228 150 C246 166 262 182 276 206 M246 168 C270 166 290 172 304 182 M262 186 C276 220 290 250 300 282 M276 206 C292 228 304 246 312 266"/>
+            </g>
+            <!-- fissures -->
+            <g fill="none" stroke="#7d2f3c" stroke-width="1.5" stroke-linecap="round">
+              <path d="M80 178 C108 220 140 262 166 291"/>
+              <path d="M186 168 C150 170 112 172 86 184"/>
+              <path d="M322 178 C292 222 264 262 246 304"/>
+            </g>
+          </g>
+
+          <!-- great vessels + heart -->
+          <g class="layer" data-layer="heart">
+            <path d="M222 108 C212 105 200 107 186 112" stroke="#4c5bb4" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M192 64 C212 61 232 58 252 56" stroke="#3d58b6" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M206 82 L199 52" stroke="#c4373f" stroke-width="7" stroke-linecap="round"/>
+            <path d="M217 77 L217 49" stroke="#c4373f" stroke-width="5" stroke-linecap="round"/>
+            <path d="M228 79 L236 51" stroke="#c4373f" stroke-width="6" stroke-linecap="round"/>
+            <path d="M178 62 L192 62 L195 142 L177 142 Z" fill="#3d58b6"/>
+            <path d="M183 66 L186 140" stroke="#7d93e0" stroke-width="2" opacity=".6"/>
+            <path d="M207 140 C205 116 200 100 204 88 C210 72 232 72 238 88 C240 96 240 110 238 128" stroke="#a9262f" stroke-width="17" fill="none" stroke-linecap="round"/>
+            <path d="M205 132 C203 114 200 100 205 89 C210 78 228 77 234 88" stroke="#e0646c" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+            <path d="M228 146 C228 130 225 118 230 106" stroke="#4c5bb4" stroke-width="15" fill="none" stroke-linecap="round"/>
+            <path d="M230 106 C240 100 252 102 264 109" stroke="#4c5bb4" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M226 140 C225 128 224 118 228 109" stroke="#8a95dc" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+            <g class="thx-heart">
+              <path d="M176 136 C164 160 164 192 178 214 C208 236 250 240 284 230 C292 227 293 221 289 214 C280 188 262 154 228 128 C214 119 192 123 176 136 Z" fill="url(#gHeart)" stroke="#6e1220" stroke-width="1.2"/>
+              <path d="M176 136 C164 160 164 192 178 214 C186 219 192 221 197 221 C192 190 192 160 197 131 C189 129 182 131 176 136 Z" fill="url(#gRA)" opacity=".95"/>
+              <path d="M180 132 C188 124 198 122 206 126 C204 134 196 140 186 142 Z" fill="#c95e6b" stroke="#7c2236" stroke-width=".8"/>
+              <path d="M197 131 C192 160 192 190 197 221" stroke="#e8c27a" stroke-width="4" fill="none" opacity=".85"/>
+              <path d="M197 131 C192 160 192 190 197 221" stroke="#c22a33" stroke-width="1.6" fill="none"/>
+              <path d="M236 131 C254 160 262 200 258 232" stroke="#e8c27a" stroke-width="5" fill="none" opacity=".85"/>
+              <path d="M236 131 C254 160 262 200 258 232" stroke="#c22a33" stroke-width="1.8" fill="none"/>
+              <path d="M239 131 C257 160 266 200 262 231" stroke="#5367c4" stroke-width="1.3" fill="none" opacity=".9"/>
+              <path d="M247 142 C256 140 262 146 262 152" stroke="#c75b5f" stroke-width="7" fill="none" stroke-linecap="round" opacity=".9"/>
+              <ellipse cx="214" cy="170" rx="22" ry="30" fill="#fff" opacity=".07"/>
+            </g>
+          </g>
+
+          <!-- pericardium -->
+          <g class="layer off" data-layer="peri">
+            <path class="peri-shape" d="M170 132 C156 160 156 198 174 222 C208 248 256 250 294 234 C302 228 300 214 293 205 C283 177 263 145 236 122 C233 108 234 98 238 90 L196 90 C192 104 188 118 170 132 Z"/>
+          </g>
+
+          <!-- anterior ribs, cartilages, sternum, clavicles -->
+          <g class="layer thx-cage" data-layer="cage" id="thxAnterior"></g>
+
+          <g class="lbl" id="thxLabels"></g>
+        </svg>
+        <div class="controls" role="group" aria-label="Layers">
+          <button class="chip" type="button" data-toggle="cage" aria-pressed="true"><span class="dot" style="background:#e2d0aa"></span>Ribs</button>
+          <button class="chip" type="button" data-toggle="lungs" aria-pressed="true"><span class="dot" style="background:#e59a9b"></span>Lungs</button>
+          <button class="chip" type="button" data-toggle="heart" aria-pressed="true"><span class="dot" style="background:#b9363c"></span>Heart</button>
+          <button class="chip" type="button" data-toggle="labels" aria-pressed="true"><span class="dot" style="background:var(--stage-ink)"></span>Labels</button>
+          <button class="chip" type="button" id="breatheBtn" aria-pressed="false"><span class="dot" style="background:var(--venous)"></span>Breathe</button>
+        </div>
+      </div>
+
+      <div class="explorer-panel">
+        <div class="seg" role="tablist" aria-label="Topics" id="thxTabs">
+          <button role="tab" aria-selected="true" data-tab="cage" id="tab-cage" aria-controls="panel-cage">Rib cage</button>
+          <button role="tab" aria-selected="false" data-tab="lungs" id="tab-lungs" aria-controls="panel-lungs">Lungs</button>
+          <button role="tab" aria-selected="false" data-tab="heart" id="tab-heart" aria-controls="panel-heart">Heart</button>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-cage" aria-labelledby="tab-cage">
+          <ul class="points">
+            <li><span class="term">12 pairs of ribs</span>, the <span class="term">sternum</span> in front and <span class="term">12 thoracic vertebrae</span> at the back.</li>
+            <li>The sternum has 3 parts: <span class="term">manubrium</span>, <span class="term">body</span> and <span class="term">xiphoid process</span>.</li>
+            <li>Its job: protect the heart and lungs, and help us breathe.</li>
+          </ul>
+          <p class="label-tag">Tap a rib group</p>
+          <div class="controls" id="ribGroups">
+            <button class="chip" type="button" data-ribs="1-7" aria-pressed="false"><span class="dot" style="background:var(--arterial)"></span>True ribs 1–7</button>
+            <button class="chip" type="button" data-ribs="8-10" aria-pressed="false"><span class="dot" style="background:var(--gold)"></span>False ribs 8–10</button>
+            <button class="chip" type="button" data-ribs="11-12" aria-pressed="false"><span class="dot" style="background:var(--venous)"></span>Floating ribs 11–12</button>
+          </div>
+          <div class="info-pop" id="ribInfo"><b>Three kinds of ribs</b>They differ in how they reach the front of the chest.</div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-lungs" aria-labelledby="tab-lungs" hidden>
+          <ul class="points blue">
+            <li><span class="term">Right lung: 3 lobes</span> (upper, middle, lower).</li>
+            <li><span class="term">Left lung: 2 lobes</span> (upper, lower). It is smaller because the heart leans to the left.</li>
+            <li>The left lung has a <span class="key">cardiac notch</span>, a space for the heart.</li>
+            <li>Press <b>Breathe</b>: the diaphragm moves down and the lungs fill with air.</li>
+          </ul>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-heart" aria-labelledby="tab-heart" hidden>
+          <ul class="points">
+            <li>The heart lies in the <span class="term">middle mediastinum</span>, the space between the two lungs.</li>
+            <li>About <b>two-thirds</b> of it is on the <b>left</b> side of the chest.</li>
+            <li>It is wrapped in a protective sac called the <span class="key">pericardium</span> (dashed line).</li>
+            <li>Its tip, the <span class="term">apex</span>, is at the left 5th intercostal space.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="atlas-strip two" data-reveal>
+      <figure class="plate">
+        <button class="zoom frame" type="button" data-full="images/gray-thoracic-cage.png" data-cap="The rib cage, front view (Gray’s Anatomy, fig. 112)"><img src="images/gray-thoracic-cage.png" width="436" height="600" alt="Engraving of the rib cage from the front: sternum, ribs and costal cartilages" loading="lazy"></button>
+        <figcaption><b>The rib cage</b>Front view · Gray’s Anatomy</figcaption>
+      </figure>
+      <figure class="plate">
+        <button class="zoom frame" type="button" data-full="images/gray-heart-lungs.png" data-cap="The heart and lungs in the chest, front view (Gray’s Anatomy, fig. 490)"><img src="images/gray-heart-lungs.png" width="600" height="585" alt="Engraving of the heart between the two lungs, seen from the front" loading="lazy"></button>
+        <figcaption><b>Heart between the lungs</b>Front view · Gray’s Anatomy</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 OUTSIDE ================= -->
+<section class="sec" id="outside" data-title="Outside the Heart">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">02</span>
+      <div>
+        <p class="eyebrow">Size · Shape · Parts</p>
+        <h2>The outside of the heart</h2>
+        <p class="lede">The heart is about the size of your fist. Click the numbers on the picture to name each part.</p>
+      </div>
+    </header>
+
+    <div class="grid-2" data-reveal>
+      <div style="display:grid;gap:10px;min-width:0">
+        <div class="hs-wrap" id="extImg">
+          <img src="images/heart-exterior.jpg" width="1100" height="1006" alt="Realistic front view of the heart with numbered hotspots" draggable="false">
+        </div>
+        <p class="cap">Front view · Patrick J. Lynch &amp; C. Carl Jaffe, CC BY 2.5</p>
+      </div>
+      <div style="display:grid;gap:16px;min-width:0;align-content:start">
+        <div class="info-pop" id="extInfo"><b>Click a number</b>Each one names a part you should know.</div>
+        <div class="structure-list" id="extList"></div>
+        <div class="facts">
+          <div class="fact"><b>Fist</b><span>Size of a closed fist</span></div>
+          <div class="fact"><b>≈ 300 g</b><span>Weight (250–350 g)</span></div>
+          <div class="fact"><b>60–100</b><span>Beats per minute at rest</span></div>
+          <div class="fact"><b>≈ 5 L</b><span>Blood pumped every minute</span></div>
+        </div>
+        <ul class="points">
+          <li>The <span class="term">apex</span> points down and to the left.</li>
+          <li>The <span class="term">base</span> faces backwards (mostly the left atrium).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 INSIDE ================= -->
+<section class="sec" id="inside" data-title="Inside the Heart">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">03</span>
+      <div>
+        <p class="eyebrow">Chambers · Valves</p>
+        <h2>Four chambers, four valves</h2>
+        <p class="lede">The right side pumps blood to the lungs. The left side pumps blood to the body. A wall called the <b>septum</b> keeps the two sides apart.</p>
+      </div>
+    </header>
+    <div class="grid-2 flip" data-reveal>
+      <div style="display:grid;gap:16px;min-width:0">
+        <div class="ch-grid">
+          <div class="ch-card r"><small>RA</small><b>Right atrium</b><span>Receives blood from the body (SVC and IVC).</span></div>
+          <div class="ch-card l"><small>LA</small><b>Left atrium</b><span>Receives blood from the lungs (4 pulmonary veins).</span></div>
+          <div class="ch-card r"><small>RV</small><b>Right ventricle</b><span>Pumps blood to the lungs.</span></div>
+          <div class="ch-card l"><small>LV</small><b>Left ventricle</b><span>Pumps blood to the whole body. Thickest wall.</span></div>
+        </div>
+        <div class="card" style="padding:16px 18px">
+          <p class="label-tag" style="margin-bottom:8px">The valves</p>
+          <table class="vtable">
+            <thead><tr><th scope="col">Valve</th><th scope="col">Between</th><th scope="col">Cusps</th></tr></thead>
+            <tbody>
+              <tr><td><b>Tricuspid</b></td><td>Right atrium → right ventricle</td><td>3</td></tr>
+              <tr><td><b>Pulmonary</b></td><td>Right ventricle → pulmonary trunk</td><td>3</td></tr>
+              <tr><td><b>Mitral</b></td><td>Left atrium → left ventricle</td><td>2</td></tr>
+              <tr><td><b>Aortic</b></td><td>Left ventricle → aorta</td><td>3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note"><b class="nb">Remember</b>Valves open only one way, so blood never flows backwards.</div>
+      </div>
+      <figure class="plate">
+        <button class="zoom frame" type="button" data-full="images/heart-interior.jpg" data-cap="Inside the heart, front view (OpenStax Anatomy & Physiology, CC BY 3.0)"><img src="images/heart-interior.jpg" width="1400" height="980" alt="Labelled illustration of the inside of the heart showing the four chambers and valves" loading="lazy"></button>
+        <figcaption><b>Inside the heart</b>Click to enlarge · OpenStax Anatomy &amp; Physiology, CC BY 3.0</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 BLOOD FLOW ================= -->
+<section class="sec" id="blood-flow" data-title="Blood Flow">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">04</span>
+      <div>
+        <p class="eyebrow">Pathway of blood</p>
+        <h2>How blood flows through the heart</h2>
+        <p class="lede"><span style="color:var(--venous);font-weight:600">Blue</span> = blood with little oxygen. <span style="color:var(--arterial);font-weight:600">Red</span> = blood full of oxygen. Press Next to follow it step by step.</p>
+      </div>
+    </header>
+    <div class="grid-2" data-reveal>
+      <div class="flow-wrap" id="flowWrap">
+        <img src="images/heart-diagram.png" width="960" height="944" alt="Diagram of the heart with chambers, valves and great vessels labelled">
+        <svg viewBox="0 0 960 944" id="flowSvg" aria-hidden="true"></svg>
+      </div>
+      <div style="display:grid;gap:14px;min-width:0;align-content:start">
+        <div class="controls">
+          <button class="btn" type="button" id="flowPrev" aria-label="Previous step">← Prev</button>
+          <button class="btn btn-primary" type="button" id="flowPlay" aria-pressed="false">Play</button>
+          <button class="btn" type="button" id="flowNext" aria-label="Next step">Next →</button>
+        </div>
+        <div class="step-detail" id="flowDetail" aria-live="polite"></div>
+        <ol class="steps" id="flowSteps"></ol>
+      </div>
+    </div>
+    <div class="circuits" data-reveal>
+      <div class="circuit pul">
+        <h3>To the lungs (pulmonary circulation)</h3>
+        <p class="route">Right ventricle → lungs → left atrium</p>
+        <p style="margin-top:6px;font-size:var(--fs-sm)">Blood picks up oxygen and gets rid of carbon dioxide.</p>
+      </div>
+      <div class="circuit sys">
+        <h3>To the body (systemic circulation)</h3>
+        <p class="route">Left ventricle → aorta → body → right atrium</p>
+        <p style="margin-top:6px;font-size:var(--fs-sm)">Blood delivers oxygen to every organ.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 ELECTRICAL ================= -->
+<section class="sec" id="electrical" data-title="Electrical System">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">05</span>
+      <div>
+        <p class="eyebrow">Conduction system</p>
+        <h2>What makes the heart beat?</h2>
+        <p class="lede">Every beat starts with a small electrical signal. It travels along a special pathway and makes the heart muscle contract. The ECG records this signal.</p>
+      </div>
+    </header>
+    <div class="grid-2" data-reveal>
+      <div class="stage" style="border-radius:16px;border:1px solid var(--line)">
+        <svg class="cond-svg" id="condSvg" viewBox="0 0 360 320" role="img" aria-label="Animation of the electrical signal travelling from the SA node to the Purkinje fibres">
+          <g id="condChambers">
+            <path d="M104 22 L128 22 L130 84 L104 84 Z" fill="#3d58b6"/>
+            <path d="M170 18 C168 40 168 60 172 84 L196 84 C196 60 196 40 198 26 Z" fill="#b62f38"/>
+            <path d="M70 96 C58 132 68 172 104 186 L162 186 C168 150 162 110 142 88 C120 72 86 74 70 96 Z" fill="#a54a5c" stroke="#5a1a2a" stroke-width="1.5"/>
+            <path d="M200 82 C232 66 282 72 296 98 C306 128 296 166 270 182 L206 182 C196 152 192 110 200 82 Z" fill="#b84650" stroke="#5a1a2a" stroke-width="1.5"/>
+            <path d="M104 194 L172 194 L178 302 C140 292 100 262 90 232 C86 216 92 202 104 194 Z" fill="#a54a5c" stroke="#5a1a2a" stroke-width="1.5"/>
+            <path d="M188 194 L274 190 C304 222 304 272 262 306 C236 320 206 318 186 304 Z" fill="#b84650" stroke="#5a1a2a" stroke-width="1.5"/>
+            <path id="cAtGlow" d="M70 96 C58 132 68 172 104 186 L162 186 C168 150 162 110 142 88 C120 72 86 74 70 96 Z M200 82 C232 66 282 72 296 98 C306 128 296 166 270 182 L206 182 C196 152 192 110 200 82 Z" fill="#ffd34d" opacity="0"/>
+            <path id="cVGlow" d="M104 194 L172 194 L178 302 C140 292 100 262 90 232 C86 216 92 202 104 194 Z M188 194 L274 190 C304 222 304 272 262 306 C236 320 206 318 186 304 Z" fill="#ffd34d" opacity="0"/>
+          </g>
+          <g id="condPaths"></g>
+          <circle class="cond-node" id="nSA" cx="118" cy="92" r="7"/>
+          <circle class="cond-node" id="nAV" cx="168" cy="174" r="6.5"/>
+          <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--stage-ink)" font-weight="500">
+            <text x="20" y="64">SA node</text><line x1="62" y1="68" x2="110" y2="88" stroke="var(--stage-ink)" stroke-width=".7"/>
+            <text x="14" y="160">AV node</text><line x1="56" y1="158" x2="160" y2="173" stroke="var(--stage-ink)" stroke-width=".7"/>
+            <text x="14" y="214">Bundle of His</text><line x1="94" y1="211" x2="178" y2="192" stroke="var(--stage-ink)" stroke-width=".7"/>
+            <text x="300" y="250">Purkinje</text><text x="300" y="262">fibres</text>
+          </g>
+        </svg>
+        <div class="controls" style="justify-content:center">
+          <button class="btn" type="button" id="condPlay" aria-pressed="true">Pause</button>
+          <div class="seg" role="group" aria-label="Speed" id="condSpeed">
+            <button type="button" data-s="0.25" aria-pressed="true">Slow motion</button>
+            <button type="button" data-s="1" aria-pressed="false">Real speed</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;gap:14px;min-width:0;align-content:start">
+        <ol class="path-steps" id="condSteps">
+          <li><b>SA node</b><span>The natural pacemaker. It starts every beat.</span></li>
+          <li><b>AV node</b><span>Holds the signal for a moment so the ventricles can fill.</span></li>
+          <li><b>Bundle of His</b><span>Carries the signal into the septum.</span></li>
+          <li><b>Right &amp; left bundle branches</b><span>Run down both sides of the septum.</span></li>
+          <li><b>Purkinje fibres</b><span>Spread the signal through the ventricles, which then contract.</span></li>
+        </ol>
+        <div class="card" style="padding:12px 14px">
+          <svg class="ecg-mini" id="condEcg" viewBox="0 0 400 150" role="img" aria-label="ECG of one heartbeat with a moving cursor"></svg>
+          <p class="cond-caption" id="condCap" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 CARDIAC CYCLE ================= -->
+<section class="sec" id="cycle" data-title="Cardiac Cycle">
+  <div class="sec-inner">
+    <header class="sec-head" data-reveal>
+      <span class="sec-no">06</span>
+      <div>
+        <p class="eyebrow">One heartbeat ≈ 0.8 seconds</p>
+        <h2>The cardiac cycle</h2>
+        <p class="lede">Each heartbeat has two parts: <b>systole</b>, when the heart squeezes, and <b>diastole</b>, when it relaxes and fills. Watch the valves open and close.</p>
+      </div>
+    </header>
+    <div class="grid-2" data-reveal>
+      <div class="stage" style="border-radius:16px;border:1px solid var(--line)">
+        <svg class="valve-svg" id="valveSvg" viewBox="0 0 420 330" role="img" aria-label="The four heart valves seen from above, opening and closing with each heartbeat"></svg>
+        <div class="tl" aria-hidden="true">
+          <div class="tl-bar">
+            <div class="tl-seg sys" style="flex:3"><span>Systole · 0.3 s</span></div>
+            <div class="tl-seg dia" style="flex:5"><span>Diastole · 0.5 s</span></div>
+            <i class="tl-cur" id="tlCur"></i>
+          </div>
+          <div class="tl-marks"><span style="left:0">▲ S1 “lub”</span><span style="left:37.5%">▲ S2 “dub”</span></div>
+        </div>
+        <div class="controls" style="justify-content:center">
+          <button class="btn btn-primary" type="button" id="cycPlay" aria-pressed="true">Pause</button>
+          <div class="seg" role="group" aria-label="Speed" id="cycSpeed">
+            <button type="button" data-s="0.25" aria-pressed="true">Slow motion</button>
+            <button type="button" data-s="1" aria-pressed="false">Real speed</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;gap:14px;min-width:0;align-content:start">
+        <button class="pc sys" type="button" id="pcSys">
+          <small>Part 1 · 0.3 s</small><b>Systole: the heart squeezes</b>
+          <span>The ventricles contract and push blood into the aorta and pulmonary trunk.</span>
+          <span>Mitral and tricuspid valves <b>close</b> → first sound <b>S1 “lub”</b>.</span>
+        </button>
+        <button class="pc dia" type="button" id="pcDia">
+          <small>Part 2 · 0.5 s</small><b>Diastole: the heart relaxes</b>
+          <span>The ventricles relax and fill with blood. At the end, the atria squeeze in a little more.</span>
+          <span>Aortic and pulmonary valves <b>close</b> → second sound <b>S2 “dub”</b>.</span>
+        </button>
+        <figure class="plate" style="grid-template-columns:130px 1fr;align-items:center;gap:14px">
+          <button class="zoom frame" type="button" data-full="images/gray-valves.png" data-cap="The four valves seen from above, after removing the atria (Gray’s Anatomy, fig. 495)"><img src="images/gray-valves.png" width="450" height="398" alt="Engraving of the four heart valves seen from above" loading="lazy"></button>
+          <figcaption><b>The real valves from above</b>Gray’s Anatomy · turn on Heart sounds to hear lub-dub</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= END ================= -->
+<section class="sec" id="end" data-title="Summary">
+  <div class="sec-inner">
+    <header class="sec-head plain" data-reveal>
+      <div>
+        <p class="eyebrow">To sum up</p>
+        <h2>Summary</h2>
+      </div>
+    </header>
+    <ul class="takeaways" data-reveal>
+      <li><b>Where</b>In the middle of the chest, between the lungs, protected by the rib cage.</li>
+      <li><b>Structure</b>Four chambers (2 atria, 2 ventricles) and four valves.</li>
+      <li><b>Blood flow</b>Body → right heart → lungs → left heart → body.</li>
+      <li><b>Heartbeat</b>Starts at the SA node; one cycle = systole + diastole, heard as “lub-dub”.</li>
+    </ul>
+    <div class="thanks" data-reveal>
+      <p class="eyebrow" style="color:var(--hero-muted)">Practical Anatomy Seminar</p>
+      <h3>Thank you</h3>
+      <p>Any questions?</p>
+      <p class="names">Yousif Basil<i>&amp;</i>Arwan Samir</p>
+    </div>
+    <p class="credits" data-reveal>
+      References: Moore, <i>Clinically Oriented Anatomy</i> · Snell, <i>Clinical Anatomy by Regions</i> · Guyton &amp; Hall, <i>Medical Physiology</i>.
+      Images: P. J. Lynch &amp; C. C. Jaffe (CC BY 2.5) · OpenStax Anatomy &amp; Physiology (CC BY 3.0) · Wikimedia Commons heart diagram (CC BY-SA 3.0) · H. Gray, <i>Anatomy of the Human Body</i>, 1918 (public domain). Chest, valve and conduction drawings and animations made for this seminar.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">The Human Heart · Structure, Blood Flow and Cardiac Cycle · Prepared by Yousif Basil &amp; Arwan Samir</footer>
+
+<div class="slide-nav" id="slideNav" aria-label="Slide navigation">
+  <button type="button" id="slPrev" aria-label="Previous section"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+  <span id="slCount">1 / 8</span>
+  <button type="button" id="slNext" aria-label="Next section"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button>
+  <button type="button" id="slExit" aria-label="Exit present mode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label="Enlarged image">
+  <button class="btn lb-close" type="button" id="lbClose">Close</button>
+  <div class="lb-inner">
+    <img id="lbImg" src="" alt="">
+    <p id="lbCap"></p>
+  </div>
+</dialog>
+
+<script>
+(() => {
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const NS = "http://www.w3.org/2000/svg";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const gauss = (x, c, w, a) => a * Math.exp(-((x - c) * (x - c)) / (2 * w * w));
+function mono(pts) {
+  const n = pts.length, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), d = [], m = [];
+  for (let i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
+  m[0] = d[0]; m[n - 1] = d[n - 2];
+  for (let i = 1; i < n - 1; i++) m[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2;
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+    const a = m[i] / d[i], b = m[i + 1] / d[i], s = a * a + b * b;
+    if (s > 9) { const t = 3 / Math.sqrt(s); m[i] = t * a * d[i]; m[i + 1] = t * b * d[i]; }
+  }
+  return t => {
+    if (t <= xs[0]) return ys[0];
+    if (t >= xs[n - 1]) return ys[n - 1];
+    let i = 0; while (t > xs[i + 1]) i++;
+    const h = xs[i + 1] - xs[i], s = (t - xs[i]) / h, s2 = s * s, s3 = s2 * s;
+    return (2 * s3 - 3 * s2 + 1) * ys[i] + (s3 - 2 * s2 + s) * h * m[i] + (-2 * s3 + 3 * s2) * ys[i + 1] + (s3 - s2) * h * m[i + 1];
+  };
+}
+
+/* ---------- one animation clock, only for visible components ---------- */
+const loops = [];
+const vis = new WeakMap();
+const io = new IntersectionObserver(es => es.forEach(e => vis.set(e.target, e.isIntersecting)), { rootMargin: "120px" });
+function addLoop(target, fn) { loops.push({ target, fn }); io.observe(target); }
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  for (const l of loops) if (vis.get(l.target)) { try { l.fn(dt, now); } catch (err) { console.error(err); } }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- heart sounds (Web Audio, starts only after a click) ---------- */
+const sound = { on: false, ctx: null };
+function audio() {
+  if (!sound.ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; sound.ctx = new AC(); }
+  if (sound.ctx.state === "suspended") sound.ctx.resume();
+  return sound.ctx;
+}
+function thump(freq, dur, gain, delay = 0) {
+  if (!sound.on) return;
+  const ctx = audio(); if (!ctx) return;
+  const t0 = ctx.currentTime + delay;
+  const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+  o.type = "sine"; o.frequency.setValueAtTime(freq * 1.9, t0); o.frequency.exponentialRampToValueAtTime(freq, t0 + dur * 0.6);
+  f.type = "lowpass"; f.frequency.value = 220;
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(gain, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(f); f.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0 + dur + 0.05);
+}
+const S1 = () => thump(52, 0.16, 0.9);
+const S2 = () => thump(74, 0.11, 0.6);
+const soundBtn = $("#soundBtn");
+soundBtn.addEventListener("click", () => {
+  sound.on = !sound.on;
+  soundBtn.setAttribute("aria-pressed", String(sound.on));
+  $("#soundWaves").setAttribute("opacity", sound.on ? "1" : ".35");
+  if (sound.on) { audio(); S1(); thump(74, 0.11, 0.6, 0.32); }
+});
+
+/* ---------- hero: ECG monitor + beating heart ---------- */
+(() => {
+  const cv = $("#ecg"), ctx = cv.getContext("2d"), heart = $("#heroHeart");
+  const hrIn = $("#hr");
+  let W = 0, H = 0, x = 0, prevY = null, hr = 75, beatT = 0, tAcc = 0, firedR = false, firedS2 = false;
+  const speed = 150;
+  const grid = getComputedStyle(document.documentElement).getPropertyValue("--hero-grid").trim() || "#141b33";
+  const trace = getComputedStyle(document.documentElement).getPropertyValue("--trace").trim() || "#ff4f68";
+  function drawGrid(x0, x1) {
+    ctx.fillStyle = "#060912"; ctx.fillRect(x0, 0, x1 - x0, H);
+    ctx.strokeStyle = grid; ctx.lineWidth = 1; ctx.beginPath();
+    for (let gx = Math.ceil(x0 / 12) * 12; gx <= x1; gx += 12) { ctx.moveTo(gx + .5, 0); ctx.lineTo(gx + .5, H); }
+    for (let gy = 0; gy <= H; gy += 12) { ctx.moveTo(x0, gy + .5); ctx.lineTo(x1, gy + .5); }
+    ctx.stroke();
+  }
+  function resize() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect();
+    W = Math.max(10, r.width); H = Math.max(10, r.height);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawGrid(0, W); x = 0; prevY = null;
+  }
+  function ecgVal(tau, T) {
+    const k = Math.min(1, T / 0.62), R = 0.2 * k;
+    return gauss(tau, R - 0.13 * k, 0.022 * k, 0.13) + gauss(tau, R - 0.022 * k, 0.007 * k, -0.1) + gauss(tau, R, 0.009 * k, 1)
+      + gauss(tau, R + 0.022 * k, 0.009 * k, -0.24) + gauss(tau, R + 0.26 * Math.sqrt(T / 0.8) * k, 0.045 * k, 0.28);
+  }
+  function setHR(v) {
+    hr = v; const T = 60 / hr;
+    $("#hrOut").textContent = hr; $("#cycleOut").textContent = T.toFixed(2) + " s";
+    $("#dayOut").textContent = (hr * 1440).toLocaleString("en-US");
+  }
+  hrIn.addEventListener("input", () => setHR(+hrIn.value));
+  window.addEventListener("resize", resize);
+  resize(); setHR(75);
+  function pulse(T) {
+    if (reduce) return;
+    heart.animate([{ transform: "scale(1)" }, { transform: "scale(1.05)", offset: .16 }, { transform: "scale(.985)", offset: .45 }, { transform: "scale(1)" }],
+      { duration: Math.min(460, T * 1000 * 0.62), easing: "ease-out" });
+  }
+  addLoop($(".hero"), dt => {
+    const T = 60 / hr, k = Math.min(1, T / 0.62), R = 0.2 * k, s2t = R + (0.26 * Math.sqrt(T / 0.8) + 0.07) * k;
+    let remaining = dt * speed;
+    ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.strokeStyle = trace; ctx.shadowColor = trace; ctx.shadowBlur = 6;
+    while (remaining > 0) {
+      const step = Math.min(1, remaining); remaining -= step;
+      tAcc += step / speed; beatT += step / speed;
+      if (beatT >= T) { beatT -= T; firedR = false; firedS2 = false; }
+      if (!firedR && beatT >= R) { firedR = true; pulse(T); S1(); }
+      if (!firedS2 && beatT >= s2t) { firedS2 = true; S2(); }
+      const y = H * 0.62 - ecgVal(beatT, T) * H * 0.48;
+      const nx = x + step;
+      if (nx > W) { x = 0; prevY = null; continue; }
+      ctx.shadowBlur = 0; drawGrid(Math.floor(nx) + 1, Math.min(W, Math.floor(nx) + 22)); ctx.shadowBlur = 6;
+      if (prevY !== null) { ctx.beginPath(); ctx.moveTo(x, prevY); ctx.lineTo(nx, y); ctx.stroke(); }
+      x = nx; prevY = y;
+    }
+    ctx.shadowBlur = 0;
+  });
+})();
+
+/* ---------- navigation: rail, current title, progress, present mode ---------- */
+const sections = [$("#title"), ...$$("main .sec")];
+(() => {
+  const rail = $("#rail"), now = $("#nowTitle"), prog = $("#progress");
+  sections.forEach((s, i) => {
+    const a = document.createElement("a");
+    a.href = "#" + s.id; a.innerHTML = "<span>" + (i ? String(i).padStart(2, "0") + " · " : "") + s.dataset.title + "</span>";
+    a.setAttribute("aria-label", s.dataset.title);
+    rail.appendChild(a);
+  });
+  const links = $$("a", rail);
+  let current = 0;
+  function update() {
+    const mid = window.scrollY + window.innerHeight * 0.4;
+    let idx = 0;
+    sections.forEach((s, i) => { if (s.offsetTop <= mid) idx = i; });
+    if (idx !== current || !links[idx].classList.contains("active")) {
+      current = idx;
+      links.forEach((l, i) => l.classList.toggle("active", i === idx));
+      now.textContent = idx ? String(idx).padStart(2, "0") + " · " + sections[idx].dataset.title : "Practical Anatomy Seminar";
+    }
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+    $("#slCount").textContent = (idx + 1) + " / " + sections.length;
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+
+  const body = document.body, pBtn = $("#presentBtn");
+  function go(delta) {
+    const mid = window.scrollY + 4 + (body.classList.contains("present") ? 0 : window.innerHeight * 0.3);
+    let idx = 0; sections.forEach((s, i) => { if (s.offsetTop - 70 <= mid) idx = i; });
+    const target = sections[clamp(idx + delta, 0, sections.length - 1)];
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  function setPresent(on) {
+    body.classList.toggle("present", on);
+    pBtn.setAttribute("aria-pressed", String(on));
+    if (on) {
+      const el = document.documentElement;
+      if (el.requestFullscreen && !document.fullscreenElement) el.requestFullscreen().catch(() => {});
+      setTimeout(() => go(0), 60);
+    } else if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+  pBtn.addEventListener("click", () => setPresent(!body.classList.contains("present")));
+  $("#heroPresent").addEventListener("click", () => setPresent(true));
+  $("#slPrev").addEventListener("click", () => go(-1));
+  $("#slNext").addEventListener("click", () => go(1));
+  $("#slExit").addEventListener("click", () => setPresent(false));
+  document.addEventListener("keydown", e => {
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["input", "select", "textarea"].includes(tag) || e.target.isContentEditable || e.metaKey || e.ctrlKey || e.altKey) return;
+    if ($("#lightbox").open) return;
+    if (e.key === "p" || e.key === "P") { setPresent(!body.classList.contains("present")); e.preventDefault(); return; }
+    if (!body.classList.contains("present")) return;
+    if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(1); }
+    else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(-1); }
+    else if (e.key === "Home") { e.preventDefault(); sections[0].scrollIntoView({ behavior: "smooth" }); }
+    else if (e.key === "End") { e.preventDefault(); sections[sections.length - 1].scrollIntoView({ behavior: "smooth" }); }
+    else if (e.key === "Escape") setPresent(false);
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && body.classList.contains("present")) { /* keep present mode, just windowed */ } });
+})();
+
+/* ---------- settle-in animation (content is already visible) ---------- */
+if (!reduce && "IntersectionObserver" in window) {
+  const ro = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("settle"); ro.unobserve(e.target); }
+  }), { rootMargin: "0px 0px 8% 0px", threshold: 0 });
+  const vh = window.innerHeight;
+  $$("[data-reveal]").forEach(r => { if (r.getBoundingClientRect().top > vh) ro.observe(r); });
+}
+
+/* ---------- lightbox ---------- */
+(() => {
+  const dlg = $("#lightbox"), img = $("#lbImg"), cap = $("#lbCap");
+  $$(".zoom").forEach(b => b.addEventListener("click", () => {
+    img.src = b.dataset.full; img.alt = b.querySelector("img").alt; cap.textContent = b.dataset.cap || "";
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  }));
+  $("#lbClose").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+})();
+
+
+/* ---------- 02 thorax explorer ---------- */
+(() => {
+  const svg = $("#thx"), post = $("#thxPosterior"), ant = $("#thxAnterior"), lblG = $("#thxLabels");
+  const X = 200;
+  const lat = [62, 96, 116, 128, 136, 140, 142, 142, 139, 133, 120, 100];
+  const drop = [18, 30, 32, 33, 34, 34, 34, 34, 33, 32, 30, 26];
+  const C = [30, 48, 58, 66, 74, 84, 94, 106, 116, 124, 130, 104];
+  const yj = [88, 124, 150, 176, 202, 230, 256, 278, 296, 312, 322, 330];
+  const sternY = [86, 119, 140, 162, 184, 206, 226];
+  const joins = { 8: [72, 252], 9: [92, 268], 10: [108, 288] };
+  const ribGroups = [];
+  // vertebral bodies
+  for (let i = 0; i < 12; i++) {
+    const y = 58 + i * 21.5;
+    el("rect", { x: 186, y, width: 28, height: 17, rx: 4, fill: "url(#gBone)", stroke: "#a2895f", "stroke-width": .8, opacity: .55 }, post);
+  }
+  function bone(parent, d, w, cls) {
+    el("path", { d, class: (cls || "bone") + "-o", "stroke-width": w + 2.6 }, parent);
+    el("path", { d, class: (cls || "bone") + "-f", "stroke-width": w }, parent);
+  }
+  for (let i = 1; i <= 12; i++) {
+    const k = i - 1, yh = 66 + k * 21.5, ly = yh + drop[k];
+    const gp = el("g", { class: "rib post" + (i >= 11 ? " float" : ""), "data-rib": i }, post);
+    const ga = el("g", { class: "rib", "data-rib": i }, ant);
+    ribGroups[i] = [gp, ga];
+    for (const s of [-1, 1]) {
+      const px = x => X + s * x;
+      bone(gp, `M${px(14)} ${yh} C${px(lat[k] * .5)} ${yh - 8} ${px(lat[k] - 6)} ${yh - 6} ${px(lat[k])} ${ly}`, i >= 11 ? 6.5 : 6);
+      const sag = Math.min(26, (yj[k] - ly) + 10);
+      if (i <= 10) {
+        bone(ga, `M${px(lat[k])} ${ly} C${px(lat[k])} ${ly + sag} ${px(C[k] + (lat[k] - C[k]) * .45)} ${yj[k] + 6} ${px(C[k])} ${yj[k]}`, 7.5);
+        if (i <= 7) {
+          const cy = Math.max(yj[k], sternY[k]) + (i >= 5 ? (i - 4) * 4 : 2);
+          bone(ga, `M${px(C[k])} ${yj[k]} Q${px(C[k] * .45)} ${cy} ${px(13)} ${sternY[k]}`, 6, "cart");
+        } else {
+          const j = joins[i];
+          bone(ga, `M${px(C[k])} ${yj[k]} Q${px((C[k] + j[0]) / 2 + 4)} ${(yj[k] + j[1]) / 2 + 6} ${px(j[0])} ${j[1]}`, 5, "cart");
+        }
+      }
+    }
+  }
+  // clavicles + sternum on top
+  bone(ant, "M187 76 C166 70 146 58 98 56", 9);
+  bone(ant, "M213 76 C234 70 254 58 302 56", 9);
+  el("path", { d: "M184 76 Q200 84 216 76 L223 85 L214 117 L186 117 L177 85 Z", fill: "url(#gBone)", stroke: "#a2895f", "stroke-width": 1.2 }, ant);
+  el("path", { d: "M187 120 L213 120 L215 200 L211 232 L189 232 L185 200 Z", fill: "url(#gBone)", stroke: "#a2895f", "stroke-width": 1.2 }, ant);
+  el("path", { d: "M192 235 L208 235 L203 257 L197 257 Z", fill: "url(#gBone)", stroke: "#a2895f", "stroke-width": 1.1 }, ant);
+  el("line", { x1: 186, y1: 118.5, x2: 214, y2: 118.5, stroke: "#a2895f", "stroke-width": 1.4 }, ant);
+
+  // labels per tab: [text, px, py, lx, ly, anchor]
+  const LABELS = {
+    cage: [["Clavicle", 128, 60, 6, 30, "start"], ["1st rib", 148, 86, 6, 74, "start"], ["True rib (5th)", 66, 186, 6, 160, "start"],
+      ["False rib (9th)", 62, 270, 6, 246, "start"], ["Floating ribs (11, 12)", 84, 310, 6, 352, "start"],
+      ["Sternum", 206, 170, 394, 120, "end"], ["Costal cartilage", 246, 196, 394, 176, "end"], ["Xiphoid process", 204, 250, 394, 232, "end"]],
+    lungs: [["Trachea", 207, 54, 394, 30, "end"], ["Right lung · upper lobe", 128, 122, 6, 96, "start"], ["Horizontal fissure", 128, 172, 6, 146, "start"],
+      ["Middle lobe", 162, 222, 6, 200, "start"], ["Lower lobe", 106, 284, 6, 268, "start"], ["Diaphragm", 128, 296, 6, 392, "start"],
+      ["Left lung · upper lobe", 290, 128, 394, 96, "end"], ["Cardiac notch", 250, 192, 394, 160, "end"], ["Oblique fissure", 300, 210, 394, 214, "end"],
+      ["Lower lobe", 306, 284, 394, 268, "end"]],
+    heart: [["Superior vena cava", 184, 100, 6, 84, "start"], ["Right atrium", 172, 182, 6, 176, "start"], ["Diaphragm", 128, 296, 6, 392, "start"],
+      ["Aorta", 230, 80, 394, 52, "end"], ["Pulmonary trunk", 229, 120, 394, 92, "end"], ["Left ventricle", 274, 204, 394, 150, "end"],
+      ["Pericardium", 294, 222, 394, 196, "end"], ["Apex", 286, 230, 394, 244, "end"]]
+  };
+  let showLabels = true, tab = "cage";
+  function drawLabels() {
+    lblG.textContent = "";
+    if (!showLabels) return;
+    for (const [t, px, py, lx, ly, an] of LABELS[tab]) {
+      const line = el("line", { x1: px, y1: py, x2: px, y2: py }, lblG);
+      el("circle", { cx: px, cy: py, r: 1.8 }, lblG);
+      const tx = el("text", { x: lx, y: ly, "text-anchor": an }, lblG);
+      tx.textContent = t;
+      let len = 0; try { len = tx.getComputedTextLength(); } catch (e) { len = 0; }
+      if (!len) len = t.length * 5.2;
+      const xl = an === "start" ? lx : lx - len, xr = xl + len;
+      let x2 = px, y2 = py < ly ? ly - 11 : ly + 3;
+      if (px < xl - 2) { x2 = xl - 3; y2 = ly - 3.5; } else if (px > xr + 2) { x2 = xr + 3; y2 = ly - 3.5; }
+      line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+    }
+  }
+  const layers = { cage: true, lungs: true, heart: true, peri: false };
+  function applyLayers() {
+    $$(".layer", svg).forEach(g => g.classList.toggle("off", !layers[g.dataset.layer]));
+  }
+  $$("[data-toggle]").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.toggle, on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", String(on));
+    if (k === "labels") { showLabels = on; drawLabels(); return; }
+    layers[k] = on; applyLayers();
+  }));
+  function syncChip(k) { const b = $(`[data-toggle="${k}"]`); if (b) b.setAttribute("aria-pressed", String(layers[k])); }
+  const breatheBtn = $("#breatheBtn");
+  breatheBtn.addEventListener("click", () => {
+    const on = !svg.classList.contains("breathing");
+    svg.classList.toggle("breathing", on); breatheBtn.setAttribute("aria-pressed", String(on));
+  });
+  // rib groups
+  function highlight(range, color, colorO) {
+    for (let i = 1; i <= 12; i++) ribGroups[i].forEach(g => { g.classList.remove("hl", "dim"); g.style.removeProperty("--hl"); g.style.removeProperty("--hl-o"); });
+    if (!range) return;
+    for (let i = 1; i <= 12; i++) ribGroups[i].forEach(g => {
+      if (i >= range[0] && i <= range[1]) { g.classList.add("hl"); g.style.setProperty("--hl", color); g.style.setProperty("--hl-o", colorO); }
+      else g.classList.add("dim");
+    });
+  }
+  const ribText = {
+    "1-7": ["True ribs, 1–7", "Each one joins the sternum directly with its own cartilage."],
+    "8-10": ["False ribs, 8–10", "They join the cartilage of the rib above, not the sternum."],
+    "11-12": ["Floating ribs, 11–12", "Short ribs with free front ends. They do not reach the front of the chest."]
+  };
+  const ribColor = { "1-7": ["#ff8796", "#9b1027"], "8-10": ["#f2c14e", "#8a5a08"], "11-12": ["#9db4ff", "#2b4fae"] };
+  $$("#ribGroups .chip").forEach(b => b.addEventListener("click", () => {
+    const on = b.getAttribute("aria-pressed") !== "true";
+    $$("#ribGroups .chip").forEach(o => o.setAttribute("aria-pressed", "false"));
+    if (on) {
+      b.setAttribute("aria-pressed", "true");
+      const r = b.dataset.ribs.split("-").map(Number);
+      if (!layers.cage) { layers.cage = true; syncChip("cage"); applyLayers(); }
+      highlight(r, ...ribColor[b.dataset.ribs]);
+      const [h, t] = ribText[b.dataset.ribs];
+      $("#ribInfo").innerHTML = `<b>${h}</b>${t}`;
+    } else { highlight(null); }
+  }));
+  // tabs
+  const tabCfg = {
+    cage: { cage: true, lungs: true, heart: true, peri: false },
+    lungs: { cage: false, lungs: true, heart: true, peri: false },
+    heart: { cage: false, lungs: true, heart: true, peri: true }
+  };
+  $$("#thxTabs [role=tab]").forEach(b => b.addEventListener("click", () => {
+    tab = b.dataset.tab;
+    $$("#thxTabs [role=tab]").forEach(o => o.setAttribute("aria-selected", String(o === b)));
+    $$(".explorer-panel .tabpanel").forEach(p => p.hidden = p.id !== "panel-" + tab);
+    Object.assign(layers, tabCfg[tab]);
+    ["cage", "lungs", "heart"].forEach(syncChip);
+    if (tab !== "cage") { highlight(null); $$("#ribGroups .chip").forEach(o => o.setAttribute("aria-pressed", "false")); }
+    applyLayers(); drawLabels();
+  }));
+  applyLayers(); drawLabels();
+  if (reduce) $$(".thx-heart", svg).forEach(h => h.style.animation = "none");
+})();
+
+/* ---------- 02 outside: hotspots ---------- */
+(() => {
+  const wrap = $("#extImg");
+  const S = [
+    ["Superior vena cava", 33, 17, "Big vein that brings blood from the upper body into the right atrium."],
+    ["Aorta", 50, 20, "The largest artery. It carries oxygen-rich blood from the left ventricle to the body."],
+    ["Right atrium", 26, 48, "Upper right chamber. Its ear-shaped flap is the right auricle."],
+    ["Right ventricle", 44, 66, "Lower right chamber. It makes most of the front of the heart."],
+    ["Left ventricle", 76, 70, "Lower left chamber. The strongest pump, with the thickest wall."],
+    ["Apex", 69, 94, "The tip of the heart, made by the left ventricle. It lies at the left 5th intercostal space."],
+    ["Coronary artery", 63, 63, "Feeds the heart muscle itself. This one runs in the groove between the two ventricles."],
+    ["Pulmonary veins", 75, 48, "Bring oxygen-rich blood from the lungs into the left atrium."],
+    ["Inferior vena cava", 31, 85, "Big vein that brings blood from the lower body into the right atrium."]
+  ];
+  const list = $("#extList"), info = $("#extInfo");
+  const spots = S.map((s, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "hs"; b.style.left = s[1] + "%"; b.style.top = s[2] + "%";
+    b.textContent = i + 1; b.setAttribute("aria-label", s[0]);
+    b.addEventListener("click", () => select(i));
+    wrap.appendChild(b);
+    const lb = document.createElement("button");
+    lb.type = "button"; lb.textContent = (i + 1) + " · " + s[0];
+    lb.addEventListener("click", () => select(i));
+    list.appendChild(lb);
+    return [b, lb];
+  });
+  function select(i) {
+    spots.forEach(([b, lb], j) => { b.classList.toggle("on", j === i); lb.classList.toggle("on", j === i); });
+    info.innerHTML = `<b>${i + 1} · ${S[i][0]}</b>${S[i][3]}`;
+  }
+  select(4);
+})();
+
+
+/* ---------- 07 blood flow ---------- */
+(() => {
+  const svg = $("#flowSvg");
+  const tail = " C380 650 430 690 480 715 C520 735 470 650 455 600 L448 540 L448 420 C448 330 470 260 540 238 L742 232";
+  const R = [
+    { d: "M295 40 L295 250 C295 330 290 400 300 470 C308 530 330 580 352 612" + tail, c: "#2f53c4", ox: false },
+    { d: "M280 905 L280 760 C280 700 310 650 352 612" + tail, c: "#2f53c4", ox: false },
+    { d: "M448 420 C448 330 440 272 380 252 L172 240", c: "#2f53c4", ox: false, fadeIn: true },
+    { d: "M772 300 L700 300 C650 300 610 330 586 370 C572 400 590 430 610 455 C640 500 662 560 652 640 C646 700 620 724 600 684 C586 644 576 572 560 530 L535 495 C500 460 420 440 395 400 C378 360 378 300 385 240 C395 170 440 140 480 135 C500 133 505 110 500 46", c: "#d02a3c", ox: true },
+    { d: "M772 368 L716 368 C670 368 640 380 610 400", c: "#d02a3c", ox: true, fadeOut: true },
+    { d: "M440 150 C420 130 404 110 398 60", c: "#d02a3c", ox: true, fadeIn: true },
+    { d: "M520 146 C540 120 552 100 562 60", c: "#d02a3c", ox: true, fadeIn: true },
+    { d: "M162 300 L250 304", c: "#d02a3c", ox: true, fadeOut: true },
+    { d: "M166 370 L250 368", c: "#d02a3c", ox: true, fadeOut: true }
+  ];
+  const routes = R.map(r => {
+    const p = el("path", { d: r.d, fill: "none", stroke: "none" }, svg);
+    const len = p.getTotalLength();
+    const n = Math.max(3, Math.round(len / 46));
+    const dots = [];
+    for (let i = 0; i < n; i++) dots.push(el("circle", { r: 8.5, fill: r.c, stroke: "#fff", "stroke-width": 2.5 }, svg));
+    return { ...r, p, len, dots, n };
+  });
+  const ringG = el("g", {}, svg);
+  const steps = [
+    ["Venae cavae (SVC + IVC)", "Blood low in oxygen comes back from the body.", [[295, 170], [280, 830]], 0],
+    ["Right atrium", "Collects this blood.", [[300, 470]], 0],
+    ["Tricuspid valve", "Opens to let blood into the right ventricle.", [[346, 606]], 0],
+    ["Right ventricle", "Squeezes and pumps the blood toward the lungs.", [[470, 702]], 0],
+    ["Pulmonary valve", "Opens to let blood leave the right ventricle.", [[445, 525]], 0],
+    ["Pulmonary arteries", "Carry the blood to the lungs.", [[610, 234], [230, 242]], 0],
+    ["Lungs", "Blood drops carbon dioxide and picks up oxygen. Now it is red.", [[742, 232]], 1],
+    ["Pulmonary veins", "Bring the oxygen-rich blood back to the heart.", [[744, 300], [744, 368], [200, 300]], 1],
+    ["Left atrium", "Collects the oxygen-rich blood.", [[584, 380]], 1],
+    ["Mitral valve", "Opens to let blood into the left ventricle.", [[612, 458]], 1],
+    ["Left ventricle", "Squeezes hard and pumps blood to the whole body.", [[650, 620]], 1],
+    ["Aortic valve", "Opens to let blood into the aorta.", [[535, 492]], 1],
+    ["Aorta → body", "Oxygen reaches every organ. Then the blood comes back to step 1.", [[470, 145]], 1]
+  ];
+  const listEl = $("#flowSteps"), detail = $("#flowDetail");
+  const stepBtns = steps.map((s, i) => {
+    const li = document.createElement("li"); li.className = s[3] ? "oxy" : "deoxy";
+    const b = document.createElement("button"); b.type = "button"; b.textContent = s[0];
+    b.addEventListener("click", () => { stopPlay(); go(i); });
+    li.appendChild(b); listEl.appendChild(li); return b;
+  });
+  let cur = 0;
+  function go(i) {
+    cur = (i + steps.length) % steps.length;
+    stepBtns.forEach((b, j) => { if (j === cur) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    const s = steps[cur];
+    detail.innerHTML = `<span class="label-tag">Step ${cur + 1} of ${steps.length} · ${s[3] ? "oxygen-rich" : "low in oxygen"}</span><b>${s[0]}</b>${s[1]}`;
+    ringG.textContent = "";
+    s[2].forEach(([x, y]) => {
+      el("circle", { class: "flow-ring", cx: x, cy: y, r: 40, stroke: "#fff", "stroke-width": 14 }, ringG);
+      el("circle", { class: "flow-ring", cx: x, cy: y, r: 40, stroke: s[3] ? "#d02a3c" : "#2f53c4", "stroke-width": 7 }, ringG);
+    });
+  }
+  let playing = false, acc = 0, particles = true, flowT = 0;
+  const playBtn = $("#flowPlay");
+  function stopPlay() { playing = false; playBtn.setAttribute("aria-pressed", "false"); playBtn.textContent = "Play"; }
+  playBtn.addEventListener("click", () => {
+    playing = !playing; playBtn.setAttribute("aria-pressed", String(playing)); playBtn.textContent = playing ? "Pause" : "Play"; acc = 0;
+  });
+  $("#flowPrev").addEventListener("click", () => { stopPlay(); go(cur - 1); });
+  $("#flowNext").addEventListener("click", () => { stopPlay(); go(cur + 1); });
+  function draw() {
+    const ox = steps[cur][3] === 1;
+    routes.forEach(r => {
+      const emph = r.ox === ox ? 1 : 0.38;
+      r.dots.forEach((dot, i) => {
+        const s = ((i / r.n) * r.len + flowT * 95) % r.len;
+        const pt = r.p.getPointAtLength(s);
+        dot.setAttribute("cx", pt.x.toFixed(1)); dot.setAttribute("cy", pt.y.toFixed(1));
+        let o = 1;
+        const edge = 50;
+        if (s < edge) o = s / edge;
+        if (r.len - s < edge) o = Math.min(o, (r.len - s) / edge);
+        dot.setAttribute("opacity", particles ? (o * emph).toFixed(2) : 0);
+      });
+    });
+  }
+  addLoop(svg, dt => {
+    if (particles && !reduce) { flowT += dt; draw(); }
+    if (playing) { acc += dt; if (acc > 2.6) { acc = 0; go(cur + 1); } }
+  });
+  go(0); draw();
+})();
+
+
+/* ---------- 09 conduction ---------- */
+(() => {
+  const pathsG = $("#condPaths");
+  const P = {
+    inter: ["M118 92 C135 115 150 140 168 174", "M118 92 C112 128 134 156 168 174", "M118 92 C98 140 130 172 168 174"],
+    bach: ["M118 92 C150 74 200 78 248 98"],
+    his: ["M168 174 L181 196"],
+    bb: ["M181 196 C176 230 160 262 140 282", "M181 196 C192 230 210 264 236 286"],
+    purk: ["M140 282 C114 276 98 252 96 214", "M140 282 C134 252 128 232 118 206", "M236 286 C266 286 286 256 288 214", "M236 286 C246 256 256 236 264 206", "M140 282 C150 292 165 298 178 300", "M236 286 C224 300 206 306 190 304"]
+  };
+  const segs = {};
+  for (const k in P) segs[k] = P[k].map(d => {
+    el("path", { d, class: "cond-base" }, pathsG);
+    const p = el("path", { d, class: "cond-path" }, pathsG);
+    const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+    return { p, L };
+  });
+  const win = { inter: [0.0, 0.07], bach: [0.0, 0.06], his: [0.14, 0.165], bb: [0.165, 0.2], purk: [0.2, 0.235] };
+  const nSA = $("#nSA"), nAV = $("#nAV"), atG = $("#cAtGlow"), vG = $("#cVGlow");
+  const ecgSvg = $("#condEcg");
+  const ecgF = t => gauss(t, 0.05, 0.018, 0.15) + gauss(t, 0.155, 0.006, -0.1) + gauss(t, 0.17, 0.008, 1) + gauss(t, 0.185, 0.008, -0.25) + gauss(t, 0.4, 0.035, 0.3);
+  const ex = t => 20 + (t / 0.8) * 370, ey = v => 108 - v * 78;
+  const gridG = el("g", { class: "ecg-grid" }, ecgSvg);
+  for (let x = 20; x <= 390; x += 18.5) el("line", { x1: x, y1: 14, x2: x, y2: 136 }, gridG);
+  for (let y = 14; y <= 136; y += 18) el("line", { x1: 20, y1: y, x2: 390, y2: y }, gridG);
+  let d = "";
+  for (let t = 0; t <= 0.8; t += 0.002) d += (t ? "L" : "M") + ex(t).toFixed(1) + " " + ey(ecgF(t)).toFixed(1);
+  el("path", { d, class: "ecg-line" }, ecgSvg);
+  [["P", 0.05, 0.2], ["Q", 0.152, -0.22], ["R", 0.17, 1.07], ["S", 0.19, -0.38], ["T", 0.4, 0.42]].forEach(([s, t, v]) => {
+    const tx = el("text", { x: ex(t), y: ey(v) + (v < 0 ? 12 : -4), "text-anchor": "middle", "font-family": "IBM Plex Mono, monospace", "font-size": 11, "font-weight": 600, fill: "var(--ink)" }, ecgSvg);
+    tx.textContent = s;
+  });
+  const cl = el("line", { x1: 20, y1: 14, x2: 20, y2: 136, stroke: "var(--arterial)", "stroke-width": 1.6 }, ecgSvg);
+  const cd = el("circle", { r: 4.5, fill: "var(--arterial)" }, ecgSvg);
+  const caps = [
+    [0.0, 0.09, "P wave", "The SA node fires. The atria contract."],
+    [0.09, 0.15, "Short pause", "The AV node holds the signal for a moment so the ventricles can fill."],
+    [0.15, 0.26, "QRS", "The signal races down the bundle of His and Purkinje fibres. The ventricles contract."],
+    [0.26, 0.35, "ST", "The ventricles are squeezing blood out."],
+    [0.35, 0.47, "T wave", "The ventricles relax."],
+    [0.47, 0.8, "Rest", "The heart rests until the next beat."]
+  ];
+  const stepEls = $$("#condSteps li"), SR = [[0, 0.09], [0.09, 0.15], [0.15, 0.18], [0.18, 0.2], [0.2, 0.27]];
+  const capEl = $("#condCap");
+  let t = 0, speed = 0.25, playing = !reduce, lastCap = -1;
+  function prog(w) { return clamp((t - w[0]) / (w[1] - w[0]), 0, 1); }
+  function render() {
+    for (const k in segs) {
+      const p = prog(win[k]);
+      const fade = t > 0.5 ? clamp(1 - (t - 0.5) / 0.15, 0, 1) : 1;
+      segs[k].forEach(s => { s.p.style.strokeDashoffset = (s.L * (1 - p)).toFixed(1); s.p.style.opacity = fade; });
+    }
+    nSA.classList.toggle("on", t < 0.035);
+    nAV.classList.toggle("on", t >= 0.06 && t < 0.15);
+    atG.setAttribute("opacity", (t < 0.09 ? 0.45 * clamp(t / 0.07, 0, 1) : t < 0.2 ? 0.45 * (1 - (t - 0.09) / 0.11) : 0).toFixed(2));
+    const vOn = t < 0.17 ? 0 : t < 0.24 ? (t - 0.17) / 0.07 : t < 0.36 ? 1 : t < 0.47 ? 1 - (t - 0.36) / 0.11 : 0;
+    vG.setAttribute("opacity", (0.45 * vOn).toFixed(2));
+    cl.setAttribute("x1", ex(t)); cl.setAttribute("x2", ex(t));
+    cd.setAttribute("cx", ex(t)); cd.setAttribute("cy", ey(ecgF(t)));
+    stepEls.forEach((li, i) => li.classList.toggle("on", t >= SR[i][0] && t < SR[i][1]));
+    const ci = caps.findIndex(c => t >= c[0] && t < c[1]);
+    if (ci !== lastCap && ci >= 0) { lastCap = ci; capEl.innerHTML = `<b>${caps[ci][2]}</b>${caps[ci][3]}`; }
+  }
+  const playBtn = $("#condPlay");
+  function setPlay(p) { playing = p; playBtn.setAttribute("aria-pressed", String(p)); playBtn.textContent = p ? "Pause" : "Play"; }
+  playBtn.addEventListener("click", () => setPlay(!playing));
+  $$("#condSpeed button").forEach(b => b.addEventListener("click", () => {
+    speed = +b.dataset.s; $$("#condSpeed button").forEach(o => o.setAttribute("aria-pressed", String(o === b))); setPlay(true);
+  }));
+  setPlay(playing);
+  addLoop($("#condSvg"), dt => {
+    if (!playing) return;
+    const prev = t;
+    t += dt * speed;
+    if (t >= 0.8) t -= 0.8;
+    if (prev < 0.17 && t >= 0.17) S1();
+    if (prev < 0.45 && t >= 0.45) S2();
+    render();
+  });
+  t = 0.18; render();
+})();
+
+/* ---------- 06 cardiac cycle: valves + timeline ---------- */
+(() => {
+  const svg = $("#valveSvg");
+  el("path", { class: "valve-skel", d: "M60 250 C40 170 110 40 190 36 C250 32 300 80 330 150 C380 180 400 250 360 296 C300 330 120 330 60 250 Z" }, svg);
+  const V = [
+    { id: "pulm", name: "Pulmonary", cx: 168, cy: 78, r: 34, n: 3, rot: -90, type: "sl" },
+    { id: "aort", name: "Aortic", cx: 218, cy: 152, r: 36, n: 3, rot: 90, type: "sl" },
+    { id: "mitral", name: "Mitral", cx: 118, cy: 238, r: 50, n: 2, rot: -20, type: "av" },
+    { id: "tric", name: "Tricuspid", cx: 302, cy: 230, r: 56, n: 3, rot: -60, type: "av" }
+  ];
+  const parts = [], slLines = [];
+  V.forEach(v => {
+    el("circle", { class: "valve-ring", cx: v.cx, cy: v.cy, r: v.r }, svg);
+    const leaflets = [];
+    for (let i = 0; i < v.n; i++) {
+      const a0 = (v.rot + i * 360 / v.n) * Math.PI / 180, a1 = (v.rot + (i + 1) * 360 / v.n) * Math.PI / 180;
+      const am = (a0 + a1) / 2, r = v.r - 3;
+      const p0 = [v.cx + r * Math.cos(a0), v.cy + r * Math.sin(a0)], p1 = [v.cx + r * Math.cos(a1), v.cy + r * Math.sin(a1)];
+      const large = (a1 - a0) > Math.PI ? 1 : 0;
+      const cp = [v.cx + r * .25 * Math.cos(am), v.cy + r * .25 * Math.sin(am)];
+      const d = v.type === "sl"
+        ? `M${v.cx} ${v.cy} L${p0[0]} ${p0[1]} A${r} ${r} 0 ${large} 1 ${p1[0]} ${p1[1]} Z`
+        : `M${v.cx} ${v.cy} Q${cp[0]} ${cp[1]} ${p0[0]} ${p0[1]} A${r} ${r} 0 ${large} 1 ${p1[0]} ${p1[1]} Q${cp[0]} ${cp[1]} ${v.cx} ${v.cy} Z`;
+      const lf = el("path", { class: "leaflet", d }, svg);
+      lf.style.transformOrigin = `${v.cx + r * Math.cos(am)}px ${v.cy + r * Math.sin(am)}px`;
+      leaflets.push(lf);
+    }
+    if (v.type === "sl") for (let i = 0; i < v.n; i++) {
+      const a = (v.rot + i * 360 / v.n) * Math.PI / 180;
+      slLines.push(el("line", { x1: v.cx, y1: v.cy, x2: v.cx + (v.r - 3) * Math.cos(a), y2: v.cy + (v.r - 3) * Math.sin(a), stroke: "#a7776c", "stroke-width": 1 }, svg));
+    }
+    const side = v.id === "pulm";
+    const name = el("text", { class: "valve-name", x: side ? v.cx - v.r - 10 : v.cx, y: side ? v.cy - 2 : v.cy + v.r + 17 }, svg); name.textContent = v.name;
+    const st = el("text", { class: "valve-state", x: side ? v.cx - v.r - 10 : v.cx, y: side ? v.cy + 10 : v.cy + v.r + 29 }, svg);
+    if (side) { name.style.textAnchor = "end"; st.style.textAnchor = "end"; }
+    parts.push({ v, leaflets, st });
+  });
+  const o1 = el("text", { class: "orient", x: 210, y: 14, "text-anchor": "middle" }, svg); o1.textContent = "FRONT ↑";
+  const o2 = el("text", { class: "orient", x: 8, y: 160 }, svg); o2.textContent = "LEFT";
+  const o3 = el("text", { class: "orient", x: 412, y: 160, "text-anchor": "end" }, svg); o3.textContent = "RIGHT";
+
+  let systole = null;
+  const pcSys = $("#pcSys"), pcDia = $("#pcDia");
+  function setPhase(s, withSound) {
+    if (s === systole) return;
+    systole = s;
+    parts.forEach(p => {
+      const open = p.v.type === "sl" ? s : !s;
+      p.leaflets.forEach(l => l.style.transform = open ? "scale(.32)" : "scale(1)");
+      p.st.textContent = open ? "OPEN" : "CLOSED";
+      p.st.setAttribute("class", "valve-state " + (open ? "open" : "closed"));
+    });
+    slLines.forEach(x => x.style.opacity = s ? 0 : 1);
+    pcSys.classList.toggle("active", s); pcDia.classList.toggle("active", !s);
+    if (withSound) (s ? S1 : S2)();
+  }
+  const cur = $("#tlCur");
+  let t = 0.05, speed = 0.25, playing = !reduce;
+  function place() { cur.style.left = `calc(${(t / 0.8 * 100).toFixed(2)}% - 1.5px)`; }
+  const playBtn = $("#cycPlay");
+  function setPlay(p) { playing = p; playBtn.setAttribute("aria-pressed", String(p)); playBtn.textContent = p ? "Pause" : "Play"; }
+  playBtn.addEventListener("click", () => setPlay(!playing));
+  $$("#cycSpeed button").forEach(b => b.addEventListener("click", () => {
+    speed = +b.dataset.s; $$("#cycSpeed button").forEach(o => o.setAttribute("aria-pressed", String(o === b))); setPlay(true);
+  }));
+  pcSys.addEventListener("click", () => { setPlay(false); t = 0.12; place(); setPhase(true, true); });
+  pcDia.addEventListener("click", () => { setPlay(false); t = 0.5; place(); setPhase(false, true); });
+  addLoop(svg, dt => {
+    if (!playing) return;
+    t += dt * speed; if (t >= 0.8) t -= 0.8;
+    place(); setPhase(t < 0.3, true);
+  });
+  setPlay(playing); place(); setPhase(true, false);
+})();
+
+})();
+</script>
+
+</body></html>
